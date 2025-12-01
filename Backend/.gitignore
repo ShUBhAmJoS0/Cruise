@@ -1,0 +1,16 @@
+# Node modules (huge, can be installed with npm install)
+node_modules/
+
+# Environment variables (do not push your passwords!)
+.env
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Build/dist folders
+dist/
+build/
