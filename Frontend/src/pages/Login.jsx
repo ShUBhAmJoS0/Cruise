@@ -7,6 +7,8 @@ import "./Login.css"
 import { auth, provider } from "../firbase.js";
 import { signInWithPopup } from "firebase/auth";
 
+import { signOut } from "firebase/auth";
+
 export default function Login() {
   const navigate = useNavigate();
   const { saveToken } = useContext(AuthContext);
