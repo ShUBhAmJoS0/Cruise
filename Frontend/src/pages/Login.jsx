@@ -39,11 +39,13 @@ export default function Login() {
 const googleLogin = async () => {
     try {
       const result = await signInWithPopup(auth, provider);
-
+      
       console.log("User Info:", result.user);
+      console.log("userId" , result.user.uid)
       alert("Logged in as " + result.user.displayName);
+      const res= await api.post("/auth/googleSignup",{googleId:result.user.uid,name:result.user.displayName,email:result.user.email})
       navigate("/dashboard");
-
+       
       // You can redirect or store user info here
     } catch (error) {
       console.error(error);

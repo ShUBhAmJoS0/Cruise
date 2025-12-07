@@ -19,8 +19,18 @@ const User = sequelize.define("User", {
   },
   password: {
     type: DataTypes.STRING(255),
-    allowNull: false
+    allowNull: true
   },
+  userType: {
+      type: DataTypes.ENUM("Attendee", "Artist"),
+      defaultValue: "Attendee",
+      allowNull: false,
+    },
+
+    googleId: {
+      type: DataTypes.STRING(255),
+      allowNull: true,   // Only needed for Google users
+    },
   createdAt: {
     type: DataTypes.DATE,
     field: "created_at",

@@ -16,7 +16,7 @@ export default function Signup() {
   const[User,setUser] = useState("");
   const signupUser = async () => {
     try {
-      const res = await api.post("/auth/signup", { name, email, password });
+      const res = await api.post("/auth/signup", { name, email, password, userType:User});
 
       saveToken(res.data.token);
       alert("Signup successful!");
@@ -38,8 +38,13 @@ export default function Signup() {
         <InputField label="Email Address" value={email} setValue={setEmail} type="email" />
         <InputField label="Password" value={password} setValue={setPassword} type="password" />
       <InputField label="Confirm Password" value={retype} setValue={setRetype} type="password" />
+      {password && retype && password !== retype && (
+          <p style={{ color: "red"}}>
+            Passwords do not match!
+          </p>
+        )}
       <div className="Signupcontainer">
-      <label>Account Type</label> 
+      <label>Account Type: </label> 
       <label><input type="radio" name="User" value="Attendee" checked={User==="Attendee"} onChange={(e)=>setUser(e.target.value)}/>Attendee</label>
       <label><input type="radio" name="User" value="Artist" checked={User==="Artist"} onChange={(e)=>setUser(e.target.value)}/>Artist</label>
       </div>
@@ -52,9 +57,9 @@ export default function Signup() {
           Sign Up
         </button>
 
-        <p className="mt-4 text-center text-gray-600">
+        <p className="Signupcontainer">
           Already have an account?
-          <Link className="text-blue-600 font-semibold ml-1" to="/login">
+          <Link className="SignupText" to="/login">
             Login
           </Link>
         </p>
