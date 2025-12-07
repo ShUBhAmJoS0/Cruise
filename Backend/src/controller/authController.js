@@ -19,7 +19,8 @@ const registerUser = async (req, res) => {
       return res.status(400).json({ message: "Invalid email format" });
     }
     if(!userType){
-      return res.status(400).json({message:""})
+       alert("Please choose an option!");
+      return res.status(400).json({message:"empty usertype"})
     }
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {

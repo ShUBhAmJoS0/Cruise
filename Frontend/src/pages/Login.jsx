@@ -1,9 +1,8 @@
 import { useState, useContext,useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../api/axios";
-import InputField from "../components/InputComponent";
+
 import { AuthContext } from "../context/AuthContext";
-import "./Login.css"
 import { auth, provider } from "../firbase.js";
 import { signInWithPopup } from "firebase/auth";
 
@@ -56,30 +55,55 @@ const googleLogin = async () => {
   
   return (
    <div 
-  className="background-main"
+  className="flex items-center justify-center min-h-screen bg-center bg-no-repeat bg-cover px-4 sm:px-6"
+  style={{ backgroundImage: "url('/images/Loginbackground.png')" }}
 >
-  <div className="Contentboard">
-    <div className="img-align"><img src="/images/BoardStyle3.png"></img></div>
-    <div className="TextStyle"><h1>Welcome Back to cruise</h1></div>
-    <div className="FieldContainer">
-    <InputField label="Email Address" value={email} setValue={setEmail} type="email" placeholder="Enter your email"/>
-    <InputField label="Password" value={password} setValue={setPassword} type="password" placeholder="Enter your password"/>
- <Link to="/forgot-password" className="ForgotPassword">Forgot Password?</Link>
+  <div className="relative bg-white overflow-hidden rounded-[10px] w-3/5 pl-15 flex-column">
+    <div className="absolute top-0 right-0"><img className="w-[320px]" src="/images/BoardStyle3.png"></img></div>
+        <div className="flex flex-col w-[57%]">
+<h1 className="text-4xl font-semibold mt-7.5 mb-5 text-[#3593A6]">Welcome Back to cruise</h1>
+
+     
+      <div className="flex flex-col">
+        
+      <label className="text-black mt-5 mb-2.5">Email</label>
+       <input 
+        type="email"
+        className="w-[480px] h-[60px] border border-black rounded-md p-4 "
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        placeholder="Enter your email"
+              />
+      </div>
+<div className="flex flex-col">
+        
+      <label className="text-black mt-5 mb-2.5">Password</label>
+       <input 
+        type="password"
+        className="w-[480px] h-[60px] border border-black rounded-md p-4 "
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        placeholder="Enter your password"
+              />
+      </div>
+
+    
+ <Link to="/forgot-password" className="text-[#9C9090] font-semibold no-underline mt-2.5 self-end">Forgot Password?</Link>
     <button
       onClick={loginUser}
-      className="ButtonClass"
+      className="w-[480px] h-[60px] rounded-[10px] bg-[#3593A6] text-white mt-5 border-none flex items-center justify-center"
     >
       Login
     </button>
  <button
       onClick={googleLogin}
-      className="ButtonClass"
+      className="w-[480px] h-[60px] rounded-[10px] bg-[#3593A6] text-white mt-5 border-none flex items-center justify-center"
     >
-   <img src="/images/google.png"></img>Continue with google
+   <img className=" w-[22px] h-[22px] mr-3" src="/images/google.png"></img>Continue with google
     </button>
-    <div className="Signupcontainer">
+    <div className="flex gap-2.5 my-5">
      <p>Dont have an account?</p>
-      <Link to="/signup" className="SignupText">Sign Up</Link>
+      <Link to="/signup" className="text-[#3593A6] font-semibold no-underline">Sign Up</Link>
       </div>
     </div>
   </div>
