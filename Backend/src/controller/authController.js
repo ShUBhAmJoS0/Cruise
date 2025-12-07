@@ -2,10 +2,12 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import User from "../model/User.js";
 import dotenv from "dotenv";
+
 dotenv.config();
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "7d" });
 };
+
 //register User
 const registerUser = async (req, res) => {
   try {
@@ -19,7 +21,7 @@ const registerUser = async (req, res) => {
       return res.status(400).json({ message: "Invalid email format" });
     }
     if(!userType){
-       alert("Please choose an option!");
+
       return res.status(400).json({message:"empty usertype"})
     }
     const existingUser = await User.findOne({ where: { email } });
@@ -35,6 +37,7 @@ const registerUser = async (req, res) => {
       password: hashed,
       userType:userType
     });
+
     const token = generateToken(user.id);
 
     res.status(201).json({

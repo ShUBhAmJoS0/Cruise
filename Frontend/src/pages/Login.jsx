@@ -88,7 +88,7 @@ const googleLogin = async () => {
       </div>
 
     
- <Link to="/forgot-password" className="text-[#9C9090] font-semibold no-underline mt-2.5 self-end">Forgot Password?</Link>
+ <Link to="/forgotpassword" className="text-[#9C9090] font-semibold no-underline mt-2.5 self-end">Forgot Password?</Link>
     <button
       onClick={loginUser}
       className="w-[480px] h-[60px] rounded-[10px] bg-[#3593A6] text-white mt-5 border-none flex items-center justify-center"

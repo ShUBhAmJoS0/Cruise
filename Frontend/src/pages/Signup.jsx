@@ -3,6 +3,7 @@ import api from "../api/axios";
 import { AuthContext } from "../context/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
 
+
 export default function Signup() {
   const { saveToken } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -13,9 +14,9 @@ export default function Signup() {
   const [retype,setRetype] = useState("");
   const[User,setUser] = useState("");
   const signupUser = async () => {
+
     try {
       const res = await api.post("/auth/signup", { name, email, password, userType:User});
-
       saveToken(res.data.token);
       alert("Signup successful!");
       navigate("/login");
@@ -23,6 +24,7 @@ export default function Signup() {
         console.log(error)
       alert(error.response?.data?.message || "Signup failed");
     }
+  
   };
 
   return (
