@@ -3,15 +3,21 @@ import cors from "cors"
 import dotenv from "dotenv"
 dotenv.config();
 import sequelize from "./Database/db.js";
-import authRoutes from "./routes/authRoutes.js"
+import authRoutes from "./routes/authRoutes.js";
+import eventRoutes from "./routes/EventRoutes.js";
+import bookingRoutes from "./routes/bookingRoutes.js";
+// import { seedEvents } from "./model/seed.js";
 
 const app=express();
 app.use(cors());
 app.use(express.json());
 //asignig routes
 app.use("/auth",authRoutes)
-
+app.use("/event",eventRoutes)
+app.use("/api/booking",bookingRoutes)
 //sync db and start server
+// seedEvents()
+
 const port = process.env.PORT || 5000;
 (async()=>{
     try{
@@ -26,4 +32,4 @@ const port = process.env.PORT || 5000;
         console.error("Unable to start server:",err);
     }
 })
-();
+(); 
