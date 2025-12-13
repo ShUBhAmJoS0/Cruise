@@ -45,14 +45,7 @@ export default function Signup() {
      catch (error) {
         console.log(error)
 
-        if (firebaseUser) {
-      try {
-        await firebaseUser.delete();
-        console.log("Firebase user rolled back");
-      } catch (deleteError) {
-        console.error("Failed to delete Firebase user", deleteError);
-      }
-    }
+        
     alert(error.code)
 
 

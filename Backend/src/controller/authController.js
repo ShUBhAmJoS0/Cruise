@@ -18,12 +18,8 @@ const registerUser = async (req, res) => {
 const firebase_uid = decodedToken.uid;
     // Check if user exists in Postgres
     let user = await User.findOne({ where: {firebase_uid} });
-    let existingName= await User.findOne({where:{name}});
-    if(existingName){
-      return res.status(400).json({
-    message: "Username already taken"
-  });
-    }
+   
+    
     //  If not, create user in Postgres
     if (!user) {
       user = await User.create({
