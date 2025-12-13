@@ -3,6 +3,7 @@ import { AuthProvider } from "./context/AuthContext";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import ForgetPassword from "./pages/ForgetPassword";
+
 function App() {
   return (
     
@@ -14,6 +15,7 @@ function App() {
 <Route path="/forgotpassword" element={<ForgetPassword/>}/>
           {/* After login */}
           <Route path="/dashboard" element={<h1>Dashboard</h1>} />
+
         </Routes>
       </BrowserRouter>
     </AuthProvider>
