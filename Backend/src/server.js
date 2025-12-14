@@ -15,8 +15,7 @@ app.use(express.json());
 app.use("/auth",authRoutes)
 app.use("/event",eventRoutes)
 app.use("/api/booking",bookingRoutes)
-//sync db and start server
-// seedEvents()
+
 
 const port = process.env.PORT || 5000;
 (async()=>{

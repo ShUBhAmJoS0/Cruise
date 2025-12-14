@@ -5,6 +5,7 @@ import Event from "../model/Event.js";
 export const DisplayAll = async (req, res) => {
   try {
     const events = await Event.findAll();
+    // console.log(events)
     res.json(events);
   } catch (e) {
     console.error(e);

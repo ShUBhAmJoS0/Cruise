@@ -16,7 +16,6 @@
             <Route path="/signup" element={<Signup />} />
             <Route path="/forgotpassword" element={<ForgetPassword/>}/>
             {/* After login */}
-            <Route path="/dashboard" element={<h1>Dashboard</h1>} />
             <Route path="/event/:id" element={<Bookingpage></Bookingpage>}/>
           </Routes>
         </BrowserRouter>

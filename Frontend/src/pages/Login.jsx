@@ -35,7 +35,7 @@ export default function Login() {
       id_token: idToken,
     });
     alert("Login successful!");
-    navigate("/dashboard");
+    navigate("/events");
   }
 catch (error) {
       alert(error.response?.data?.message || "Invalid credentials");
@@ -51,7 +51,7 @@ const googleLogin = async () => {
       console.log("userId" , result.user.uid)
       alert("Logged in as " + result.user.displayName);
       const res = await api.post("/auth/googleSignup",{googleId:result.user.uid,name:result.user.displayName,email:result.user.email})
-      navigate("/dashboard");
+      navigate("/events");
        
       // You can redirect or store user info here
     } catch (error) {
