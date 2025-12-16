@@ -18,7 +18,6 @@ function App() {
           <Route path="/forgotpassword" element={<ForgetPassword />} />
 
          
-          <Route path="/" element={<Landing />} />
           <Route path="/landing" element={<Landing />} /> 
 
           
