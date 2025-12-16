@@ -1,22 +1,24 @@
-import { createContext, useState, useEffect } from "react";
+import { createContext, useEffect, useState } from "react";
+import { auth } from "../firbase";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [token, setToken] = useState(localStorage.getItem("auth_token") || null);
+  const [user, setUser] = useState(null);
 
-  const saveToken = (jwt) => {
-    localStorage.setItem("auth_token", jwt);
-    setToken(jwt);
-  };
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
 
-  const logout = () => {
-    localStorage.removeItem("auth_token");
-    setToken(null);
-  };
+    return () => unsubscribe();
+  }, []);
+
+  const logout = () => signOut(auth);
 
   return (
-    <AuthContext.Provider value={{ token, saveToken, logout }}>
+    <AuthContext.Provider value={{ user, logout }}>
       {children}
     </AuthContext.Provider>
   );

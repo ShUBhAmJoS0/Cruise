@@ -17,10 +17,11 @@ const User = sequelize.define("User", {
     unique: true,
     validate: { isEmail: true }
   },
-  password: {
-    type: DataTypes.STRING(255),
-    allowNull: true
-  },
+firebase_uid:{
+    type: DataTypes.STRING(100),
+    unique: true,
+    allowNull: true,
+},
   userType: {
       type: DataTypes.ENUM("Attendee", "Artist"),
       defaultValue: "Attendee",
