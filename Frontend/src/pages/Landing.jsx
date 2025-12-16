@@ -1,8 +1,4 @@
-import "../styles/index.css";
-
-import cruiseLogo from '../../public/images/cruise logo.png';
-import heroBg from '../../public/Images/heroimage.png';
-import scrapImg from '../../public/Images/scrap.png';
+import "../styles/Landing.css";
 
 function App() {
   return (
@@ -10,7 +6,7 @@ function App() {
       {/* NAVBAR */}
       <nav className="navbar">
         <div className="nav-left-wrapper">
-          <img src={cruiseLogo} className="logo" alt="Cruise Logo" />
+          <img src="images/cruise logo.png" className="logo" alt="Cruise Logo" />
           <div className="nav-left">
             <a href="#" className="nav-link">Event</a>
             <a href="#" className="nav-link">Categories</a>
@@ -27,11 +23,11 @@ function App() {
       {/* HERO SECTION */}
       <section className="hero-section">
         <div className="hero-bg-wrapper">
-          <img src={heroBg} className="hero-bg" alt="Hero Background" />
+          <img src="/images/heroimage.png" alt="Hero Background" />
         </div>
         <button className="cta-btn">Explore Event</button>
         <div className="scrap-wrapper">
-          <img src={scrapImg} className="scrap-img" alt="Scrap Design" />
+          <img src="/images/scrap.png" className="scrap-img" alt="Scrap Design" />
         </div>
       </section>
 

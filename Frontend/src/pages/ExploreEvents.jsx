@@ -78,7 +78,7 @@ const ExploreEvents = () => {
           throw new Error('Unexpected data format');
         }
 
-        setError(null);
+     
       } catch (err) {
         setError(err.message);
         console.error('Error fetching events:', err);
