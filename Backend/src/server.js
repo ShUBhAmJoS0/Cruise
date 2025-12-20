@@ -6,15 +6,17 @@ import sequelize from "./Database/db.js";
 import authRoutes from "./routes/authRoutes.js";
 import eventRoutes from "./routes/EventRoutes.js";
 import bookingRoutes from "./routes/bookingRoutes.js";
-// import { seedEvents } from "./model/seed.js";
+import authToken from "./middleware/firebaseAuth.js";
 
 const app=express();
 app.use(cors());
 app.use(express.json());
 //asignig routes
+app.use(authToken)
 app.use("/auth",authRoutes)
 app.use("/event",eventRoutes)
 app.use("/api/booking",bookingRoutes)
+// app.use("/api/artist",ArtistRoutes)
 
 
 const port = process.env.PORT || 5000;

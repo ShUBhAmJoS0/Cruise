@@ -1,0 +1,45 @@
+import {admin} from "../Config/firebaseAdmin.js"
+import User from "../model/User.js";
+
+const authToken= async (req, res, next) => {
+
+
+  try {
+          if (req.path === "/auth/login" || req.path=="/auth/signup") {
+    return next();
+  }
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({
+        message: "Authorization token missing",
+      });
+    }
+
+    const token = authHeader.split(" ")[1];
+
+    const decodedToken = await admin.auth().verifyIdToken(token);
+const user = await User.findOne({
+      where: { firebase_uid: decoded.uid }
+    });
+
+    if (!user) {
+      return res.status(403).json({ message: "User not registered" });
+    }
+
+    req.user = {
+      firebase_uid: decodedToken.uid,
+      role: user.userType
+    };
+
+    next();
+  } catch (error) {
+    console.error("Firebase Auth Error:", error.message);
+
+    return res.status(401).json({
+      message: "Invalid or expired token",
+    });
+  }
+};
+
+export default authToken;

@@ -11,17 +11,29 @@ const Event = sequelize.define(
     description: { type: DataTypes.TEXT, allowNull: false },
     location: { type: DataTypes.STRING, allowNull: false },
     date: { type: DataTypes.DATE, allowNull: false },
+    time: { type: DataTypes.STRING, allowNull: false },
+    category:{ type: DataTypes.STRING, allowNull: false },
     images: { type: DataTypes.ARRAY(DataTypes.STRING), allowNull: true },
+    profileImage:{type:DataTypes.STRING,allowNull:false},
     prices: {
-        type: DataTypes.JSONB, // Postgres JSON column
+        type: DataTypes.JSONB, 
         allowNull: false,
         defaultValue: { VIP: 0, Regular: 0, Student: 0 }
+    },
+    Quantity:{
+        type: DataTypes.JSONB, 
+        allowNull: false,
+        defaultValue: { VIP: 0, Regular: 0, Student: 0 }
+    },
+    status:{
+      type:DataTypes.STRING,
+      allowNull:false,
+      defaultValue:false
     }
   },
-  {
-    tableName: "Events",
-    timestamps: true,
-  }
+{
+  timestamps: true
+}
 );
 
-export default Event;
+export default Event;

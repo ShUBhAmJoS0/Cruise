@@ -25,7 +25,7 @@ export const createBookingController = async (req, res) => {
     if (!ticket_type || !quantity || !customer_name || !billing_address) {
       return res.status(400).json({ message: "Missing required fields" });
     }
-
+    
     const pricePerTicket = TICKET_PRICES[ticket_type] || 0;
     const subtotal = pricePerTicket * quantity;
     const fee = Math.round(subtotal * 0.05);

@@ -1,11 +1,12 @@
 // backend/src/routes/EventRoutes.js
 
 import express from "express";
-import { DisplayAll, GetEvent } from "../controller/eventController.js";
+import { AddEvent, DisplayAll, GetEvent } from "../controller/eventController.js";
 
 const router= express.Router()
 
 
 router.get("/",DisplayAll);
 router.get("/:id",GetEvent);
+router.post("/request", AddEvent);
 export default router

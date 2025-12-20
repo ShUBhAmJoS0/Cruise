@@ -1,16 +1,19 @@
-import React, { useState, useEffect, useRef } from 'react';
+import  { useState, useEffect, useRef } from 'react';
 import api from "../api/axios";
-import { jsx } from 'react/jsx-runtime';
-const primaryColor = '#3593A6';
-import { useNavigate } from 'react-router-dom';
 
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+
+const primaryColor = '#3593A6';
 const ExploreEvents = () => {
+    const navigate= useNavigate()
+
   // Data states
   const [upcomingEvents, setUpcomingEvents] = useState([]);
   const [trendingEvents, setTrendingEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const navigate= useNavigate()
+
 
   // Temporary filter states (UI only - no actual filtering)
   const [tempCategories, setTempCategories] = useState({

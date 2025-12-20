@@ -1,8 +1,8 @@
-import { useState } from "react";
+import {  useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../api/axios";
 
-import { AuthContext } from "../context/AuthContext";
+
 import { auth, provider } from "../firbase.js";
 import { signInWithPopup } from "firebase/auth";
 import {signInWithEmailAndPassword } from "firebase/auth";
@@ -12,10 +12,6 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const[showpassword,setShowpassword]=useState(false)
-
-//   useEffect(() => {
-//     if (saveToken) navigate("/dashboard");
-//   }, [saveToken, navigate]);
 
 
   const loginUser = async () => {
@@ -46,11 +42,12 @@ catch (error) {
 const googleLogin = async () => {
     try {
       const result = await signInWithPopup(auth, provider);
-      
+       const idToken = await result.user.getIdToken();
       console.log("User Info:", result.user);
       console.log("userId" , result.user.uid)
+      
+      const res = await api.post("/auth/signup",{id_token:idToken,name:result.user.displayName,email:result.user.email,userType:"Attendee"})
       alert("Logged in as " + result.user.displayName);
-      const res = await api.post("/auth/googleSignup",{googleId:result.user.uid,name:result.user.displayName,email:result.user.email})
       navigate("/events");
        
       // You can redirect or store user info here

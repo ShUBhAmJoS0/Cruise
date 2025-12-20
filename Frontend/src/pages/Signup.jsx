@@ -1,12 +1,14 @@
-import { useState,} from "react";
+import {  useState,} from "react";
 import api from "../api/axios";
 import { Link, useNavigate } from "react-router-dom";
 import { auth } from "../firbase.js";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 
+
 export default function Signup() {
 
   const navigate = useNavigate();
+
   let firebaseUser = null;
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
