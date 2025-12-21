@@ -1,30 +1,48 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { auth } from "../firbase";
-import { onAuthStateChanged, signOut } from "firebase/auth";
+import { auth } from "../firbase.js";
+import { onAuthStateChanged } from "firebase/auth";
+import api from "../api/axios.js";
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(null);     
+  const [role, setRole] = useState(null);      
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+useEffect(() => {
+  const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+    if (currentUser) {
       setUser(currentUser);
-      setLoading(false);
-    });
+      try {
+        const token = await currentUser.getIdToken();
+        const res = await api.get("/auth/getuser", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setRole(res.data.userType); 
+      } catch {
+        setRole(null);
+      }
+    } else {
+      setUser(null);
+      setRole(null);
+    }
+    setLoading(false);
+  });
+  return () => unsubscribe();
+}, []);
 
-    return () => unsubscribe();
-  }, []);
+  const logout = async () => {
+    await auth.signOut();
+    setUser(null);
+    setRole(null); 
+  };
 
-  const logout = () => signOut(auth);
-
-  
   return (
-    <AuthContext.Provider value={{ user, logout,loading}}>
+    <AuthContext.Provider value={{ user, role, setRole, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );
-  
 };
-export const useAuth = () => useContext(AuthContext)
+
+export const useAuth = () => useContext(AuthContext);

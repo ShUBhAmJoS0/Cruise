@@ -2,16 +2,24 @@ import { Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 const PublicRoute = ({ children }) => {
-  // const { user, loading } = useAuth();
+  const {user, role, loading } = useAuth(); 
 
-  // // 1. Wait until auth state is loaded
-  // if (loading) return <p></p>;
+if (loading) return <p>Loading...</p>;
 
-  // // 2. If user is logged in, redirect to dashboard / events
-  // if (user) return <Navigate to="/events" />;
+  if (user) {
+     console.log(role)
+    switch (role) {
+       
+      case "Admin":
+        return <Navigate to="/admin/dashboard" />;
+      case "Artist":
+        return <Navigate to="/artist/Request" />;
+      default:
+        return <Navigate to="/events" />;
+    }
+  }
 
-  // // 3. If not logged in, render the auth page
-  return children;
+  return children; 
 };
 
 export default PublicRoute;

@@ -1,7 +1,23 @@
-import { useState } from "react";
-
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 export function Navbar({children}){
-    const[selected,setSelected]=useState("")
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { logout } = useAuth(); 
+    const[selected,setSelected]=useState("");
+
+    useEffect(() => {
+    if (location.pathname.includes("Myprofile")) setSelected("Myprofile");
+    else if (location.pathname.includes("Request")) setSelected("ManageEvents");
+    else if (location.pathname.includes("Merchandise")) setSelected("Merchandise");
+    else setSelected(""); // default
+  }, [location.pathname]);
+
+    const handleLogout = async () => {
+    await logout();
+    navigate("/login"); // redirect to login after logout
+  };
     return(
         
         <div className="h-[100dvh] flex ">
@@ -22,6 +38,7 @@ export function Navbar({children}){
 <button onClick={()=> setSelected("Merchandise")} className={`text-white text-left h-[50px] flex items-center gap-3 mb-3 p-3 transition duration-200 ${
     selected === "Merchandise" ? "bg-white/20" : "bg-transparent hover:bg-white/20"
   }`} > <img src="/images/Shopping bag.png" className="w-[25px] h-[25px]" ></img>Merchandise </button>
+  <button onClick={handleLogout} className="text-white text-left h-[50px] flex items-center gap-3 mb-3 p-3 transition duration-200" > <img src="/images/Shopping bag.png" className="w-[25px] h-[25px]" ></img> Log out</button>
 </div>
 </div>
 {children}

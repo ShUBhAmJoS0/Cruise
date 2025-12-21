@@ -42,7 +42,7 @@ export default function Signup() {
         id_token: idToken,
       });
       alert("Signup successful!");
-      navigate("/events");
+      navigate("/login");
     }
      catch (error) {
         console.log(error)

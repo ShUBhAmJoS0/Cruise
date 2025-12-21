@@ -166,8 +166,7 @@ export default function BookingPage() {
         customer_name: name,
         billing_address: billingAddress,
         email,
-        card_number: cardNumber, // mock
-        // backend will calculate total itself
+        card_number: cardNumber,
       });
       alert ("Booking Confirmed!");
     } finally {

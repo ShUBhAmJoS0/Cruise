@@ -16,7 +16,8 @@ export const DisplayAll = async (req, res) => {
 export const AddEvent = async(req,res)=>{
   try {
     const body = req.body;
-if (!body.title || !body.description || !body.location || !body.date || !body.time || !body.category || !body.profileImage || !body.prices || typeof body.prices !== "object" || !body.Quantity || typeof body.Quantity !== "object" || body.status === undefined || body.status === null) {
+    const uid = req.user.id;
+if (!body.title || !body.description || !body.location || !body.date || !body.time || !body.category || !body.profileImage || !body.prices || typeof body.prices !== "object" || !body.Quantity || typeof body.Quantity !== "object") {
     return res.status(400).json({ message: "All required fields must be filled and valid" });
 }
 const event = await Event.create({
@@ -30,13 +31,14 @@ const event = await Event.create({
             profileImage: body.profileImage,
             prices: body.prices,
             Quantity: body.Quantity,
-            status: body.status
+            status: "pending",
+            createdBy:uid
         });
 
-        return res.status(201).json({ message: "Event created successfully", event });
+       res.status(200).json({ message: "Event created successfully", event });
   } catch (e) {
     console.log(e);
-    res.status(500).json({message:`failed to add event ${e.message}` })
+    res.status(500).json({message:`failed to add  ${e.message}` })
     
   }
 }
@@ -53,3 +55,20 @@ export const GetEvent = async (req, res) => {
     res.status(500).json({ message: "Failed to fetch event" });
   }
 };
+
+export const GetrequestedEvent = async(req,res)=>{
+  try{
+     const userId = req.user.id; 
+    const requestedEvents = await Event.findAll({where:{createdBy:userId}});
+if(!requestedEvents){
+  return res.status(404).send({message:"no events found for this user"})
+}
+res.status(200).send({
+  data:"200",
+  message:"retrieved requested events sucessfully"
+})
+  }
+  catch(e){
+    res.status(500).send({message:e.message})
+  }
+}

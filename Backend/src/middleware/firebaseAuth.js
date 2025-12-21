@@ -20,7 +20,7 @@ const authToken= async (req, res, next) => {
 
     const decodedToken = await admin.auth().verifyIdToken(token);
 const user = await User.findOne({
-      where: { firebase_uid: decoded.uid }
+      where: { firebase_uid: decodedToken.uid }
     });
 
     if (!user) {
@@ -28,6 +28,7 @@ const user = await User.findOne({
     }
 
     req.user = {
+       id: user.id,
       firebase_uid: decodedToken.uid,
       role: user.userType
     };

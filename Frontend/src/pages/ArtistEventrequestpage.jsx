@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import api from "../api/axios";
 
 function ArtistEventRequestPage(){
@@ -7,9 +7,14 @@ const [EventLocation,setEventlocation] = useState("");
 const[Category,setCategory]=useState("")
 const[EventDate,setEventDate]=useState("")
 const[EventTime,setEventTime]=useState("")
-const[Price,setPrice]=useState("")
-const[Quantity,setQuantity]=useState("")
-const[profile,setProfile]=useState("")
+const[Price,setPrice]=useState( {Standard: "",
+  Student: "",
+  VIP: ""})
+const[Quantity,setQuantity]=useState({
+  Standard: "",
+  Student: "",
+  VIP: ""
+})
 const[selected,setSelected]=useState("")
 const[eventDes,setEventdis]=useState("")
 
@@ -36,13 +41,32 @@ const [imagePreviewUrl, setImagePreviewUrl] = useState(null);
   const removeImage = (index) => {
     setSelectedImages(selectedImages.filter((_, i) => i !== index));
   };
+
+  useEffect(()=>{
+const LoadrquestedEvents=async()=>{
+  try {
+    const res = await api.get("/event/request");
+    const Events = res.data
+console.log(res.data)
+alert(res)
+  } catch (e) {
+    console.log(e)
+    alert(e.response?.data?.message)
+    
+  }
+
+}
+  }
+
+  )
   const RequestEvent = async()=>{
     try {
-      const res = await api.post("/event/request",{title:EventTittle,date:EventDate,time:EventTime,location:EventLocation,category:Category,price:Price,  quantity: Quantity,  profileImage: selectedImage ? imagePreviewUrl : null,  images: selectedImages.map(file => file.name)});
-      alert(res.message);
+      const res = await api.post("/event/request",{title:EventTittle,date:EventDate,time:EventTime,location:EventLocation,category:Category,prices:Price, description:eventDes, Quantity: Quantity,  profileImage: selectedImage ? imagePreviewUrl : null,  images: selectedImages.map(file => file.name)});
+      alert(res.data.message);
     } catch (error) {
-      console.log(error.message)
-      alert(res.message)
+      const msg=error.response?.data?.message;
+      console.log(error.response?.data?.message)
+      alert(msg)
     }
     
 
@@ -89,27 +113,59 @@ return (
         </div>
         <div className = "flex flex-col ">
         <p className="text-s font-bold  ml-4">Ticket Price</p>
-        <div className="flex md:flex-col m-3 items-center">
-<div className="grid grid-cols-3 gap-y-5 gap-x-3 w-[100%] p-5 bg-[#F1F0F0]/40  md:px-20 text-center rounded-lg shadow-inner">
-    <p><b>Ticket</b></p>
-    <p><b>Price</b></p>
-    <p><b>Quantity</b></p>
-    <div className="flex flex-col justify-center items-center gap-3 ">
-    <div className="w-40 h-10 border-2 border-[#93CAD5] rounded-lg flex items-center justify-center ">Standard</div>
-        <div className="w-40 h-10 border-2 border-[#93CAD5] rounded-lg flex items-center justify-center">Student</div>
-            <div className="w-40 h-10 border-2 border-[#93CAD5] rounded-lg flex items-center justify-center ">VIP</div>
-            </div>
-               <div className="flex flex-col justify-center items-center gap-3 ">
-                <input type="text" className="flex-grow-1 h-10 border border-black rounded-md p-4" ></input>
-                <input type="text" className="flex-grow-1 h-10 border border-black rounded-md p-4"></input>
-                <input type="text" className="flex-grow-1 h-10 border border-black rounded-md p-4"></input>
-               </div>
-                       <div className="flex flex-col justify-center items-center gap-3 ">
-                <input type="number" className="flex-grow-1 h-10 border border-black rounded-md p-4" ></input>
-                <input type="number" className="flex-grow-1 h-10 border border-black rounded-md p-4"></input>
-                <input type="number" className="flex-grow-1 h-10 border border-black rounded-md p-4"></input>
-               </div>
-     </div>
+        <div className="flex md:flex-col m-3 items-center ">
+<div className="grid grid-cols-3 gap-y-5 gap-x-6 w-full p-5 bg-[#F1F0F0]/40 md:px-20 rounded-lg shadow-inner place-items-center">
+
+  {/* Headers */}
+  <p className="font-bold">Ticket</p>
+  <p className="font-bold">Price</p>
+  <p className="font-bold">Quantity</p>
+
+  {["Standard", "Student", "VIP"].map((type) => (
+    <>
+      {/* Ticket type */}
+      <div
+        key={`${type}-label`}
+        className="w-40 h-10 border-2 border-[#93CAD5] rounded-lg flex items-center justify-center"
+      >
+        {type}
+      </div>
+
+      {/* Price */}
+      <input
+        key={`${type}-price`}
+        type="number"
+        min="0"
+        value={Price[type]}
+        onChange={(e) =>
+          setPrice({
+            ...Price,
+            [type]: Number(e.target.value),
+          })
+        }
+        className="h-10 w-28 border border-black rounded-md px-3 text-center"
+        placeholder="Price"
+      />
+
+      {/* Quantity */}
+      <input
+        key={`${type}-qty`}
+        type="number"
+        min="0"
+        value={Quantity[type]}
+        onChange={(e) =>
+          setQuantity({
+            ...Quantity,
+            [type]: Number(e.target.value),
+          })
+        }
+        className="h-10 w-28 border border-black rounded-md px-3 text-center"
+        placeholder="Qty"
+      />
+    </>
+  ))}
+</div>
+
         </div>
         </div>
         <div className = "flex flex-col mt-4 ">
@@ -167,7 +223,7 @@ return (
           </div>
         )}
         </div>
-        <button className= "w-30 self-center bg-[#3593A6] text-white py-2 md:py-5 mt-6 rounded-md text-sm font-semibold hover:bg-[#93CAD5] hover:text-black"onClick={{}}>Add Event</button>
+        <button className= "w-30 self-center bg-[#3593A6] text-white py-2 md:py-5 mt-6 rounded-md text-sm font-semibold hover:bg-[#93CAD5] hover:text-black"onClick={RequestEvent}>Add Event</button>
         </div>
         <div className="flex flex-col justify-center items-center w-[100%]">
           <h2 className="font-bold m-4">Manage Added Events</h2>

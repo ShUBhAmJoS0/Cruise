@@ -30,7 +30,7 @@ export const createBookingController = async (req, res) => {
     const subtotal = pricePerTicket * quantity;
     const fee = Math.round(subtotal * 0.05);
     const total = subtotal + fee;
-
+    const uid = req.user.firebase_uid;
     const paymentResult = await fakeChargeCard(card_number);
 
     const booking = await Booking.create({
@@ -41,6 +41,7 @@ export const createBookingController = async (req, res) => {
       billingAddress: billing_address,
       totalPrice: total,
       paymentStatus: paymentResult.status,
+      createdBy:uid,
     });
 
     res.status(201).json({
@@ -52,4 +53,15 @@ export const createBookingController = async (req, res) => {
     console.error(err);
     res.status(500).json({ message: "Server error" });
   }
+}
+
+export const Getmybookings = async(req,res)=>{
+try{
+  const uid = req.user.firebase_uid
+const bookings = Booking.findAll({where:{createdBy:uid}})
+res.status(200).send({data:bookings,message:"fetched all bookings suscessfully"})
+}
+catch(e){
+res.status(500).send({message:"Failed to fetch bookings"})
+}
 };

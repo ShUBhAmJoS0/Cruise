@@ -2,6 +2,7 @@
 
 import { DataTypes } from "sequelize";
 import sequelize from "../Database/db.js";
+import User from "./User.js";
 
 const Event = sequelize.define(
   "Event",
@@ -25,10 +26,18 @@ const Event = sequelize.define(
         allowNull: false,
         defaultValue: { VIP: 0, Regular: 0, Student: 0 }
     },
+    createdBy:{
+      type: DataTypes.INTEGER,
+      allowNull:false,
+      references:{
+        model:User,
+        key:"id"
+      }
+    },
     status:{
       type:DataTypes.STRING,
       allowNull:false,
-      defaultValue:false
+      defaultValue:"pending"
     }
   },
 {

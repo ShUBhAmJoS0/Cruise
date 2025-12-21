@@ -75,6 +75,24 @@ const firebase_uid = decodedToken.uid;
     res.status(500).json({ message: "Invalid Firebase token or login failed" });
   }
 };
+export const getUser = async (req, res) => {
+  try {
+    const firebaseUid = req.user.firebase_uid; 
+    
+    const user = await User.findOne({
+      where: { firebase_uid: firebaseUid },
+      attributes: ["id", "name", "email", "userType"], 
+    });
 
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    return res.json(user); 
+  } catch (error) {
+    console.error("getUser error:", error);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
 
 export { loginUser, registerUser};

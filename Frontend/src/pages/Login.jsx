@@ -1,21 +1,19 @@
 import {  useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../api/axios";
-
-
 import { auth, provider } from "../firbase.js";
 import { signInWithPopup } from "firebase/auth";
 import {signInWithEmailAndPassword } from "firebase/auth";
+
 export default function Login() {
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const[showpassword,setShowpassword]=useState(false)
-
-
   const loginUser = async () => {
     try{
+   
       if(!email || !password){
         alert("Cannot leave any fields empty !")
         return ;
@@ -24,16 +22,22 @@ export default function Login() {
     const firebaseUser = userCredential.user;
 
     const idToken = await firebaseUser.getIdToken();
+    
 
-    //  Send the ID Token to your backend
     const res = await api.post("/auth/login", {
       email: firebaseUser.email,
       id_token: idToken,
     });
+    
+    const role = res.data.user.userType
+
     alert("Login successful!");
-    navigate("/events");
+    if (role === "Admin") navigate("/admin");
+else if (role === "Artist") navigate("/artist/Request");
+else navigate("/dashboard");
   }
 catch (error) {
+  console.log(error)
       alert(error.response?.data?.message || "Invalid credentials");
     }
   };
