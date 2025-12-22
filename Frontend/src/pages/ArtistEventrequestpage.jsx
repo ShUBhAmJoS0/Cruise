@@ -41,7 +41,7 @@ function ArtistEventRequestPage() {
     setSelectedImages(selectedImages.filter((_, i) => i !== index));
   };
 
-  useEffect(() => {
+
     const LoadRequestedEvents = async () => {
       try {
         const res = await api.get("/artist/request");
@@ -53,8 +53,10 @@ function ArtistEventRequestPage() {
         alert(e.response?.data?.message || "Failed to load events");
       }
     };
-    LoadRequestedEvents();
-  }, []);
+useEffect(() => {
+  LoadRequestedEvents();
+}, []);
+
 
   const RequestEvent = async () => {
     try {
@@ -86,6 +88,7 @@ function ArtistEventRequestPage() {
       });
       
       alert(res.data.message);
+      await LoadRequestedEvents ()
       
   
       setEventTitle("");

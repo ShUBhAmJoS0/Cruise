@@ -32,7 +32,7 @@ export const AddEvent = async (req, res) => {
 
 
     const profileImagePath = req.files?.profileImage?.[0]?.path.replace(/\\/g, '/') || null;
-    const imagePaths = req.files?.images?.map(file => file.path).replace(/\\/g, '/') || [];
+    const imagePaths = req.files?.images?.map(file => file.path.replace(/\\/g, '/'))|| [];
 
     const event = await Event.create({
       title: body.title,
