@@ -1,25 +1,19 @@
-import { useState } from "react";
+import {  useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../api/axios";
-
-import { AuthContext } from "../context/AuthContext";
 import { auth, provider } from "../firbase.js";
 import { signInWithPopup } from "firebase/auth";
 import {signInWithEmailAndPassword } from "firebase/auth";
+
 export default function Login() {
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const[showpassword,setShowpassword]=useState(false)
-
-//   useEffect(() => {
-//     if (saveToken) navigate("/dashboard");
-//   }, [saveToken, navigate]);
-
-
   const loginUser = async () => {
     try{
+   
       if(!email || !password){
         alert("Cannot leave any fields empty !")
         return ;
@@ -28,16 +22,22 @@ export default function Login() {
     const firebaseUser = userCredential.user;
 
     const idToken = await firebaseUser.getIdToken();
+    
 
-    //  Send the ID Token to your backend
     const res = await api.post("/auth/login", {
       email: firebaseUser.email,
       id_token: idToken,
     });
+    
+    const role = res.data.user.userType
+
     alert("Login successful!");
-    navigate("/events");
+    if (role === "Admin") navigate("/admin");
+else if (role === "Artist") navigate("/artist/Request");
+else navigate("/events");
   }
 catch (error) {
+  console.log(error)
       alert(error.response?.data?.message || "Invalid credentials");
     }
   };
@@ -46,11 +46,12 @@ catch (error) {
 const googleLogin = async () => {
     try {
       const result = await signInWithPopup(auth, provider);
-      
+       const idToken = await result.user.getIdToken();
       console.log("User Info:", result.user);
       console.log("userId" , result.user.uid)
+      
+      const res = await api.post("/auth/signup",{id_token:idToken,name:result.user.displayName,email:result.user.email,userType:"Attendee"})
       alert("Logged in as " + result.user.displayName);
-      const res = await api.post("/auth/googleSignup",{googleId:result.user.uid,name:result.user.displayName,email:result.user.email})
       navigate("/events");
        
       // You can redirect or store user info here

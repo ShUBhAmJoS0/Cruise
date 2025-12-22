@@ -27,11 +27,6 @@ firebase_uid:{
       defaultValue: "Attendee",
       allowNull: false,
     },
-
-    googleId: {
-      type: DataTypes.STRING(255),
-      allowNull: true,   // Only needed for Google users
-    },
   createdAt: {
     type: DataTypes.DATE,
     field: "created_at",

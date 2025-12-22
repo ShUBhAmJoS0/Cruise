@@ -1,19 +1,22 @@
-import { useState,} from "react";
+import {  useState,} from "react";
 import api from "../api/axios";
 import { Link, useNavigate } from "react-router-dom";
 import { auth } from "../firbase.js";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { useAuth } from "../context/AuthContext.jsx";
+
 
 export default function Signup() {
 
   const navigate = useNavigate();
-  let firebaseUser = null;
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [retype,setRetype] = useState("");
   const[User,setUser] = useState("");
   const[showpassword,setShowpassword] = useState(false);
+  const { setRole } = useAuth();
   const signupUser = async () => {
    if (!name || !email || !password || !retype) {
       alert("All fields are required");
@@ -26,7 +29,7 @@ export default function Signup() {
     try {
  
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      firebaseUser = userCredential.user;
+      const firebaseUser = userCredential.user;
 
       await updateProfile(firebaseUser, { displayName: name });
 
@@ -39,20 +42,14 @@ export default function Signup() {
         userType: User,
         id_token: idToken,
       });
+      setRole(User);
       alert("Signup successful!");
-      navigate("/events");
+      navigate("/login");
     }
      catch (error) {
         console.log(error)
-
-        
-    alert(error.code)
-
-
-    if (error.response?.data?.message) {
       alert(error.response.data.message);
-      return;
-    }
+
 
     }
   

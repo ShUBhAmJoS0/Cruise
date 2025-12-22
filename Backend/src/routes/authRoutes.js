@@ -1,10 +1,11 @@
 
 import express from "express"
-import { registerUser,loginUser,googleSignup } from "../controller/authController.js";
+import { registerUser,loginUser, getUser } from "../controller/authController.js";
+import authToken from "../middleware/firebaseAuth.js";
 
 const router = express.Router();
 
 router.post("/signup",registerUser);
 router.post("/login",loginUser);
-router.post("/googleSignup",googleSignup);
+router.get("/getuser",authToken,getUser)
 export default router
