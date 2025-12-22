@@ -24,15 +24,13 @@ const firebase_uid = decodedToken.uid;
         await existingUser.save();
         return res.status(200).json({ message: "Google account linked", user: existingUser });
       }
-    //  If not, create user in Postgres
+  
       user = await User.create({
         firebase_uid,
         email,
         name,
         userType,
       });
-    
-
     res.status(200).json({
       message: "Signup successful",
       user: {

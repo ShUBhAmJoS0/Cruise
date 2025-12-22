@@ -15,7 +15,7 @@ function App() {
         </div>
         <div className="nav-right-wrapper">
           <input type="search" className="search-input" placeholder="Search Events" />
-          <button className="auth-btn login">Login</button>
+          <button className="auth-btn login" >Login</button>
           <button className="auth-btn signup">Sign Up</button>
         </div>
       </nav>

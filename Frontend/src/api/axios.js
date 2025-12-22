@@ -2,7 +2,7 @@ import axios from "axios";
 import { getAuth } from "firebase/auth";
 
 const api = axios.create({
-  baseURL: "http://localhost:5000", // your backend URL
+  baseURL: "http://localhost:5000", 
   withCredentials: false
 });
 

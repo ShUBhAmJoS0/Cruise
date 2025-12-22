@@ -378,12 +378,12 @@ useEffect(() => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-7 mb-16">
                   {upcomingEvents.map((event, idx) => (
                     <div
-                      key={event.id || idx} // Prefer event.id if available from backend
+                      key={event.id || idx} 
                       className="bg-white rounded-2xl overflow-hidden shadow-lg transition-all duration-400 hover:-translate-y-3 hover:shadow-2xl group cursor-pointer"
                     >
-                      <div
+                          <img
                         className="h-52 bg-cover bg-center transition-transform duration-400 group-hover:scale-105"
-                        style={{ backgroundImage: `url(${event.images[1] || 'https://source.unsplash.com/random/800x600/?event'})` }}
+                        src= {`http://localhost:5000/${event.profileImage}`} 
                       />
                       <div className="p-5">
                         <h3 className="text-xl font-bold mb-2">{event.title}</h3>
@@ -429,9 +429,9 @@ useEffect(() => {
                       key={event.id || idx}
                       className="bg-white rounded-2xl overflow-hidden shadow-lg transition-all duration-400 hover:-translate-y-3 hover:shadow-2xl group cursor-pointer"
                     >
-                      <div
+                      <img
                         className="h-52 bg-cover bg-center transition-transform duration-400 group-hover:scale-105"
-                        style={{ backgroundImage: `url(${event.image || 'https://source.unsplash.com/random/800x600/?concert'})` }}
+                        src= {`http://localhost:5000/${event.profileImage}`} 
                       />
                       <div className="p-5">
                         <h3 className="text-xl font-bold mb-2">{event.title}</h3>

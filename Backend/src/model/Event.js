@@ -5,7 +5,7 @@ import sequelize from "../Database/db.js";
 import User from "./User.js";
 
 const Event = sequelize.define(
-  "Event",
+  "Events",
   {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     title: { type: DataTypes.STRING, allowNull: false },

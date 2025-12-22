@@ -34,7 +34,7 @@ export default function Login() {
     alert("Login successful!");
     if (role === "Admin") navigate("/admin");
 else if (role === "Artist") navigate("/artist/Request");
-else navigate("/dashboard");
+else navigate("/events");
   }
 catch (error) {
   console.log(error)

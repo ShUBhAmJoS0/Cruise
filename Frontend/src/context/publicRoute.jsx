@@ -8,6 +8,7 @@ if (loading) return <p>Loading...</p>;
 
   if (user) {
      console.log(role)
+  if (user && !role) return <p>Loading user info...</p>;
     switch (role) {
        
       case "Admin":
@@ -18,7 +19,7 @@ if (loading) return <p>Loading...</p>;
         return <Navigate to="/events" />;
     }
   }
-
+    console.log("Role missing, showing login page but no redirect loop yet");
   return children; 
 };
 

@@ -24,7 +24,7 @@ const user = await User.findOne({
     });
 
     if (!user) {
-      return res.status(403).json({ message: "User not registered" });
+      return res.status(200).json({ user: null });
     }
 
     req.user = {

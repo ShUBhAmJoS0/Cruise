@@ -1,5 +1,6 @@
 // backend/src/controller/bookingController.js
 import Booking from "../model/Booking.js";
+import User from "../model/User.js";
 
 const TICKET_PRICES = {
   VIP: 500,
@@ -13,6 +14,7 @@ const fakeChargeCard = async () => {
 };
 
 export const createBookingController = async (req, res) => {
+
   try {
     const {
       ticket_type,
@@ -30,8 +32,16 @@ export const createBookingController = async (req, res) => {
     const subtotal = pricePerTicket * quantity;
     const fee = Math.round(subtotal * 0.05);
     const total = subtotal + fee;
-    const uid = req.user.firebase_uid;
+    const firebaseUid = req.user.firebase_uid; // From your auth middleware
+
+    console.log("Creating booking for firebase_uid:", firebaseUid);
     const paymentResult = await fakeChargeCard(card_number);
+
+    const user = await User.findOne({ where: { firebase_uid:firebaseUid } });
+console.log("Found user:", user.id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
     const booking = await Booking.create({
       eventName: "Summer Music Festival 2025",
@@ -41,7 +51,7 @@ export const createBookingController = async (req, res) => {
       billingAddress: billing_address,
       totalPrice: total,
       paymentStatus: paymentResult.status,
-      createdBy:uid,
+      createdBy:user.id,
     });
 
     res.status(201).json({
@@ -57,7 +67,7 @@ export const createBookingController = async (req, res) => {
 
 export const Getmybookings = async(req,res)=>{
 try{
-  const uid = req.user.firebase_uid
+  const uid = req.user.uid
 const bookings = Booking.findAll({where:{createdBy:uid}})
 res.status(200).send({data:bookings,message:"fetched all bookings suscessfully"})
 }

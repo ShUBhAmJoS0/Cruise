@@ -13,35 +13,49 @@ export const DisplayAll = async (req, res) => {
   }
 };
 
-export const AddEvent = async(req,res)=>{
+export const AddEvent = async (req, res) => {
   try {
     const body = req.body;
     const uid = req.user.id;
-if (!body.title || !body.description || !body.location || !body.date || !body.time || !body.category || !body.profileImage || !body.prices || typeof body.prices !== "object" || !body.Quantity || typeof body.Quantity !== "object") {
-    return res.status(400).json({ message: "All required fields must be filled and valid" });
-}
-const event = await Event.create({
-            title: body.title,
-            description: body.description,
-            location: body.location,
-            date: body.date,
-            time: body.time,
-            category: body.category,
-            images: body.images || [], 
-            profileImage: body.profileImage,
-            prices: body.prices,
-            Quantity: body.Quantity,
-            status: "pending",
-            createdBy:uid
-        });
+    console.log("User ID:", uid);
+    console.log("Request body:", body);
+    console.log("Files:", req.files);
 
-       res.status(200).json({ message: "Event created successfully", event });
+    const prices = JSON.parse(body.prices || '{}');
+    const quantity = JSON.parse(body.Quantity || '{}');
+
+
+    if (!body.title || !body.description || !body.location || !body.date || 
+        !body.time || !body.category || !prices || !quantity) {
+      return res.status(400).json({ message: "All required fields must be filled" });
+    }
+
+
+    const profileImagePath = req.files?.profileImage?.[0]?.path.replace(/\\/g, '/') || null;
+    const imagePaths = req.files?.images?.map(file => file.path).replace(/\\/g, '/') || [];
+
+    const event = await Event.create({
+      title: body.title,
+      description: body.description,
+      location: body.location,
+      date: body.date,
+      time: body.time,
+      category: body.category,
+      images: imagePaths,
+      profileImage: profileImagePath,
+      prices: prices,
+      Quantity: quantity,
+      status: "pending",
+      createdBy: uid
+    });
+
+    res.status(200).json({ message: "Event created successfully", event });
   } catch (e) {
     console.log(e);
-    res.status(500).json({message:`failed to add  ${e.message}` })
-    
+    res.status(500).json({ message: `Failed to add: ${e.message}` });
   }
-}
+};
+
 export const GetEvent = async (req, res) => {
   try {
     const event = await Event.findByPk(req.params.id);
@@ -53,18 +67,20 @@ export const GetEvent = async (req, res) => {
   } catch (e) {
     console.error(e);
     res.status(500).json({ message: "Failed to fetch event" });
-  }
+ }
 };
 
 export const GetrequestedEvent = async(req,res)=>{
   try{
      const userId = req.user.id; 
+     console.log(userId)
     const requestedEvents = await Event.findAll({where:{createdBy:userId}});
+ 
 if(!requestedEvents){
   return res.status(404).send({message:"no events found for this user"})
 }
 res.status(200).send({
-  data:"200",
+  data:requestedEvents,
   message:"retrieved requested events sucessfully"
 })
   }

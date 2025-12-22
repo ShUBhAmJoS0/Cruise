@@ -11,7 +11,7 @@ if (loading) return <p>Loading...</p>;
     console.log(role)
     return <Navigate to="/unauthorized" />; 
   }
-
+  console.log("Role missing, showing login page but no redirect loop yet");
   return children; 
 };
 

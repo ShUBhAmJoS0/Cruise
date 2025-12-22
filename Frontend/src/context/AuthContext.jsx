@@ -10,6 +10,7 @@ export const AuthProvider = ({ children }) => {
   const [role, setRole] = useState(null);      
   const [loading, setLoading] = useState(true);
 
+// In AuthContext.jsx - improve error handling
 useEffect(() => {
   const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
     if (currentUser) {
@@ -19,8 +20,10 @@ useEffect(() => {
         const res = await api.get("/auth/getuser", {
           headers: { Authorization: `Bearer ${token}` },
         });
+        console.log(res.data.userType)
         setRole(res.data.userType); 
-      } catch {
+      } catch (error) {
+        console.error("Error fetching user role:", error); 
         setRole(null);
       }
     } else {
