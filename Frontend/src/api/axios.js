@@ -5,4 +5,16 @@ const api = axios.create({
   withCredentials: false
 });
 
+export const getFilteredEvents = async (filters) => {
+  try {
+    const response = await api.get('/api/events/filter', { 
+      params: filters
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching filtered events:', error);
+    throw error;
+  }
+};
+
 export default api;

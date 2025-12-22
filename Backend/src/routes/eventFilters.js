@@ -1,32 +1,10 @@
-// backend/src/controller/eventController.js
+import express from 'express';
+import { pool } from '../Database/db.js';
 
-import Event from "../model/Event.js";
+const router = express.Router();
 
-export const DisplayAll = async (req, res) => {
-  try {
-    const events = await Event.findAll();
-    // console.log(events)
-    res.json(events);
-  } catch (e) {
-    console.error(e);
-    res.status(500).json({ message: "Failed to fetch events" });
-  }
-};
-
-export const GetEvent = async (req, res) => {
-  try {
-    const event = await Event.findByPk(req.params.id);
-    console.log("event found",event)
-    if (!event) {
-      return res.status(404).json({ message: "Event not found" });
-    }
-    res.json(event);
-  } catch (e) {
-    console.error(e);
-    res.status(500).json({ message: "Failed to fetch event" });
-  }
-};
-export const filterEvent =async (req, res) => {
+// Get filtered events
+router.get('/filter', async (req, res) => {
   try {
     const { category, minPrice, maxPrice, location, date } = req.query;
     
@@ -34,13 +12,13 @@ export const filterEvent =async (req, res) => {
     const params = [];
     let paramCount = 1;
 
-  
+    // Add category filter
     if (category) {
       query += ` AND category = $${paramCount++}`;
       params.push(category);
     }
 
- 
+    // Add price range filter
     if (minPrice) {
       query += ` AND (SELECT MIN(value::numeric) FROM jsonb_each_text(prices)) >= $${paramCount++}`;
       params.push(minPrice);
@@ -50,13 +28,13 @@ export const filterEvent =async (req, res) => {
       params.push(maxPrice);
     }
 
-  
+    // Add location filter
     if (location) {
       query += ` AND location ILIKE $${paramCount++}`;
       params.push(`%${location}%`);
     }
 
-
+    // Add date filter
     if (date) {
       const today = new Date();
       let start, end;
@@ -93,4 +71,6 @@ export const filterEvent =async (req, res) => {
     console.error('Error fetching filtered events:', err);
     res.status(500).json({ error: 'Server error' });
   }
-}
+});
+
+export default router;

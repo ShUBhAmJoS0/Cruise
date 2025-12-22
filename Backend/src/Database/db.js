@@ -1,5 +1,6 @@
 import { Sequelize } from "sequelize";
 import dotenv from "dotenv"
+import pg from 'pg' ;
 
 dotenv.config()
 
@@ -22,5 +23,14 @@ const sequelize = new Sequelize(
 sequelize.authenticate()
     .then(() => console.log("✅ Database connected"))
     .catch(err => console.error("❌ DB Connection Error:", err));
+
+export const pool = new pg.Pool({
+  user: process.env.DB_USER,
+  host: process.env.DB_HOST,
+  database: process.env.DB_NAME,
+  password: process.env.DB_PASSWORD,
+  port: process.env.DB_PORT || 5432,
+});
+
     
 export default sequelize;

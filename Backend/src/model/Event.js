@@ -16,6 +16,10 @@ const Event = sequelize.define(
         type: DataTypes.JSONB, // Postgres JSON column
         allowNull: false,
         defaultValue: { VIP: 0, Regular: 0, Student: 0 }
+    },
+     category: {
+      type: DataTypes.STRING,
+      allowNull: true
     }
   },
   {
@@ -24,4 +28,4 @@ const Event = sequelize.define(
   }
 );
 
-export default Event;
+export default Event;

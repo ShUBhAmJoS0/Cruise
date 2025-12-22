@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import api from "../api/axios";
-import { jsx } from 'react/jsx-runtime';
 const primaryColor = '#3593A6';
 import { useNavigate } from 'react-router-dom';
+import { getFilteredEvents } from '../api/axios';
 
 const ExploreEvents = () => {
   // Data states
@@ -11,6 +11,8 @@ const ExploreEvents = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate= useNavigate()
+  const [categories, setCategories] = useState([]);
+  const [selectedCategories, setSelectedCategories] = useState({});
 
   // Temporary filter states (UI only - no actual filtering)
   const [tempCategories, setTempCategories] = useState({
@@ -60,7 +62,7 @@ const ExploreEvents = () => {
         const fetchEvents = async () => {
       try {
         setLoading(true);
-        const response = await api.get('/event'); 
+        const response = await api.get('/event/'); 
 
         // if (!response.ok) {
         //   throw new Error('Failed to fetch events');
@@ -90,18 +92,69 @@ const ExploreEvents = () => {
     fetchEvents();
   }, []); 
 
-  const handleApplyFilters = () => {
- 
-  };
+const handleApplyFilters = async () => {
+  try {
+    setLoading(true);
+    
+    // Get selected categories
+    const selectedCats = Object.entries(tempCategories)
+      .filter(([_, isSelected]) => isSelected)
+      .map(([category]) => category);
 
-  const handleClearAll = (e) => {
-    e.preventDefault();
-    setTempCategories({ Music: false, Sports: false, Family: false, Arts: false });
-    setTempDate(null);
-    setTempLocation(null);
-    setTempMinPrice(0);
-    setTempMaxPrice(500);
-  };
+    // Prepare filters
+    const filters = {
+      category: selectedCats.length > 0 ? selectedCats[0] : undefined,
+      minPrice: tempMinPrice,
+      maxPrice: tempMaxPrice,
+      location: tempLocation,
+      date: tempDate
+    };
+
+    // Remove empty/undefined filters
+    Object.keys(filters).forEach(key => 
+      (filters[key] === null || filters[key] === undefined || filters[key] === '') && delete filters[key]
+    );
+
+    // If no filters are applied, fetch all events
+    if (Object.keys(filters).length === 0) {
+      const response = await api.get('/event');
+      setUpcomingEvents(response.data);
+      setTrendingEvents(response.data);
+      return;
+    }
+
+    // Apply filters to both upcoming and trending events
+    const filteredEvents = await getFilteredEvents(filters);
+    setUpcomingEvents(filteredEvents);
+    setTrendingEvents(filteredEvents);
+  } catch (error) {
+    console.error('Error applying filters:', error);
+    setError('Failed to apply filters');
+  } finally {
+    setLoading(false);
+  }
+};
+const handleClearAll = async (e) => {
+  e.preventDefault();
+  setTempCategories({ Music: false, Sports: false, Family: false, Arts: false });
+  setTempDate(null);
+  setTempLocation(null);
+  setTempMinPrice(0);
+  setTempMaxPrice(500);
+  
+  // Refetch all events for both states
+  try {
+    setLoading(true);
+    const response = await api.get('/event');
+    setUpcomingEvents(response.data);
+    setTrendingEvents(response.data);
+  } catch (error) {
+    console.error('Error fetching all events:', error);
+    setError('Failed to clear filters');
+  } finally {
+    setLoading(false);
+  }
+};
 
   const categoriesList = ['Music', 'Sports', 'Family', 'Arts'];
   const dateOptions = ['Today', 'Tomorrow', 'This Week', 'This Month'];
@@ -170,7 +223,7 @@ const ExploreEvents = () => {
     {/* Right: Search + Profile */}
     <div className="flex items-center gap-4 w-full md:w-auto">
       
-      {/* Search (hidden on very small screens) */}
+      {/* Search  */}
       <div className="flex-1 md:flex-none md:w-72 hidden sm:block">
         <input
           type="text"
@@ -376,13 +429,13 @@ const ExploreEvents = () => {
                         <div className="max-h-0 overflow-hidden group-hover:max-h-96 group-hover:py-5 transition-all duration-500 bg-gray-50 border-t border-gray-200">
                           <p className="mb-3">
                             <strong style={{ color: primaryColor }}>Price:</strong>{' '}
-                            {event.price === 0 ? 'Free Entry' : `Starts from $${event.prices[1]}`}
+                           {event.prices?.Regular === 0 ? 'Free Entry' : `Starts from $${event.prices?.Regular}`}
                           </p>
                           <p className="mb-3">
                             <strong style={{ color: primaryColor }}>Location:</strong> {event.location}
                           </p>
                           <p className="mb-3">
-                            <strong style={{ color: primaryColor }}>Category:</strong> {"music"}
+                            <strong style={{ color: primaryColor }}>Category:</strong> {event.category}
                           </p>
                           <button
                             className="w-full py-3.5 text-white rounded-full font-bold mt-4 transition hover:opacity-90"
@@ -423,13 +476,13 @@ const ExploreEvents = () => {
                         <p className="text-gray-600 text-sm mb-4">{event.date}</p>
                         <div className="max-h-0 overflow-hidden group-hover:max-h-96 group-hover:py-5 transition-all duration-500 bg-gray-50 border-t border-gray-200">
                           <p className="mb-3">
-                            <strong style={{ color: primaryColor }}>Price:</strong> ${event.prices[1]}+
+                            {event.prices?.Regular === 0 ? 'Free Entry' : `Starts from $${event.prices?.Regular}`}
                           </p>
                           <p className="mb-3">
                             <strong style={{ color: primaryColor }}>Location:</strong> {event.location}
                           </p>
                           <p className="mb-3">
-                            <strong style={{ color: primaryColor }}>Category:</strong> {"music"}
+                            <strong style={{ color: primaryColor }}>Category:</strong> {event.category}
                           </p>
                           <button
                             className="w-full py-3.5 text-white rounded-full font-bold mt-4 transition hover:opacity-90"
