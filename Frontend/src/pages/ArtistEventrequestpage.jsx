@@ -41,7 +41,7 @@ function ArtistEventRequestPage() {
     setSelectedImages(selectedImages.filter((_, i) => i !== index));
   };
 
-  useEffect(() => {
+ 
     const LoadRequestedEvents = async () => {
       try {
         const res = await api.get("/artist/request");
@@ -53,10 +53,14 @@ function ArtistEventRequestPage() {
         alert(e.response?.data?.message || "Failed to load events");
       }
     };
-    LoadRequestedEvents();
-  }, []);
+    
+  useEffect(() => {
+  LoadRequestedEvents();
+}, []);
+
 
   const RequestEvent = async () => {
+    
     try {
   
       const formData = new FormData();
@@ -83,10 +87,11 @@ function ArtistEventRequestPage() {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
+        
       });
-      
       alert(res.data.message);
-      
+   
+         await LoadRequestedEvents();
   
       setEventTitle("");
       setEventLocation("");
@@ -100,8 +105,7 @@ function ArtistEventRequestPage() {
       setSelectedImage(null);
       setSelectedImages([]);
       setImagePreviewUrl(null);
-      
-      
+    
     } catch (error) {
       const msg = error.response?.data?.message || "Failed to create event";
       console.log(error.response?.data?.message);
