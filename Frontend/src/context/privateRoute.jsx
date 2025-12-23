@@ -6,6 +6,10 @@ const ProtectedRoute = ({ allowedRoles, children }) => {
 if (loading) return <p>Loading...</p>;
 
   if (!user) return <Navigate to="/login"/>; 
+  
+  if (allowedRoles && !role) {
+  return <p>Loading user info...</p>;
+}
 
   if (allowedRoles && !allowedRoles.includes(role)) {
     console.log(role)
