@@ -10,6 +10,7 @@ import Bookingpage from "./pages/BookingPage";
 import ExploreEvents from "./pages/ExploreEvents";
 import Merchandise from "./pages/Merchandise";
 import ArtistEventRequestPage from "./pages/ArtistEventrequestpage"
+import AddToCart from "./pages/AddtoCart";
 
 import { Navbar } from "./pages/Navpage";
 import ProtectedRoute from "./context/privateRoute";
@@ -33,6 +34,7 @@ function App() {
           <Route path="/event/:id" element={<ProtectedRoute allowedRoles={["Attendee"]}><Bookingpage /></ProtectedRoute>} />
           <Route path="/artist/Request" element={<ProtectedRoute allowedRoles={["Artist"]}><Navbar><ArtistEventRequestPage/></Navbar></ProtectedRoute>}/>
           <Route path="/merchandise" element={<ProtectedRoute><Usernavbar><Merchandise /></Usernavbar></ProtectedRoute>} />
+          <Route path="/cart" element={<ProtectedRoute allowedRoles={["Attendee"]}><Usernavbar><AddToCart /></Usernavbar></ProtectedRoute>}/>
         </Routes>
       </BrowserRouter>
     </AuthProvider>

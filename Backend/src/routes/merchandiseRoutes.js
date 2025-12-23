@@ -1,9 +1,9 @@
 import express from "express";
 import { getProducts } from "../controller/merchandiseController.js";
+import { AttendeeOnly } from "../middleware/Attendeonly.js";
 
 const router = express.Router();
 
-// GET all products with optional query params: category, sort, search
-router.get("/", getProducts);
+router.get("/", AttendeeOnly, getProducts);
 
 export default router;
