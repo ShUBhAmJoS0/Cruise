@@ -1,13 +1,9 @@
-
 import jwt from "jsonwebtoken";
 import User from "../model/User.js";
 import dotenv from "dotenv";
-import admin from "firebase-admin";
-import serviceAccount from "../../adminsdk.json" with { type: "json" }; 
+import { admin } from "../Config/firebaseAdmin.js";
 dotenv.config();
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount)
-});
+
 //register User
 const registerUser = async (req, res) => {
   try {

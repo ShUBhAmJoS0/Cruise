@@ -8,6 +8,7 @@ import Signup from "./pages/Signup";
 import ForgetPassword from "./pages/ForgetPassword";
 import Bookingpage from "./pages/BookingPage";
 import ExploreEvents from "./pages/ExploreEvents";
+import Merchandise from "./pages/Merchandise";
 
 function App() {
   return (
@@ -25,6 +26,10 @@ function App() {
           {/* Other pages from master */}
           <Route path="/events" element={<ExploreEvents />} />
           <Route path="/event/:id" element={<Bookingpage />} />
+
+          {/* Merchandise & Store */}
+          <Route path="/merchandise" element={<Merchandise />} />
+
         </Routes>
       </BrowserRouter>
     </AuthProvider>
