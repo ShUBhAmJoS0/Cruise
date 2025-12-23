@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import api from "../api/axios";
+import { auth } from "../firbase";
 
 
 async function fetchEvent(eventId) {
@@ -48,7 +49,7 @@ function ImageSlider({ images}) {
       {visibleImages.map((img, i) => (
         <div key={i} className="flex-1 rounded-md overflow-hidden">
           <img
-            src={img}
+             src= {`http://localhost:5000/${img}`} 
             alt={`event-${i}`}
             className="w-full h-full object-cover"
           />
@@ -77,7 +78,10 @@ function ImageSlider({ images}) {
 
 
 async function createBooking(data) {
-  const res = await api.post("/api/booking", data);   
+  const token = await auth.currentUser.getIdToken();
+  const res = await api.post("/api/booking", data,{
+      headers: { Authorization: `Bearer ${token}` }
+    });   
   return res.data;
 }
 
@@ -111,7 +115,7 @@ export default function BookingPage() {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Load event when page opens
+
   useEffect(() => {
     const loadEvent = async () => {
       try {
@@ -129,7 +133,6 @@ export default function BookingPage() {
     }
   }, [eventId]);
 
-  // While event is loading
   if (!event) {
     return (
       <div className="min-h-screen bg-gray-100 flex items-center justify-center">
@@ -166,8 +169,7 @@ export default function BookingPage() {
         customer_name: name,
         billing_address: billingAddress,
         email,
-        card_number: cardNumber, // mock
-        // backend will calculate total itself
+        card_number: cardNumber,
       });
       alert ("Booking Confirmed!");
     } finally {
@@ -196,7 +198,7 @@ export default function BookingPage() {
           <div className="bg-white border border-3 border-[#90C7D2] text-black text-sm p-4 md:p-10 rounded-md space-y-3">
             <p>
               <span className="font-semibold text-[#3593A6] mr-2">Event Hour:</span>{" "}
-              {event.duration}
+              {event.time}
             </p>
             <p>
               <span className="font-semibold text-[#3593A6] mr-2">Services:</span>{" "}

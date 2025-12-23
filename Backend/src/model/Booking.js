@@ -1,6 +1,7 @@
 // backend/src/model/Booking.js
 import { DataTypes } from "sequelize";
 import sequelize from "../Database/db.js";
+import User from "./User.js";
 
 const Booking = sequelize.define(
   "Booking",
@@ -45,6 +46,14 @@ const Booking = sequelize.define(
       allowNull: false,
       defaultValue: "success",
       field: "payment_status",
+    },
+    createdBy:{
+      type:DataTypes.INTEGER,
+      allowNull:false,
+      references:{
+        model:User,
+        key:"id"
+      }
     },
     createdAt: {
       type: DataTypes.DATE,

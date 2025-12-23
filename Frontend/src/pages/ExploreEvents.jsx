@@ -1,17 +1,20 @@
-import React, { useState, useEffect, useRef } from 'react';
+import  { useState, useEffect, useRef } from 'react';
 import api from "../api/axios";
-import { jsx } from 'react/jsx-runtime';
-const primaryColor = '#3593A6';
-import { useNavigate } from 'react-router-dom';
 
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+
+const primaryColor = '#3593A6';
 const ExploreEvents = () => {
+    const navigate= useNavigate()
+
   // Data states
   const [upcomingEvents, setUpcomingEvents] = useState([]);
   const [trendingEvents, setTrendingEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const navigate= useNavigate()
-
+   const [user,setUser]=useState(null);
+   const { logout } = useAuth(); 
   // Temporary filter states (UI only - no actual filtering)
   const [tempCategories, setTempCategories] = useState({
     Music: false,
@@ -55,6 +58,19 @@ const ExploreEvents = () => {
     updateSlider();
   }, [tempMinPrice, tempMaxPrice]);
 
+useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await api.get("/auth/getuser"); 
+        setUser(res.data);
+        console.log(res.data)
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchUser();
+  }, []);
   // Fetch events from backend
   useEffect(() => {
         const fetchEvents = async () => {
@@ -62,8 +78,7 @@ const ExploreEvents = () => {
         setLoading(true);
         const response = await api.get('/event'); 
 
-        // if (!response.ok) {
-        //   throw new Error('Failed to fetch events');
+
        const eventData = response.data
 
 
@@ -71,10 +86,7 @@ const ExploreEvents = () => {
           setUpcomingEvents(eventData);
           setTrendingEvents(eventData);
           console.log(eventData)
-        } else if (Array.isArray(eventData)) {
-          // If it's a flat array with section property
-         
-        } else {
+        }  else {
           throw new Error('Unexpected data format');
         }
 
@@ -171,7 +183,7 @@ const ExploreEvents = () => {
     <div className="flex items-center gap-4 w-full md:w-auto">
       
       {/* Search (hidden on very small screens) */}
-      <div className="flex-1 md:flex-none md:w-72 hidden sm:block">
+      <div className="flex-1 md:flex-none  mr-6 md:w-72 hidden sm:block">
         <input
           type="text"
           placeholder="Search Events"
@@ -180,13 +192,16 @@ const ExploreEvents = () => {
       </div>
 
       {/* Profile */}
-      <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-white shadow-md shrink-0">
+      <div className=" h-10 rounded-full flex mr-2  border-2 border-white shadow-md shrink-0">
         <img
           src="/images/defaultprofilepic.png"
           alt="Profile"
           className="w-full h-full object-cover"
         />
+       
       </div>
+       <h3 className='text-black w-[200px]'>{user?.name || 'Loading...'}</h3>
+      <button onClick={logout}>logout</button>
     </div>
   </div>
 </nav>
@@ -363,12 +378,12 @@ const ExploreEvents = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-7 mb-16">
                   {upcomingEvents.map((event, idx) => (
                     <div
-                      key={event.id || idx} // Prefer event.id if available from backend
+                      key={event.id || idx} 
                       className="bg-white rounded-2xl overflow-hidden shadow-lg transition-all duration-400 hover:-translate-y-3 hover:shadow-2xl group cursor-pointer"
                     >
-                      <div
+                          <img
                         className="h-52 bg-cover bg-center transition-transform duration-400 group-hover:scale-105"
-                        style={{ backgroundImage: `url(${event.images[1] || 'https://source.unsplash.com/random/800x600/?event'})` }}
+                        src= {`http://localhost:5000/${event.profileImage}`} 
                       />
                       <div className="p-5">
                         <h3 className="text-xl font-bold mb-2">{event.title}</h3>
@@ -414,9 +429,9 @@ const ExploreEvents = () => {
                       key={event.id || idx}
                       className="bg-white rounded-2xl overflow-hidden shadow-lg transition-all duration-400 hover:-translate-y-3 hover:shadow-2xl group cursor-pointer"
                     >
-                      <div
+                      <img
                         className="h-52 bg-cover bg-center transition-transform duration-400 group-hover:scale-105"
-                        style={{ backgroundImage: `url(${event.image || 'https://source.unsplash.com/random/800x600/?concert'})` }}
+                        src= {`http://localhost:5000/${event.profileImage}`} 
                       />
                       <div className="p-5">
                         <h3 className="text-xl font-bold mb-2">{event.title}</h3>
