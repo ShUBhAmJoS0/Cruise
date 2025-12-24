@@ -1,4 +1,6 @@
-import { Order, OrderItem, Product } from "../model/Product.js"; // adjust imports
+import Order from "../model/Order.js";
+import OrderItem from "../model/OrderItems.js";
+import Product from "../model/Product.js";
 
 // Helper: get or create pending order for user
 const getOrCreateCart = async (userId) => {

@@ -1,30 +1,16 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../Database/db.js";
-import OrderItem from "./OrderItem.js"; // will associate later
+import OrderItem from "./OrderItems.js";
 
 const Order = sequelize.define("Order", {
-  id: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true,
-  },
-  userId: {
-    type: DataTypes.STRING, // Firebase UID or email
-    allowNull: false,
-  },
-  status: {
-    type: DataTypes.ENUM("pending", "completed", "cancelled"),
-    defaultValue: "pending",
-    allowNull: false,
-  },
-  totalAmount: {
-    type: DataTypes.FLOAT,
-    defaultValue: 0,
-    allowNull: false,
-  },
+  id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+  userId: { type: DataTypes.STRING, allowNull: false },
+  status: { type: DataTypes.STRING, allowNull: false, defaultValue: "pending" },
 }, {
   tableName: "orders",
   timestamps: true,
 });
+
+Order.hasMany(OrderItem, { foreignKey: "orderId", as: "OrderItems" });
 
 export default Order;

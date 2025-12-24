@@ -9,9 +9,9 @@ import bookingRoutes from "./routes/bookingRoutes.js";
 import merchandiseRoutes from "./routes/merchandiseRoutes.js";
 import artistRoutes from "./routes/artistRoutes.js";
 import authToken from "./middleware/firebaseAuth.js";
-import Product from "./models/Product.js";
-import Order from "./models/Order.js";
-import OrderItem from "./models/OrderItem.js";
+import Product from "./model/Product.js";
+import Order from "./model/Order.js";
+import OrderItem from "./model/OrderItems.js";
 import cartRoutes from "./routes/cartRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
 

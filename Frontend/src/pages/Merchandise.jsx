@@ -115,7 +115,18 @@ const Merchandise = () => {
                   <p className="text-sm mb-1">{product.name}</p>
                   <p className="text-sm font-semibold mb-3">{product.price}</p>
 
-                  <button className="mt-auto py-2 rounded-lg text-sm font-medium text-white bg-[#95c9d3] hover:bg-[#7fbac6] transition-all hover:scale-105">
+                  <button
+                    className="mt-auto py-2 rounded-lg text-sm font-medium text-white bg-[#95c9d3] hover:bg-[#7fbac6] transition-all hover:scale-105"
+                    onClick={async () => {
+                      try {
+                        await api.post("/api/cart", { productId: product.id, quantity: 1 });
+                        alert("Added to cart!");
+                      } catch (err) {
+                        console.log(err);
+                        alert("Failed to add to cart.");
+                      }
+                    }}
+                  >
                     Add to Cart
                   </button>
                 </div>
