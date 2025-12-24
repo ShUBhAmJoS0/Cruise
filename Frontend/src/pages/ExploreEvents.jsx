@@ -1,7 +1,7 @@
 import  { useState, useEffect, useRef } from 'react';
 import api from "../api/axios";
 
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const primaryColor = '#3593A6';
@@ -159,23 +159,22 @@ useEffect(() => {
         }
       `}</style>
 
-      {/* Navigation */}
-{/* Navigation */}
+
 <nav className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-300">
   <div className="flex flex-col md:flex-row md:items-center md:justify-between py-4 px-4 md:px-10 gap-4">
 
-    {/* Left: Logo + Links */}
     <div className="flex flex-wrap items-center gap-4 md:gap-20">
-      <a href="#" className="font-bold text-3xl" style={{ color: primaryColor }}>
+      <div className="font-bold text-3xl" style={{ color: primaryColor }}>
         Cruise
-      </a>
+      </div>
 
       <div className="flex flex-wrap gap-4 md:gap-6 text-sm md:text-lg font-bold">
-        <a href="#" style={{ color: primaryColor }}>Home</a>
-        <a href="#" style={{ color: primaryColor }}>ExploreEvents</a>
-        <a href="#" style={{ color: primaryColor }}>Shop</a>
-        <a href="#" style={{ color: primaryColor }}>Community</a>
-        <a href="#" style={{ color: primaryColor }}>About</a>
+         <Link to="/landing" style={{ color: primaryColor }}>Home</Link>
+        <Link to="/events"style={{ color: primaryColor }}>ExploreEvents</Link>
+        <Link to="/merchandise"style={{ color: primaryColor }}>Shop</Link>
+        <Link to="/community"style={{ color: primaryColor }}>Community</Link>
+        <Link to="/Search artists"style={{ color: primaryColor }}>Find artists</Link>
+        <Link to="/About Page"style={{ color: primaryColor }}>About</Link>
       </div>
     </div>
 
@@ -205,7 +204,6 @@ useEffect(() => {
     </div>
   </div>
 </nav>
-
 
       <main className="mt-20 flex">
         {/* Filters Sidebar - UI Only */}

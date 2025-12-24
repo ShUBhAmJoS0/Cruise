@@ -1,6 +1,8 @@
+import {useNavigate} from "react-router-dom";
 import "../styles/Landing.css";
 
-function App() {
+function LandingPage() {
+const navigate = useNavigate()
   return (
     <>
       {/* NAVBAR */}
@@ -15,8 +17,8 @@ function App() {
         </div>
         <div className="nav-right-wrapper">
           <input type="search" className="search-input" placeholder="Search Events" />
-          <button className="auth-btn login" >Login</button>
-          <button className="auth-btn signup">Sign Up</button>
+          <button className="auth-btn login" onClick={()=>navigate("/login")} >Login</button>
+          <button className="auth-btn signup" onClick={()=>navigate("/signup")}>Sign Up</button>
         </div>
       </nav>
 
@@ -182,4 +184,4 @@ function App() {
   );
 }
 
-export default App;
+export default LandingPage;

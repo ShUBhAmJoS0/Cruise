@@ -10,7 +10,7 @@ export const AuthProvider = ({ children }) => {
   const [role, setRole] = useState(null);      
   const [loading, setLoading] = useState(true);
 
-// In AuthContext.jsx - improve error handling
+
 useEffect(() => {
   const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
     if (currentUser) {
