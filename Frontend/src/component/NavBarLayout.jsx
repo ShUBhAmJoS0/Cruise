@@ -7,6 +7,7 @@ import { AttendeeNavBar } from "./Attendeenavbar";
 
 export function Layout({children}){
     const {user,logout,role,loading} = useAuth()
+    console.log(user)
     if (loading) return null; 
 const renderNavbar =()=>{
     switch(role){
@@ -21,11 +22,12 @@ const renderNavbar =()=>{
     }
 };
 return (
-<div className="h-100dvh">
+<div className="min -h screen">
        {renderNavbar()}
-<div className="h-100dvh">
+       <div>
         {children}
         </div>
+     
 </div>
 
 )

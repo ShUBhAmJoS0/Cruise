@@ -5,7 +5,7 @@ import { Link } from "react-router-dom"
 
 export function AttendeeNavBar({logout,user}){
  
-
+console.log(user)
     const primaryColor="#3593A6"
     return(
 <nav className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-300">
@@ -47,7 +47,7 @@ export function AttendeeNavBar({logout,user}){
         />
        
       </div>
-       <h3 className='text-black w-[200px]'>{user?.name || 'Loading...'}</h3>
+       <h3 className='text-black w-[200px]'>{user?.displayName}</h3>
       <button onClick={logout}>logout</button>
     </div>
   </div>

@@ -32,7 +32,7 @@ export const createBookingController = async (req, res) => {
     const subtotal = pricePerTicket * quantity;
     const fee = Math.round(subtotal * 0.05);
     const total = subtotal + fee;
-    const firebaseUid = req.user.firebase_uid; // From your auth middleware
+    const firebaseUid = req.user.firebase_uid; 
 
     console.log("Creating booking for firebase_uid:", firebaseUid);
     const paymentResult = await fakeChargeCard(card_number);

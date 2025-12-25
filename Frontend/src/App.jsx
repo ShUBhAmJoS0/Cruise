@@ -12,6 +12,7 @@ import ArtistEventRequestPage from "./pages/ArtistEventrequestpage"
 import ProtectedRoute from "./context/privateRoute";
 import PublicRoute from "./context/publicRoute";
 import { Layout } from "./component/NavBarLayout";
+import { AddMerch } from "./pages/ArtistAddMerch";
 function App() {
   return (
     <AuthProvider>
@@ -32,7 +33,8 @@ function App() {
 
           {/* for artist */}
           <Route path="/artist/Request" element={<ProtectedRoute allowedRoles={["Artist"]}><ArtistEventRequestPage/></ProtectedRoute>}/>
-        </Routes>
+          <Route path="/artist/Addmerch" element = {<ProtectedRoute allowedRoles={["Artist"]}><AddMerch/></ProtectedRoute>}/>
+        </Routes> 
               {/* for admin */}
 </Layout>
       </BrowserRouter>

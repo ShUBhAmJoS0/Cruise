@@ -114,7 +114,7 @@ function ArtistEventRequestPage() {
   };
 
   return (
-    <div className=" ml-[20%] bg-[#F1F0F0] flex flex-col items-center p-2 md:p-10 overflow-y-auto">
+    <div className=" ml-[20%] bg-[#F5F5F5]  flex flex-col items-center p-2 md:p-10 overflow-y-auto">
       <h2 className="font-semibold mb-6 text-2xl">Add Events</h2>
       <div className="w-[100%] bg-white rounded-[20px] shadow-md md:p-6 flex flex-col">
         <div className="flex gap-4 flex-wrap justify-center">
@@ -359,7 +359,7 @@ function ArtistEventRequestPage() {
         </button>
       </div>
       
-      <div className="flex flex-col justify-center items-center w-[100%] mt-8">
+      <div className="flex flex-col justify-center items-center w-[100%] mt-8 bg-[white] rounded-[20px] p-3 shadow-sm">
         <h2 className="font-bold m-4">Manage Added Events</h2>
         <div className="mt-4 p-4 bg-gray-100 rounded-lg w-[100%]">
             {requestEvent.length === 0 ? (

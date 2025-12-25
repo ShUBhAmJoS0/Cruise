@@ -85,7 +85,7 @@ async function createBooking(data) {
   return res.data;
 }
 
-// Ticket Button Component
+
 const TicketButton = ({ label, desc,des, active, onClick }) => {
   return (
     <button
@@ -141,14 +141,12 @@ export default function BookingPage() {
     );
   }
 
-  // Prices: prefer event.prices JSON, fall back to single event.price
   const ticketPrices = event.prices || {};
   const price =ticketPrices[ticketType]||0;
   const subtotal = price * quantity;
   const tax = Math.round(subtotal * 0.05);
   const total = subtotal + tax;
 
-  // Nicely formatted event date
   const eventDate = new Date(event.date).toLocaleString(undefined, {
     year: "numeric",
     month: "long",
