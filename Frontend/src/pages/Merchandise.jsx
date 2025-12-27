@@ -7,6 +7,7 @@ const Merchandise = () => {
   const [sortOrder, setSortOrder] = useState("Newest");
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
+  const [cartUpdated, setCartUpdated] = useState(false); // For success message
 
   // Fetch products from backend API
   const fetchProducts = async () => {
@@ -31,6 +32,18 @@ const Merchandise = () => {
   useEffect(() => {
     fetchProducts();
   }, [selectedCategory, sortOrder, search]);
+
+  // Handle Add to Cart
+  const handleAddToCart = async (productId) => {
+    try {
+      await api.post("/api/cart", { productId, quantity: 1 });
+      setCartUpdated(true); // trigger success message
+      setTimeout(() => setCartUpdated(false), 1500); // hide after 1.5s
+    } catch (err) {
+      console.error("Failed to add to cart:", err);
+      alert("Failed to add to cart.");
+    }
+  };
 
   return (
     <>
@@ -71,6 +84,12 @@ const Merchandise = () => {
               {products.length} items found
             </p>
           </div>
+
+          {cartUpdated && (
+            <p className="mt-3 text-green-600 font-medium">
+              Added to cart!
+            </p>
+          )}
         </section>
 
         {/* Content */}
@@ -113,19 +132,11 @@ const Merchandise = () => {
                   </div>
 
                   <p className="text-sm mb-1">{product.name}</p>
-                  <p className="text-sm font-semibold mb-3">{product.price}</p>
+                  <p className="text-sm font-semibold mb-3">${product.price}</p>
 
                   <button
                     className="mt-auto py-2 rounded-lg text-sm font-medium text-white bg-[#95c9d3] hover:bg-[#7fbac6] transition-all hover:scale-105"
-                    onClick={async () => {
-                      try {
-                        await api.post("/api/cart", { productId: product.id, quantity: 1 });
-                        alert("Added to cart!");
-                      } catch (err) {
-                        console.log(err);
-                        alert("Failed to add to cart.");
-                      }
-                    }}
+                    onClick={() => handleAddToCart(product.id)}
                   >
                     Add to Cart
                   </button>

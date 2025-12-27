@@ -12,8 +12,8 @@ import authToken from "./middleware/firebaseAuth.js";
 import Product from "./model/Product.js";
 import Order from "./model/Order.js";
 import OrderItem from "./model/OrderItems.js";
-import cartRoutes from "./routes/cartRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
+import cartRoutes from "./routes/cartRoutes.js";
 
 const app=express();
 app.use(cors());

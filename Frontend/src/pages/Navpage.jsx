@@ -1,47 +1,114 @@
-import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-export function Navbar({children}){
-  const location = useLocation();
+
+// Icon placeholders (replace with SVGs if you want)
+const icons = {
+  profile: "👤",
+  booking: "📅",
+  cart: "🛒",
+  orders: "📦",
+  logout: "🚪",
+};
+
+export function NavPage({ children }) {
+  const { logout, user } = useAuth(); // your AuthContext provides user info
   const navigate = useNavigate();
-  const { logout } = useAuth(); 
-    const[selected,setSelected]=useState("");
 
-    useEffect(() => {
-    if (location.pathname.includes("Myprofile")) setSelected("Myprofile");
-    else if (location.pathname.includes("Request")) setSelected("ManageEvents");
-    else if (location.pathname.includes("Merchandise")) setSelected("Merchandise");
-    else setSelected(""); // default
-  }, [location.pathname]);
+  const [showRightNav, setShowRightNav] = useState(false);
+  const [selected, setSelected] = useState("");
 
-    const handleLogout = async () => {
-    await logout();
-    navigate("/login"); // redirect to login after logout
+  const toggleRightNav = () => setShowRightNav((prev) => !prev);
+
+  const handleMenuClick = (menu) => {
+    setSelected(menu);
+    // Later: Add navigation logic here if needed
   };
-    return(
-        
-        <div className="h-[100dvh] flex ">
-<div className="h-[100%] p-4 md:p-5 bg-[#3593A6] w-[20%] flex flex-col  fixed  ">
-    <div className="flex  items-center gap-4 ">
-<img src="/images/defaultprofilepic.png" className="md:w-[70px] md:h-[70px] w-[30px] h-[30px] border-white rounded-full"></img>
-<h4 className="w-[110px] font-semibold text-white">Artist Name</h4>
-</div>
-<button className = "md:h-[40px] h-[10px] bg-[#D6EDF2] mt-4 mb-4 rounded-[10px] ">Edit Profile</button>
-<img src="/images/Line 8.png" className=""></img>
-<div className="flex md:mt-5 mt-2 flex-col">
-<button onClick={()=> setSelected("Myprofile")} className={`text-white text-left h-[50px] flex items-center gap-3 mb-3 p-3 transition duration-200 ${
-    selected === "Myprofile" ? "bg-white/20" : "bg-transparent hover:bg-white/20"
-  }`}> <img src="/images/User.png" className="w-[25px] h-[25px]" ></img>My profile</button>
-<button onClick={()=> setSelected("ManageEvents")}className={`text-white text-left h-[50px] flex items-center gap-3 mb-3 p-3 transition duration-200 ${
-    selected === "ManageEvents"? "bg-white/20" : "bg-transparent hover:bg-white/20"
-  }`}> <img src="/images/File text.png" className="w-[25px] h-[25px]" ></img>Manage Events</button>
-<button onClick={()=> setSelected("Merchandise")} className={`text-white text-left h-[50px] flex items-center gap-3 mb-3 p-3 transition duration-200 ${
-    selected === "Merchandise" ? "bg-white/20" : "bg-transparent hover:bg-white/20"
-  }`} > <img src="/images/Shopping bag.png" className="w-[25px] h-[25px]" ></img>Merchandise </button>
-  <button onClick={handleLogout} className="text-white text-left h-[50px] flex items-center gap-3 mb-3 p-3 transition duration-200" > <img src="/images/Shopping bag.png" className="w-[25px] h-[25px]" ></img> Log out</button>
-</div>
-</div>
-{children}
-</div>
-)
+
+  const handleLogout = async () => {
+    await logout();
+    navigate("/login");
+  };
+
+  return (
+    <div className="relative h-[100vh]">
+      {/* Top bar */}
+      <div className="flex justify-end items-center p-4 bg-[#3593A6] shadow-md">
+        <span className="mr-4 text-white font-semibold">{user?.name || "User"}</span>
+        <button
+          onClick={toggleRightNav}
+          className="text-white font-bold p-2 rounded hover:bg-white/20 transition"
+        >
+          {icons.profile}
+        </button>
+      </div>
+
+      {/* Overlay */}
+      {showRightNav && (
+        <div
+          className="fixed inset-0 bg-black/30 z-40"
+          onClick={() => setShowRightNav(false)}
+        />
+      )}
+
+      {/* Right-side nav panel */}
+      <div
+        className={`fixed top-0 right-0 h-full bg-white w-1/2 max-w-[300px] shadow-lg transform transition-transform duration-300 z-50
+        ${showRightNav ? "translate-x-0" : "translate-x-full"}`}
+      >
+        <div className="flex flex-col p-5 mt-16">
+          <button
+            onClick={() => handleMenuClick("MyProfile")}
+            className={`flex items-center gap-3 mb-3 p-3 rounded transition ${
+              selected === "MyProfile" ? "bg-gray-100" : "hover:bg-gray-100"
+            }`}
+          >
+            <span className="text-xl">{icons.profile}</span>
+            My Profile
+          </button>
+
+          <button
+            onClick={() => handleMenuClick("MyBooking")}
+            className={`flex items-center gap-3 mb-3 p-3 rounded transition ${
+              selected === "MyBooking" ? "bg-gray-100" : "hover:bg-gray-100"
+            }`}
+          >
+            <span className="text-xl">{icons.booking}</span>
+            My Booking
+          </button>
+
+          <button
+            onClick={() => handleMenuClick("MyCart")}
+            className={`flex items-center gap-3 mb-3 p-3 rounded transition ${
+              selected === "MyCart" ? "bg-gray-100" : "hover:bg-gray-100"
+            }`}
+          >
+            <span className="text-xl">{icons.cart}</span>
+            My Cart
+          </button>
+
+          <button
+            onClick={() => handleMenuClick("MyOrders")}
+            className={`flex items-center gap-3 mb-3 p-3 rounded transition ${
+              selected === "MyOrders" ? "bg-gray-100" : "hover:bg-gray-100"
+            }`}
+          >
+            <span className="text-xl">{icons.orders}</span>
+            My Ordered Items
+          </button>
+
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-3 mb-3 p-3 rounded hover:bg-gray-100 transition"
+          >
+            <span className="text-xl">{icons.logout}</span>
+            Log Out
+          </button>
+        </div>
+      </div>
+
+      {/* Main content */}
+      <div className="mt-16">{children}</div>
+    </div>
+  );
 }

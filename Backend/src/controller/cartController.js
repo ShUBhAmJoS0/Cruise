@@ -2,7 +2,7 @@ import Order from "../model/Order.js";
 import OrderItem from "../model/OrderItems.js";
 import Product from "../model/Product.js";
 
-// Helper: get or create pending order for user
+// Helper to get or create pending cart
 const getOrCreateCart = async (userId) => {
   let order = await Order.findOne({ where: { userId, status: "pending" } });
   if (!order) {
@@ -11,7 +11,7 @@ const getOrCreateCart = async (userId) => {
   return order;
 };
 
-// Add item to cart
+// Add to cart
 export const addToCart = async (req, res) => {
   try {
     const userId = req.user.uid;
@@ -22,19 +22,16 @@ export const addToCart = async (req, res) => {
 
     const order = await getOrCreateCart(userId);
 
-    let orderItem = await OrderItem.findOne({
-      where: { orderId: order.id, productId },
-    });
-
-    if (orderItem) {
-      orderItem.quantity += quantity;
-      await orderItem.save();
+    let item = await OrderItem.findOne({ where: { orderId: order.id, productId } });
+    if (item) {
+      item.quantity += quantity;
+      await item.save();
     } else {
       await OrderItem.create({
         orderId: order.id,
         productId,
         quantity,
-        priceAtPurchase: product.price,
+        priceAtPurchase: product.price
       });
     }
 
@@ -45,7 +42,7 @@ export const addToCart = async (req, res) => {
   }
 };
 
-// Get user cart
+// Get cart
 export const getCart = async (req, res) => {
   try {
     const userId = req.user.uid;
@@ -71,9 +68,8 @@ export const updateCartItem = async (req, res) => {
     const item = await OrderItem.findOne({ where: { id: itemId, orderId: order.id } });
     if (!item) return res.status(404).json({ message: "Item not found" });
 
-    if (quantity < 1) {
-      await item.destroy();
-    } else {
+    if (quantity < 1) await item.destroy();
+    else {
       item.quantity = quantity;
       await item.save();
     }

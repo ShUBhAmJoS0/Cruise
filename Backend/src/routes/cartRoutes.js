@@ -4,11 +4,12 @@ import authToken from "../middleware/firebaseAuth.js";
 
 const router = express.Router();
 
+// All cart routes require authentication
 router.use(authToken);
 
-router.post("/", addToCart);             
-router.get("/", getCart);               
-router.patch("/:itemId", updateCartItem); 
-router.delete("/:itemId", removeCartItem); 
+router.post("/", addToCart);
+router.get("/", getCart);
+router.patch("/:itemId", updateCartItem);
+router.delete("/:itemId", removeCartItem);
 
 export default router;
