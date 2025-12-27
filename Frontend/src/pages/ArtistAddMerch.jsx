@@ -1,269 +1,255 @@
-import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { useState, useEffect } from "react";
+import api from "../api/axios";
 
-function AddMerch(){
+function AddMerch() {
+  const { register, handleSubmit, reset, formState: { errors } } = useForm();
 
-    const [productname,setProductName] = useState("")
-    const [price,setPrice] = useState("")
-    const [Description,setDescription] = useState("")
-    const [stockquantity,setQuantity] = useState("")
-    const [category,setCategory] = useState("")
-    const [sku,setSku] = useState("")
-    const [selectedimage,setSelectedImage] = useState("")
-    const [preview,setImagePreviewUrl] = useState("")
-    const [showpopup,setShowpopup]  = useState(null)
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [preview, setPreview] = useState("");
+  const [showPopup, setShowPopup] = useState(null);
+  const [editpopup, setEditpopup] = useState(null);
+  const [getItems, setGetItems] = useState([]);
+
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       setSelectedImage(file);
-      setImagePreviewUrl(URL.createObjectURL(file));
+      setPreview(URL.createObjectURL(file));
     }
   };
 
+  const onSubmit = async (data) => {
+    try {
+      const formData = new FormData();
+      formData.append("productName", data.productName);
+      formData.append("price", data.price);
+      formData.append("description", data.description || "");
+      formData.append("stockQuantity", data.stockQuantity);
+      formData.append("category", data.category);
+      formData.append("sku", data.sku || "");
+      if (selectedImage) formData.append("image", selectedImage);
 
-const merchandiseItems= [
-  {
-    id: 1,
-    name: "Classic White Tee",
-    image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=200&h=200&fit=crop",
-    inStock: true,
-  },
-  {
-    id: 2,
-    name: "Denim Jacket",
-    image: "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=200&h=200&fit=crop",
-    inStock: true,
-  },
-  {
-    id: 3,
-    name: "Running Shoes",
-    image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=200&h=200&fit=crop",
-    inStock: true,
-  },
-  {
-    id: 4,
-    name: "Leather Watch",
-    image: "https://images.unsplash.com/photo-1524592094714-0f0654e20314?w=200&h=200&fit=crop",
-    inStock: false,
-  },
-  {
-    id: 5,
-    name: "Canvas Backpack",
-    image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=200&h=200&fit=crop",
-    inStock: false,
-  },
-];
+      const res = await api.post("/artist/addmerch", formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      alert(res.data.message);
+      reset();
+      setSelectedImage(null);
+      setPreview("");
+      getMerchItems(); // refresh list
+    } catch (error) {
+      alert(error.response?.data?.message || "Failed to add product");
+      console.log(error.message);
+    }
+  };
 
-return(
-    <>
-    <div className="flex bg-[#F5F5F5] flex-col ml-[20%] w-[80%] p-10">
- <div className="flex items-start mb-6">
-      <div>
-        <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-1">
-          Inventory Management
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          Manage your inventory and update product details.
-        </p>
-      </div>
-      <button className="p-2 rounded-lg hover:bg-secondary transition-colors">
-      
-      </button>
-    </div>
-    <div className="bg-white rounded-xl p-5 shadow-lg ">
-        <div className="flex items-center gap-2">
-          <h2 className="font-semibold text-foreground">Product Details</h2>
+  const getMerchItems = async () => {
+    try {
+      const res = await api.get("/artist/addmerch");
+      setGetItems(res.data.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-</div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+  useEffect(() => {
+    getMerchItems();
+  }, []);
 
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-foreground flex items-center gap-2">
+  function EditMerchModal({ item, close, refresh }) {
+    const [image, setImage] = useState(null);
+    const [preview, setPreview] = useState(`http://localhost:5000/${item.productImage}`);
+    const { register, handleSubmit, reset } = useForm();
 
-            Product name
-          </label>
-          <input 
-          value={productname}
-          onChange={e=>setProductName(e.target.value)}
-          type='text' 
-            placeholder="Enter product name"
-      
-            className="md:w-130 h-[60px] border border-black rounded-md p-4"
-          />
-        </div>
+    useEffect(() => {
+      if (item) {
+        reset({
+          productName: item.productName,
+          price: item.productPrice,
+          description: item.productDescription,
+          stockQuantity: item.productQuantity,
+          sku: item.skuNumber,
+        });
+        setPreview(`http://localhost:5000/${item.productImage}`);
+        setImage(null);
+      }
+    }, [item, reset]);
 
+    const handleImageChange = (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        setImage(file);
+        setPreview(URL.createObjectURL(file));
+      }
+    };
 
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-foreground flex items-center gap-2">
-         
-            Price
-          </label>
+    const onSubmit = async (data) => {
+      const formData = new FormData();
+      Object.entries(data).forEach(([k, v]) => formData.append(k, v));
+      if (image) formData.append("image", image);
+      try {
+        await api.put(`/artist/addmerch/${item.productId}`, formData);
+        alert("Updated successfully");
+        refresh();
+        close();
+      } catch (error) {
+        console.log(error);
+        alert("Failed to update");
+      }
+    };
 
-            <input
-                value={price}
-          onChange={e=>setPrice(e.target.value)}
-            type='text' 
-              placeholder="0.00"
-    
-              className="md:w-130 h-[60px] border border-black rounded-md p-4"
-            />
+    return (
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <div className="fixed inset-0 bg-black/20 flex items-center justify-center" onClick={() => setEditpopup(null)}>
+          <div className="bg-white pr-10 pl-10 pt-5 pb-5  w-70 md:w-110 rounded-lg " onClick={e => e.stopPropagation()}>
+            <div className="flex flex-col">
+              <label>Product Name</label>
+              <input {...register("productName", { required: true })} className="h-[40px] border p-4 rounded-md" />
+              {errors.productName && <p className="text-red-500 text-xs mt-1">Product name is required</p>}
+            </div>
 
-        </div>
+            <div className="flex flex-col mt-2">
+              <label>Product Price</label>
+              <input type="number" {...register("price", { required: true })} className="h-[40px] border p-4 rounded-md" />
+              {errors.price && <p className="text-red-500 text-xs mt-1">Product price is required</p>}
+            </div>
 
-        <div className="space-y-2 md:col-span-2">
-          <label className="text-sm font-medium text-foreground flex items-center gap-2">
-     
-            Description
-          </label>
-          <input
-              value={Description}
-          onChange={e=>setDescription(e.target.value)}
-          type='text' 
-            placeholder="Enter product description"
-            className="md:w-130 h-[60px] border border-black rounded-md p-4"
-          />
-        </div>
+            <div className="flex flex-col mt-2">
+              <label>Description</label>
+              <input {...register("description")} className="h-[40px] border p-4 rounded-md" />
+            </div>
 
+            <div className="flex flex-col mt-2">
+              <label>Stock Quantity</label>
+              <input type="number" {...register("stockQuantity", { required: true })} className="h-[40px] border p-4 rounded-md" />
+            </div>
 
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-foreground flex items-center gap-2">
-   
-            Stock quantity
-          </label>
-          <div className="relative">
-            <input 
-                 value={stockquantity}
-          onChange={e=>setQuantity(e.target.value)}
-              type="number"
-              placeholder="0"
-              className="md:w-130 h-[60px] border border-black rounded-md p-4"
-            />
-            <span className="absolute right-16 bottom-1 text-xs text-muted-foreground">
-              Max: 500
-            </span>
+            <div className="flex flex-col mt-2">
+              <label>SKU</label>
+              <input {...register("sku")} className="h-[40px] border p-4 rounded-md" />
+            </div>
+
+            <label className="block mt-4 cursor-pointer">
+              <div className="border-2 border-dashed p-6 flex flex-col items-center">
+                <img src={preview} alt="preview" className="w-10 h-10 object-cover mb-3" />
+                <input type="file" className="hidden" accept="image/*" onChange={handleImageChange} />
+                <p className="text-sm">Click to upload</p>
+              </div>
+            </label>
+
+            <button type="submit" className="w-full mt-4 p-3 bg-[#93CAD5] text-white rounded-md hover:opacity-80">Update</button>
           </div>
         </div>
-        
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-foreground flex items-center gap-2">
-       
-            Category
-          </label>
-            <select className="md:w-130 h-[60px] border border-black rounded-md p-4"
-                 value={category}
-          onChange={e=>setCategory(e.target.value)}>
-                <option value="" disabled>Select Category</option>
+      </form>
+    );
+  }
+const deleteProduct = async(id)=>{
+  try{
+   const res = await api.delete(`/artist/addmerch/${id}`)
+   console.log(deleteProduct)
+   alert(res.data.message)
+   getMerchItems()
+  }
+  catch(error){
+    console.log(error)
+    alert(error.response.data.message)
+  }
+   
+}
+  return (
+    <div className="flex bg-[#F5F5F5] flex-col ml-[20%] w-[80%] p-10">
+      <h1 className="text-2xl md:text-3xl font-bold mb-6">Inventory Management</h1>
+
+      {/* Add Merchandise Form */}
+      <form onSubmit={handleSubmit(onSubmit)} className="bg-white p-5 rounded-xl shadow-lg">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="flex flex-col">
+            <label>Product Name</label>
+            <input {...register("productName", { required: true })} className="h-[60px] border p-4 rounded-md" />
+            {errors.productName && <p className="text-red-500 text-xs mt-1">Product name is required</p>}
+          </div>
+
+          <div className="flex flex-col">
+            <label>Price</label>
+            <input type="number" {...register("price", { required: true })} className="h-[60px] border p-4 rounded-md" />
+            {errors.price && <p className="text-red-500 text-xs mt-1">Product price is required</p>}
+          </div>
+
+          <div className="flex flex-col md:col-span-2">
+            <label>Description</label>
+            <input {...register("description")} className="h-[60px] border p-4 rounded-md" />
+          </div>
+
+          <div className="flex flex-col">
+            <label>Quantity</label>
+            <input type="number" {...register("stockQuantity", { required: true })} className="h-[60px] border p-4 rounded-md" />
+          </div>
+
+          <div className="flex flex-col">
+            <label>Category</label>
+            <select {...register("category", { required: true })} className="h-[60px] border p-4 rounded-md">
+              <option value="" disabled>Select Category</option>
               <option value="Clothing">Clothing</option>
-              <option value="Accesories">Accessories</option>
-              <option value="Signed items">Signed items</option>
+              <option value="Accessories">Accessories</option>
+              <option value="Signed">Signed items</option>
             </select>
+            {errors.category && <p className="text-red-500 text-xs mt-1">Category is required</p>}
+          </div>
 
+          <div className="flex flex-col">
+            <label>SKU</label>
+            <input {...register("sku")} className="h-[60px] border p-4 rounded-md" />
+          </div>
         </div>
 
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-foreground flex items-center gap-2">
-    
-            SKU
-          </label>
-          <input
-          value={sku}
-          onChange={(e)=>setSku(e.target.value)}
-            placeholder="Enter SKU"
-            className="md:w-130 h-[60px] border border-black rounded-md p-4"
-          />
-        </div>
-        </div>
+        <label className="block mt-4 cursor-pointer">
+          <div className="border-2 border-dashed p-6 flex flex-col items-center">
+            <img src={preview || "/images/preview.png"} alt="preview" className="w-20 h-20 object-cover mb-3" />
+            <input type="file" className="hidden" accept="image/*" onChange={handleImageChange} />
+            <p className="text-sm">Click to upload</p>
+          </div>
+        </label>
 
- <div className=" rounded-xl p-5 shadow-sm border h-full flex flex-col mt-10">
-      <div className="flex items-center gap-2 mb-5">
-        <h2 className="font-semibold text-foreground">Media</h2>
-      </div>
+        <button type="submit" className="w-full mt-4 p-3 bg-[#93CAD5] text-white rounded-md hover:opacity-80">Add Merchandise</button>
+      </form>
 
-        <label htmlfor="image-upload">
-      <div className="flex-1 border-2 border-dashed border-border rounded-xl p-6 flex flex-col items-center justify-center text-center hover:border-primary/50 hover:bg-primary/5 transition-colors cursor-pointer mb-4">
-        
-        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mb-3 ">
-
-              <img src={selectedimage? preview : "/images/preview.png"} alt="Preview" />
-  
-        </div>
-
-        <input type="file" accept="image/*" className="hidden " onChange={handleImageChange} id="image-upload"></input>
-        <p className="text-sm font-medium text-foreground mb-1 ">
-          Click to upload
-        </p>
-        <p className="text-xs text-muted-foreground">
-          PNG, JPG, JPEG
-        </p>
-
-      </div>
-      </label>
-
-
-      <button className="p-3 text-white text-[15px] rounded-md mt-4 transition hover:opacity-70 bg-[#93CAD5] " onClick={""}>
-        Add Merchandise
-      </button>
-    </div>
-    
-    <div className="bg-card rounded-xl p-5 bg-[#F5F5F5] mt-10">
-
-        <div className="flex items-center gap-2">
-          <h2 className="font-semibold text-foreground">Recent Merchandise</h2>
-        </div>
-
-
-      <div className="flex gap-5 overflow-x-auto pb-2 scrollbar-hide -mx-1 px-1 ">
-        {merchandiseItems.map((item) => (
-          <div
-            key={item.id}
-            className="flex-shrink-0 w-32 md:w-36 relative group"
-          >
-              <button onClick={()=>setShowpopup(item)}  className="w-25 h-7 bg-[#93CAD5] rounded-md text-white text-sm absolute  z-1 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-0 pointer-events-none  group-hover:pointer-events-auto group-hover:opacity-100 flex justify-center items-center transition-opacity duration-300  hover:bg-green-600 transition">
+      {/* Merchandise List */}
+      <div className="mt-10">
+        <h2 className="font-semibold mb-4">Recent Merchandise</h2>
+        <div className="flex gap-5 overflow-x-auto bg-white p-9 shadow-lg rounded-2xl">
+          {getItems.map(item => (
+            <div key={item.productId} className="w-36 flex-shrink-0 relative group">
+              <button
+                onClick={() => setShowPopup(item)}
+                className="absolute inset-0 m-auto z-1 w-24 h-7 bg-[#a2de79] text-white text-sm opacity-0 group-hover:opacity-100 transition"
+              >
                 View details
               </button>
-              
-              {showpopup && (
-  <div className="fixed left-[20%] top-0 bottom-0 right-0 z-2  backdrop-blur-[1px] flex items-center justify-center " onClick={()=>setShowpopup}>
-
-    <div className="bg-white p-6 rounded-lg shadow-lg  w-80 relative ">
-      
-      <button
-        className="absolute top-2 right-2 text-gray-500 hover:text-black"
-        onClick={() => setShowpopup(null)}
-      >
-        X
-      </button>
-
-      <h3 className="text-lg font-semibold mb-2">{showpopup.name}</h3>
-      <span className="block">Sold out: 45</span>
-      <span className="block">Remaining: 4</span>
-      <span className="block">Sale amount: 2</span>
-    </div>
-  </div>
-)   }   
-                       <div className="relative rounded-xl overflow-hidden mb-2 ">
-              <img
-                src={item.image}
-                alt={item.name}
-                className="w-full h-32 md:h-36 object-cover group-hover:opacity-30 transition "
-              /> 
-            
-              {item.inStock ?  
-                <span className="absolute top-2 left-2 px-2 py-0.5 text-xs font-bold bg-success text-success-foreground rounded-full text-[green] ">
-                  In Stock
-                </span> :   <span className="absolute top-2 left-2 px-2 py-0.5 text-xs font-bold bg-success text-success-foreground rounded-full text-[red] ">
-                 Out of stock
-                </span>
-              }
+              <img src={`http://localhost:5000/${item.productImage}`} alt={item.productName} className="w-full h-36 object-cover rounded-lg group-hover:opacity-50 transition" />
+              <p className="text-sm mt-2">{item.productName}</p>
+              <button onClick={() => setEditpopup(item)} className="w-full p-2 mt-2 bg-[#3593A6] text-white rounded-md hover:opacity-80">Edit</button>
+              <button className="w-full p-2 mt-2 bg-[#e07a7d] text-white rounded-md hover:opacity-80" onClick={()=>{deleteProduct(item.productId)}}>Delete</button>
             </div>
-            <p className="text-sm font-medium ">
-              {item.name}
-            </p>
+          ))}
+        </div>
+      </div>
+
+      {editpopup && <EditMerchModal item={editpopup} close={() => setEditpopup(null)} refresh={getMerchItems} />}
+
+      {showPopup && (
+        <div className="fixed inset-0 bg-black/20 flex items-center justify-center" onClick={() => setShowPopup(null)}>
+          <div className="bg-white p-10 rounded-lg pr-5 pl-5 " onClick={e => e.stopPropagation()}>
+            <h3 className="text-[#3593A6] text-2xl mb-7">{showPopup.productName}</h3>
+            <div className="flex gap-3 items-center  "><p className="font-semibold text-gray-600 text-sm">Sold: </p>  <span className="text-gray-600 text-sm"> 32</span></div>
+             <div  className="flex gap-3 items-center "><p className="font-semibold text-gray-900 text-sm">Remaining:</p> <span  className="text-gray-600 text-sm"> 32</span></div>
+             <div className="flex gap-3 items-center "><p className="font-semibold text-gray-900 text-sm">Sales: </p> <span  className="text-gray-600 text-sm"> 32</span></div>
+            <div className="flex gap-3 items-center "><p className="font-semibold text-gray-900 text-sm">Profit: </p> <span  className="text-gray-600 text-sm" > 32</span></div>
           </div>
-        ))}
         </div>
-        </div>
-        </div>
-        </div>
-        </>
-)}
-        export{ AddMerch}
+      )}
+    </div>
+  );
+}
+
+export { AddMerch };
