@@ -37,7 +37,7 @@ firebase_uid:{
     field: "updated_at",
     defaultValue: DataTypes.NOW
   },
-    profileImage: { type: DataTypes.STRING, allowNull: true , defaultValue:'/uploads/events/defaultprofilepic.png'},
+    profileImage: { type: DataTypes.STRING, allowNull: true , defaultValue:'uploads/events/defaultprofilepic.png'},
   coverImage: { type: DataTypes.STRING, allowNull: true },
   bio: { type: DataTypes.TEXT, allowNull: true },
   social:{type:DataTypes.STRING, allowNull:true},
