@@ -13,6 +13,7 @@ import ArtistEventRequestPage from "./pages/ArtistEventrequestpage"
 import { Navbar } from "./pages/Navpage";
 import ProtectedRoute from "./context/privateRoute";
 import PublicRoute from "./context/publicRoute";
+import About from "./pages/About";
 function App() {
   return (
     <AuthProvider>
@@ -28,6 +29,7 @@ function App() {
 
           {/* Other pages from master */}
           <Route path="/events" element={<ProtectedRoute allowedRoles={["Attendee"]}><ExploreEvents /></ProtectedRoute>} />
+          <Route path="/about" element={<ProtectedRoute allowedRoles={["Attendee"]}><About /></ProtectedRoute>} />
           <Route path="/event/:id" element={<ProtectedRoute allowedRoles={["Attendee"]}><Bookingpage /></ProtectedRoute>} />
           <Route path="/artist/Request" element={<ProtectedRoute allowedRoles={["Artist"]}><Navbar><ArtistEventRequestPage/></Navbar></ProtectedRoute>}/>
         </Routes>

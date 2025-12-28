@@ -1,6 +1,8 @@
 // backend/src/controller/eventController.js
 
 import Event from "../model/Event.js";
+import sequelize from "../Database/db.js";
+import { buildEventFilters } from "../utils/eventFilters.js";
 
 export const DisplayAll = async (req, res) => {
   try {
@@ -69,73 +71,15 @@ export const GetEvent = async (req, res) => {
     res.status(500).json({ message: "Failed to fetch event" });
   }
 };
-export const filterEvent =async (req, res) => {
+export const filterEvent = async (req, res) => {
   try {
-    const { category, minPrice, maxPrice, location, date } = req.query;
-    
-    let query = 'SELECT * FROM "Events" WHERE 1=1';
-    const params = [];
-    let paramCount = 1;
-
-  
-    if (category) {
-      query += ` AND category = $${paramCount++}`;
-      params.push(category);
-    }
-
- 
-    if (minPrice) {
-      query += ` AND (SELECT MIN(value::numeric) FROM jsonb_each_text(prices)) >= $${paramCount++}`;
-      params.push(minPrice);
-    }
-    if (maxPrice) {
-      query += ` AND (SELECT MAX(value::numeric) FROM jsonb_each_text(prices)) <= $${paramCount++}`;
-      params.push(maxPrice);
-    }
-
-  
-    if (location) {
-      query += ` AND location ILIKE $${paramCount++}`;
-      params.push(`%${location}%`);
-    }
-
-
-    if (date) {
-      const today = new Date();
-      let start, end;
-
-      switch(date) {
-        case 'Today':
-          start = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-          end = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
-          break;
-        case 'Tomorrow':
-          start = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
-          end = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 2);
-          break;
-        case 'This Week':
-          start = new Date(today);
-          start.setDate(today.getDate() - today.getDay()); // Sunday
-          end = new Date(start);
-          end.setDate(start.getDate() + 7);
-          break;
-        case 'This Month':
-          start = new Date(today.getFullYear(), today.getMonth(), 1);
-          end = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-          end.setHours(23, 59, 59, 999);
-          break;
-      }
-
-      query += ` AND date >= $${paramCount++} AND date < $${paramCount++}`;
-      params.push(start, end);
-    }
-
-    const result = await pool.query(query, params);
-    res.json(result.rows);
+    const whereClause = buildEventFilters(req.query);
+    const events = await Event.findAll({ where: whereClause });
+    res.json(events);
   } catch (err) {
     console.error('Error fetching filtered events:', err);
     res.status(500).json({ error: 'Server error' });
- }
+  }
 };
 
 export const GetrequestedEvent = async(req,res)=>{

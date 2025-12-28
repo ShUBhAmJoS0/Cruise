@@ -1,35 +1,43 @@
-import  { useState, useEffect, useRef } from 'react';
+     import { useState, useEffect, useRef } from 'react';
 import api from "../api/axios";
-
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const primaryColor = '#3593A6';
+
 const ExploreEvents = () => {
-    const navigate= useNavigate()
+  const navigate = useNavigate();
+  const { logout } = useAuth();
 
   // Data states
   const [upcomingEvents, setUpcomingEvents] = useState([]);
   const [trendingEvents, setTrendingEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
-  const [categories, setCategories] = useState([]);
-  const [selectedCategories, setSelectedCategories] = useState({});
+  const [user, setUser] = useState(null);
 
-   const [user,setUser]=useState(null);
-   const { logout } = useAuth(); 
-  // Temporary filter states (UI only - no actual filtering)
-  const [tempCategories, setTempCategories] = useState({
-    Music: false,
-    Sports: false,
-    Family: false,
-    Arts: false,
+  // Filter states with localStorage persistence
+  const [tempCategories, setTempCategories] = useState(() => {
+    const saved = localStorage.getItem('eventFilters_categories');
+    return saved ? JSON.parse(saved) : {
+      Music: false,
+      Sports: false,
+      Family: false,
+      Art: false,
+    };
   });
-  const [tempDate, setTempDate] = useState(null);
-  const [tempLocation, setTempLocation] = useState(null);
-  const [tempMinPrice, setTempMinPrice] = useState(0);
-  const [tempMaxPrice, setTempMaxPrice] = useState(500);
+  const [tempDate, setTempDate] = useState(() => {
+    return localStorage.getItem('eventFilters_date') || null;
+  });
+  const [tempLocation, setTempLocation] = useState(() => {
+    return localStorage.getItem('eventFilters_location') || null;
+  });
+  const [tempMinPrice, setTempMinPrice] = useState(() => {
+    return parseInt(localStorage.getItem('eventFilters_minPrice')) || 0;
+  });
+  const [tempMaxPrice, setTempMaxPrice] = useState(() => {
+    return parseInt(localStorage.getItem('eventFilters_maxPrice')) || 500;
+  });
 
   const filledTrackRef = useRef(null);
   const GAP = 30;
@@ -62,6 +70,27 @@ const ExploreEvents = () => {
     updateSlider();
   }, [tempMinPrice, tempMaxPrice]);
 
+  // Save filter states to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('eventFilters_categories', JSON.stringify(tempCategories));
+  }, [tempCategories]);
+
+  useEffect(() => {
+    localStorage.setItem('eventFilters_date', tempDate || '');
+  }, [tempDate]);
+
+  useEffect(() => {
+    localStorage.setItem('eventFilters_location', tempLocation || '');
+  }, [tempLocation]);
+
+  useEffect(() => {
+    localStorage.setItem('eventFilters_minPrice', tempMinPrice.toString());
+  }, [tempMinPrice]);
+
+  useEffect(() => {
+    localStorage.setItem('eventFilters_maxPrice', tempMaxPrice.toString());
+  }, [tempMaxPrice]);
+
 useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -75,18 +104,18 @@ useEffect(() => {
 
     fetchUser();
   }, []);
-  // Fetch events from backend
+ 
   useEffect(() => {
         const fetchEvents = async () => {
       try {
         setLoading(true);
-        const response = await api.get('/event/'); 
+        const response = await api.get('/event/');
 
 
        const eventData = response.data
 
 
-        if (eventData && eventData) { 
+        if (eventData && eventData) {
           setUpcomingEvents(eventData);
           setTrendingEvents(eventData);
           console.log(eventData)
@@ -94,7 +123,7 @@ useEffect(() => {
           throw new Error('Unexpected data format');
         }
 
-     
+
       } catch (err) {
         setError(err.message);
         console.error('Error fetching events:', err);
@@ -104,12 +133,28 @@ useEffect(() => {
     };
 
     fetchEvents();
-  }, []); 
+  }, []);
+
+  // Auto-apply saved filters on component mount
+  useEffect(() => {
+    const hasSavedFilters = localStorage.getItem('eventFilters_categories') ||
+                           localStorage.getItem('eventFilters_date') ||
+                           localStorage.getItem('eventFilters_location') ||
+                           localStorage.getItem('eventFilters_minPrice') ||
+                           localStorage.getItem('eventFilters_maxPrice');
+
+    if (hasSavedFilters) {
+      // Small delay to ensure events are loaded first
+      setTimeout(() => {
+        handleApplyFilters();
+      }, 100);
+    }
+  }, []);
 
 const handleApplyFilters = async () => {
   try {
     setLoading(true);
-    
+
     // Get selected categories
     const selectedCats = Object.entries(tempCategories)
       .filter(([_, isSelected]) => isSelected)
@@ -117,7 +162,7 @@ const handleApplyFilters = async () => {
 
     // Prepare filters
     const filters = {
-      category: selectedCats.length > 0 ? selectedCats[0] : undefined,
+      category: selectedCats.length > 0 ? selectedCats.join(',') : undefined,
       minPrice: tempMinPrice,
       maxPrice: tempMaxPrice,
       location: tempLocation,
@@ -125,7 +170,7 @@ const handleApplyFilters = async () => {
     };
 
     // Remove empty/undefined filters
-    Object.keys(filters).forEach(key => 
+    Object.keys(filters).forEach(key =>
       (filters[key] === null || filters[key] === undefined || filters[key] === '') && delete filters[key]
     );
 
@@ -137,10 +182,11 @@ const handleApplyFilters = async () => {
       return;
     }
 
-    // Apply filters to both upcoming and trending events
-    const filteredEvents = await getFilteredEvents(filters);
-    setUpcomingEvents(filteredEvents);
-    setTrendingEvents(filteredEvents);
+    // Apply filters via API call
+    const queryParams = new URLSearchParams(filters);
+    const response = await api.get(`/api/events/filter?${queryParams}`);
+    setUpcomingEvents(response.data);
+    setTrendingEvents(response.data);
   } catch (error) {
     console.error('Error applying filters:', error);
     setError('Failed to apply filters');
@@ -150,13 +196,19 @@ const handleApplyFilters = async () => {
 };
 const handleClearAll = async (e) => {
   e.preventDefault();
-  setTempCategories({ Music: false, Sports: false, Family: false, Arts: false });
+  setTempCategories({ Music: false, Sports: false, Family: false, Art: false });
   setTempDate(null);
   setTempLocation(null);
   setTempMinPrice(0);
   setTempMaxPrice(500);
-  
-  // Refetch all events for both states
+
+  // Clear localStorage
+  localStorage.removeItem('eventFilters_categories');
+  localStorage.removeItem('eventFilters_date');
+  localStorage.removeItem('eventFilters_location');
+  localStorage.removeItem('eventFilters_minPrice');
+  localStorage.removeItem('eventFilters_maxPrice');
+
   try {
     setLoading(true);
     const response = await api.get('/event');
@@ -170,7 +222,7 @@ const handleClearAll = async (e) => {
   }
 };
 
-  const categoriesList = ['Music', 'Sports', 'Family', 'Arts'];
+  const categoriesList = ['Music', 'Sports', 'Family', 'Art'];
   const dateOptions = ['Today', 'Tomorrow', 'This Week', 'This Month'];
   const locations = [
     'Hyatt Hotel',
@@ -179,7 +231,7 @@ const handleClearAll = async (e) => {
     'National Gallery',
     'Thundikhel',
   ];
-
+ 
   return (
     <>
       <style>{`
@@ -230,7 +282,7 @@ const handleClearAll = async (e) => {
         <a href="#" style={{ color: primaryColor }}>ExploreEvents</a>
         <a href="#" style={{ color: primaryColor }}>Shop</a>
         <a href="#" style={{ color: primaryColor }}>Community</a>
-        <a href="#" style={{ color: primaryColor }}>About</a>
+        <a href="/about" style={{ color: primaryColor }}>About</a>
       </div>
     </div>
 
@@ -433,12 +485,12 @@ const handleClearAll = async (e) => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-7 mb-16">
                   {upcomingEvents.map((event, idx) => (
                     <div
-                      key={event.id || idx} 
+                      key={event.id || idx}
                       className="bg-white rounded-2xl overflow-hidden shadow-lg transition-all duration-400 hover:-translate-y-3 hover:shadow-2xl group cursor-pointer"
                     >
                           <img
                         className="h-52 bg-cover bg-center transition-transform duration-400 group-hover:scale-105"
-                        src= {`http://localhost:5000/${event.profileImage}`} 
+                        src= {`http://localhost:5000/${event.profileImage}`}
                       />
                       <div className="p-5">
                         <h3 className="text-xl font-bold mb-2">{event.title}</h3>
@@ -486,7 +538,7 @@ const handleClearAll = async (e) => {
                     >
                       <img
                         className="h-52 bg-cover bg-center transition-transform duration-400 group-hover:scale-105"
-                        src= {`http://localhost:5000/${event.profileImage}`} 
+                        src= {`http://localhost:5000/${event.profileImage}`}
                       />
                       <div className="p-5">
                         <h3 className="text-xl font-bold mb-2">{event.title}</h3>

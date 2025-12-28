@@ -6,7 +6,7 @@ import sequelize from "./Database/db.js";
 import authRoutes from "./routes/authRoutes.js";
 import eventRoutes from "./routes/EventRoutes.js";
 import bookingRoutes from "./routes/bookingRoutes.js";
-import eventFilters from './routes/eventFilters.js';
+import eventFilters from './routes/eventFiltersRoutes.js';
 // import { seedEvents } from "./model/seed.js";
 import artistRoutes from "./routes/artistRoutes.js";
 import authToken from "./middleware/firebaseAuth.js";
@@ -16,11 +16,11 @@ app.use(cors());
 app.use(express.json());
 app.use('/uploads', express.static('uploads'));
 //asignig routes
+app.use("/api/events", eventFilters); // Public route for event filtering
 app.use(authToken)
 app.use("/auth",authRoutes)
 app.use("/event",eventRoutes)
 app.use("/api/booking",bookingRoutes)
-app.use("/api/events", eventFilters);
 app.use("/artist",artistRoutes);
 
 
