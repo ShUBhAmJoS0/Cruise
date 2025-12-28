@@ -267,9 +267,6 @@ const handleClearAll = async (e) => {
         }
       `}</style>
 
-
-
-
       <main className="mt-20 flex">
         {/* Filters Sidebar - UI Only */}
         <aside className="w-72 bg-gray-50 p-8 border-r border-gray-300 fixed left-0 top-20 bottom-0 overflow-y-auto">

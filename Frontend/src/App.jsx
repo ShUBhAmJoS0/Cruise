@@ -7,6 +7,7 @@ import Signup from "./pages/Signup";
 import ForgetPassword from "./pages/ForgetPassword";
 import Bookingpage from "./pages/BookingPage";
 import ExploreEvents from "./pages/ExploreEvents";
+import Merchandise from "./pages/Merchandise";
 import ArtistEventRequestPage from "./pages/ArtistEventrequestpage"
 import ProtectedRoute from "./context/privateRoute";
 import PublicRoute from "./context/publicRoute";

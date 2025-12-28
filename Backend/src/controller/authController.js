@@ -1,4 +1,3 @@
-
 import User from "../model/User.js";
 import dotenv from "dotenv";
 import { admin } from "../Config/firebaseAdmin.js";
