@@ -291,7 +291,13 @@ const ExploreEvents = () => {
               Explore Live Events<br />Near You
             </h1>
           </div>
-
+      <div className="flex-1 md:flex-none mr-6 md:w-72 hidden sm:block">
+            <input
+              type="text"
+              placeholder="Search Events"
+              className="w-full py-2.5 px-5 border border-gray-300 rounded-full text-sm md:text-base focus:outline-none"
+            />
+          </div>
           {loading && (
             <div className="text-center py-20">
               <p className="text-2xl text-gray-600">Loading events...</p>

@@ -3,7 +3,10 @@ import { AddEvent, GetrequestedEvent } from "../controller/eventController.js";
 import upload from "../Config/multer.js";
 import { artistOnly } from "../middleware/Artistonly.js";
 import { addProduct, deleteProduct, editProduct, getAllProduct} from "../controller/ProductController.js";
-// import { updateUser } from "../controller/authController.js";
+import { updateUser } from "../controller/authController.js";
+import { getallArtists, getArtistbyid, getArtistgigs } from "../controller/Artistscontroller.js";
+import { AttendeeOnly } from "../middleware/Attendeonly.js";
+
 
 const router= express.Router()
 router.get("/request",artistOnly,GetrequestedEvent);
@@ -21,9 +24,13 @@ router.put("/addmerch/:id",upload.fields([
   { name: 'image', maxCount: 1 }]),artistOnly,editProduct)
   router.delete("/addmerch/:id",artistOnly,deleteProduct)
 
-// router.put("/get",upload.fields([
-//   { name: 'image', maxCount: 1 }]),artistOnly,updateUser)
   
-// router.get("/get",upload.fields([
-//   { name: 'image', maxCount: 1 }]),artistOnly,updateUser)
+router.put("/updateProfile",upload.fields([
+  { name: 'profilePic', maxCount: 1 },{name:"coverPic",maxCount:1}]),artistOnly,updateUser)
+
+  router.get("/all",AttendeeOnly,getallArtists)
+  router.get("/profile/:id",AttendeeOnly,getArtistbyid)
+  router.get("/gig/:id",AttendeeOnly,getArtistgigs)
 export default router
+
+

@@ -6,15 +6,15 @@ import { AttendeeNavBar } from "./Attendeenavbar";
 
 
 export function Layout({children}){
-    const {user,logout,role,loading} = useAuth()
+    const {user,logout,role,loading,dbuser} = useAuth()
     console.log(user)
     if (loading) return null; 
 const renderNavbar =()=>{
     switch(role){
         case 'Admin':
-            return <AdminNavbar user={user} logout={logout}/>;
+            return <AdminNavbar user={user} logout={logout} dbuser={dbuser}/>;
             case "Artist":
-                return <ArtistNavbar user={user} logout={logout}/>;
+                return <ArtistNavbar user={user} logout={logout}  dbuser={dbuser}/>;
                 case "Attendee":
                     return <AttendeeNavBar user={user} logout={logout}/>
                     default:

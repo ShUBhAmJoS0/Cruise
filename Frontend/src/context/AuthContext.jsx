@@ -9,6 +9,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);     
   const [role, setRole] = useState(null);      
   const [loading, setLoading] = useState(true);
+  const[dbuser,setDbuser] = useState(null);
 
 
 useEffect(() => {
@@ -31,6 +32,8 @@ useEffect(() => {
       });
 
       setRole(res.data.user.userType);
+      setDbuser(res.data.user)
+      console.log(dbuser)
       console.log(role)
       setLoading(false); 
     } catch (error) {
@@ -67,7 +70,7 @@ useEffect(() => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, role, setRole, logout, loading }}>
+    <AuthContext.Provider value={{ dbuser,setDbuser, user, role, setRole, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );

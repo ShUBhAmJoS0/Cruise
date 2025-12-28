@@ -4,7 +4,7 @@ import Event from "../model/Event.js";
 
 export const DisplayAll = async (req, res) => {
   try {
-    const events = await Event.findAll();
+    const events = await Event.findAll({where:{status:"pending"}});
     // console.log(events)
     res.json(events);
   } catch (e) {
@@ -88,3 +88,4 @@ res.status(200).send({
     res.status(500).send({message:e.message})
   }
 }
+

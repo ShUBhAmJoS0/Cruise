@@ -6,7 +6,7 @@ function AddMerch() {
   const { register, handleSubmit, reset, formState: { errors } } = useForm();
 
   const [selectedImage, setSelectedImage] = useState(null);
-  const [preview, setPreview] = useState("");
+  const [preview, setPreview] = useState(null);
   const [showPopup, setShowPopup] = useState(null);
   const [editpopup, setEditpopup] = useState(null);
   const [getItems, setGetItems] = useState([]);
@@ -37,7 +37,7 @@ function AddMerch() {
       reset();
       setSelectedImage(null);
       setPreview("");
-      getMerchItems(); // refresh list
+      getMerchItems();
     } catch (error) {
       alert(error.response?.data?.message || "Failed to add product");
       console.log(error.message);
@@ -74,7 +74,7 @@ function AddMerch() {
         setPreview(`http://localhost:5000/${item.productImage}`);
         setImage(null);
       }
-    }, [item, reset]);
+    }, [item]);
 
     const handleImageChange = (e) => {
       const file = e.target.files[0];

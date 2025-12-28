@@ -79,53 +79,69 @@ export const getUser = async (req, res) => {
     
     const user = await User.findOne({
       where: { firebase_uid: firebaseUid },
-      attributes: ["id", "name", "email", "bio","profileImage","coverImage","userType"], 
+      attributes: ["id", "name", "email", "bio","profileImage","coverImage","social","userType"], 
     });
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-
+    console.log(user.profileImage)
     return res.json({user,message:"user fetched sucessfully"}); 
   } catch (error) {
     console.error("getUser error:", error);
     return res.status(500).json({ message: "Server error" });
   }
 };
-
+const updateFirebaseEmail = async (uid, newEmail) => {
+  try {
+    await admin.auth().updateUser(uid, {
+      email: newEmail,
+    });
+    console.log("Firebase email updated successfully");
+  } catch (error) {
+    console.error("Error updating Firebase email:", error);
+    throw error; 
+  }
+};
 const updateUser= async(req,res)=>{
+  console.log("api hit")
     try{
-        const uid = res.user.id
+        const uid = req.user.id
+        const fid = req.user.firebase_uid
 const body = req.body
-if(!body.name){
+console.log(body)
+if(!body.username){
   return  res.status(401).send({message:"Cannot leave name empty"})
 
 }
   let imageUrl = body.profileImage; 
-    if (req.files?.image?.[0]) {
-      imageUrl = req.files.image[0].path.replace(/\\/g, '/');
+    if (req.files.profilePic?.[0]) {
+      imageUrl = req.files.profilePic[0].path.replace(/\\/g, '/');
     }
       let coverimage= body.coverImage; 
-    if (req.files?.image?.[0]) {
-      imageUrl = req.files.image[0].path.replace(/\\/g, '/');
+    if (req.files.coverPic?.[0]) {
+      coverimage = req.files.coverPic[0].path.replace(/\\/g, '/');
     }
 const user = await User.findOne({where:{id:uid}})
 if(!user){
         return res.status(500).send({message:"the user does not exist"})
 }
-await User.update({
-  name:body.name,
+ await updateFirebaseEmail(fid,body.email.trim() );
+await user.update({
+  name:body.username,
   email:body.email,
-  bio:body.bio,
-  coverImage:body.coverImage,
+  bio:body.bio ,
+  social:body.sociallink ,
+  coverImage:coverimage ,
   profileImage:imageUrl,
 
 }
+
 )
-res,status(200).send({message:"Saved profile sucessfully"})
+res.status(200).send({message:"Saved profile sucessfully"})
 }
 catch(error){
-res.status(500).send({message:"error updating profile"})
+res.status(500).send({message:error.message})
 }
 }
 
