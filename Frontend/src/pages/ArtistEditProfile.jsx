@@ -33,7 +33,7 @@ const[info,setInfo] = useState({})
 const getImageUrl = (pathOrBlob) => {
   if (!pathOrBlob) return "/images/defaultprofilepic.png"; 
   if (pathOrBlob.startsWith("http") || pathOrBlob.startsWith("blob:")) return pathOrBlob;
-  return `http://localhost:5000/${pathOrBlob}`;
+  return `http://localhost:5000${pathOrBlob}`;
 };
 const onsubmit = async(data)=>{
 try{

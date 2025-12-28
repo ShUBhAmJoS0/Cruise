@@ -8,8 +8,8 @@ export function ArtistNavbar({user,logout,dbuser}){
   const navigate = useNavigate();
     const[selected,setSelected]=useState("");
 const getImageUrl = (pathOrBlob) => {
-  if (!pathOrBlob) return "/images/defaultprofilepic.png"; // fallback
-  if (pathOrBlob.startsWith("http") || pathOrBlob.startsWith("blob:")) return pathOrBlob; // already full URL
+  if (!pathOrBlob) return "/images/defaultprofilepic.png";
+  if (pathOrBlob.startsWith("http") || pathOrBlob.startsWith("blob:")) return pathOrBlob; 
   return `http://localhost:5000${pathOrBlob}`;
 };
     useEffect(() => {

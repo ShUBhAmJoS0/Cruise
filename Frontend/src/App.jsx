@@ -7,6 +7,7 @@ import Signup from "./pages/Signup";
 import ForgetPassword from "./pages/ForgetPassword";
 import Bookingpage from "./pages/BookingPage";
 import ExploreEvents from "./pages/ExploreEvents";
+import Merchandise from "./pages/Merchandise";
 import ArtistEventRequestPage from "./pages/ArtistEventrequestpage"
 import ProtectedRoute from "./context/privateRoute";
 import PublicRoute from "./context/publicRoute";
@@ -16,6 +17,8 @@ import { ArtistDashboard } from "./pages/ArtistDashboard";
 import ArtistProfile from "./pages/artistProfileDisplay";
 import ArtistEditProfile from "./pages/ArtistEditProfile";
 import FindArtists from "./pages/FindArtists";
+import About from "./pages/About";
+
 function AppRoutes() {
   const location = useLocation();
   const noNavPatterns = ["/", "/artist/profile/"]; 
@@ -38,6 +41,7 @@ function AppRoutes() {
         <Route path="/merchandise" element={<ProtectedRoute allowedRoles={["Attendee"]}><ExploreEvents /></ProtectedRoute>} />
         <Route path="/event/:id" element={<ProtectedRoute allowedRoles={["Attendee"]}><Bookingpage /></ProtectedRoute>} />
 <Route path="/searchartists" element={<ProtectedRoute allowedRoles={["Attendee"]}><FindArtists></FindArtists></ProtectedRoute>}/>
+<Route path="/about" element={<ProtectedRoute allowedRoles={["Attendee"]}><About /></ProtectedRoute>} />
         {/* artist */}
         <Route path="/artist/Request" element={<ProtectedRoute allowedRoles={["Artist"]}><ArtistEventRequestPage /></ProtectedRoute>} />
         <Route path="/artist/Addmerch" element={<ProtectedRoute allowedRoles={["Artist"]}><AddMerch /></ProtectedRoute>} />
