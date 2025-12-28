@@ -79,18 +79,54 @@ export const getUser = async (req, res) => {
     
     const user = await User.findOne({
       where: { firebase_uid: firebaseUid },
-      attributes: ["id", "name", "email", "userType"], 
+      attributes: ["id", "name", "email", "bio","profileImage","coverImage","userType"], 
     });
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    return res.json(user); 
+    return res.json({user,message:"user fetched sucessfully"}); 
   } catch (error) {
     console.error("getUser error:", error);
     return res.status(500).json({ message: "Server error" });
   }
 };
 
-export { loginUser, registerUser};
+const updateUser= async(req,res)=>{
+    try{
+        const uid = res.user.id
+const body = req.body
+if(!body.name){
+  return  res.status(401).send({message:"Cannot leave name empty"})
+
+}
+  let imageUrl = body.profileImage; 
+    if (req.files?.image?.[0]) {
+      imageUrl = req.files.image[0].path.replace(/\\/g, '/');
+    }
+      let coverimage= body.coverImage; 
+    if (req.files?.image?.[0]) {
+      imageUrl = req.files.image[0].path.replace(/\\/g, '/');
+    }
+const user = await User.findOne({where:{id:uid}})
+if(!user){
+        return res.status(500).send({message:"the user does not exist"})
+}
+await User.update({
+  name:body.name,
+  email:body.email,
+  bio:body.bio,
+  coverImage:body.coverImage,
+  profileImage:imageUrl,
+
+}
+)
+res,status(200).send({message:"Saved profile sucessfully"})
+}
+catch(error){
+res.status(500).send({message:"error updating profile"})
+}
+}
+
+export { loginUser, registerUser,updateUser};

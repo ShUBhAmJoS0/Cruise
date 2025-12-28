@@ -1,7 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
-
-// Import pages
+import { useLocation } from "react-router-dom";
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
@@ -14,36 +13,52 @@ import PublicRoute from "./context/publicRoute";
 import { Layout } from "./component/NavBarLayout";
 import { AddMerch } from "./pages/ArtistAddMerch";
 import { ArtistDashboard } from "./pages/ArtistDashboard";
+import ArtistProfile from "./pages/artistProfileDisplay";
+import ArtistEditProfile from "./pages/ArtistEditProfile";
+function AppRoutes() {
+  const location = useLocation();
+  const noNavPatterns = ["/", "/artist/profile/"]; 
+ const showLayout = !noNavPatterns.some(path => {
+    if (path === "/") {
+      return location.pathname === "/"; 
+    }
+    return location.pathname.startsWith(path); 
+  });
+  return showLayout ? (
+    <Layout>
+      <Routes>
+        {/* public */}
+        <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
+        <Route path="/signup" element={<PublicRoute><Signup /></PublicRoute>} />
+        <Route path="/forgotpassword" element={<PublicRoute><ForgetPassword /></PublicRoute>} />
+
+        {/* users */}
+        <Route path="/events" element={<ProtectedRoute allowedRoles={["Attendee"]}><ExploreEvents /></ProtectedRoute>} />
+        <Route path="/merchandise" element={<ProtectedRoute allowedRoles={["Attendee"]}><ExploreEvents /></ProtectedRoute>} />
+        <Route path="/event/:id" element={<ProtectedRoute allowedRoles={["Attendee"]}><Bookingpage /></ProtectedRoute>} />
+<Route path="/searchartists" element={<></>}/>
+        {/* artist */}
+        <Route path="/artist/Request" element={<ProtectedRoute allowedRoles={["Artist"]}><ArtistEventRequestPage /></ProtectedRoute>} />
+        <Route path="/artist/Addmerch" element={<ProtectedRoute allowedRoles={["Artist"]}><AddMerch /></ProtectedRoute>} />
+        <Route path="/artist/Profile" element={<ProtectedRoute allowedRoles={["Artist"]}><ArtistDashboard /></ProtectedRoute>} />
+        <Route path="/artist/EditProfile" element={<ProtectedRoute allowedRoles={["Artist"]}><ArtistEditProfile></ArtistEditProfile></ProtectedRoute>} />
+      </Routes>
+    </Layout>
+  ) : (
+    <Routes>
+      <Route path="/" element={<Landing />} />
+      <Route path="/artist/profile/:id" element={<ArtistProfile />} />
+    </Routes>
+  );
+}
+
 function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
-      <Layout>
-        <Routes>
-          <Route path="/" element={<Landing />} /> 
-
-{/* for public */}
-          <Route path="/login" element={<PublicRoute> <Login /></PublicRoute>} />
-          <Route path="/signup" element={<PublicRoute> <Signup /></PublicRoute>} />
-          <Route path="/forgotpassword" element={ <PublicRoute><ForgetPassword /></PublicRoute> } />
-
-{/* for users */}
-          <Route path="/events" element={<ProtectedRoute allowedRoles={["Attendee"]}><ExploreEvents /></ProtectedRoute>} />
-        <Route path="/merchandise" element={<ProtectedRoute allowedRoles={["Attendee"]}><ExploreEvents /></ProtectedRoute>} />
-          <Route path="/event/:id" element={<ProtectedRoute allowedRoles={["Attendee"]}><Bookingpage /></ProtectedRoute>} />
-
-          {/* for artist */}
-          <Route path="/artist/Request" element={<ProtectedRoute allowedRoles={["Artist"]}><ArtistEventRequestPage/></ProtectedRoute>}/>
-          <Route path="/artist/Addmerch" element = {<ProtectedRoute allowedRoles={["Artist"]}><AddMerch/></ProtectedRoute>}/>
-          <Route path="/artist/dashboard" element={<ProtectedRoute allowedRoles={["Artist"]}><ArtistDashboard></ArtistDashboard></ProtectedRoute>}/>
-        </Routes> 
-              {/* for admin */}
-</Layout>
+        <AppRoutes />
       </BrowserRouter>
     </AuthProvider>
-
-
-
   );
 }
 

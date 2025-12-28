@@ -8,7 +8,7 @@ export function ArtistNavbar({user,logout}){
     const[selected,setSelected]=useState("");
 
     useEffect(() => {
-    if (location.pathname.includes("Myprofile")) setSelected("Myprofile");
+    if (location.pathname.includes("Profile")) setSelected("Myprofile");
     else if (location.pathname.includes("Request")) setSelected("ManageEvents");
     else if (location.pathname.includes("merch")) setSelected("Merchandise");
     else setSelected(""); 
@@ -26,10 +26,10 @@ export function ArtistNavbar({user,logout}){
 <img src="/images/defaultprofilepic.png" className="md:w-[70px] md:h-[70px] w-[30px] h-[30px] border-white rounded-full"></img>
 <h4 className="w-[110px] font-semibold text-white">{user.displayName}</h4>
 </div>
-<button className = "md:h-[40px] h-[10px] bg-[#D6EDF2] mt-4 mb-4 rounded-[10px] ">Edit Profile</button>
+<Link to="/artist/EditProfile"><button className = "md:h-[40px] h-[10px] w-full bg-[#D6EDF2] mt-4 mb-4 rounded-[10px] ">Edit Profile</button></Link>
 <img src="/images/Line 8.png" className=""></img>
 <div className="flex md:mt-5 mt-2 flex-col">
-<Link to="/artistProfile"><button onClick={()=> setSelected("Myprofile")} className={`text-white text-left h-[50px] w-full flex items-center gap-3 mb-3 p-3 transition duration-200 ${
+<Link to="/artist/Profile"><button onClick={()=> setSelected("Myprofile")} className={`text-white text-left h-[50px] w-full flex items-center gap-3 mb-3 p-3 transition duration-200 ${
     selected === "Myprofile" ? "bg-white/20" : "bg-transparent hover:bg-white/20"
   }`}> <img src="/images/User.png" className="w-[25px] h-[25px]" ></img>My profile</button></Link>
 <Link to="/artist/Request"><button onClick={()=> setSelected("ManageEvents")}className={`text-white text-left h-[50px] w-full flex items-center gap-3 mb-3 p-3 transition duration-200 ${

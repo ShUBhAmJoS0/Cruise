@@ -36,10 +36,14 @@ firebase_uid:{
     type: DataTypes.DATE,
     field: "updated_at",
     defaultValue: DataTypes.NOW
-  }
+  },
+    profileImage: { type: DataTypes.STRING, allowNull: true },
+  coverImage: { type: DataTypes.STRING, allowNull: true },
+  bio: { type: DataTypes.TEXT, allowNull: true },
 }, {
   tableName: "users",
   timestamps: true,
   underscored: true
-});
+}
+);
  export default User;

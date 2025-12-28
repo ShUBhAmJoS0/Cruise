@@ -1,6 +1,5 @@
 
 import React, { useState } from 'react';
-import { Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
 
 // Fake Database - Replace with backend later
 const FAKE_DB = {
@@ -28,9 +27,9 @@ const FAKE_DB = {
     id: 101,
     username: "current_user"
   },
-  // This tracks follow relationships
+
   follows: [
-    // { followerId: 101, followingId: 1 } means user 101 follows artist 1
+   
   ]
 };
 
@@ -77,15 +76,15 @@ const ArtistProfile = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white">
-      {/* Cover Image */}
-      <div className="relative h-48 md:h-64 bg-gradient-to-b from-gray-800 to-black">
+    <div className="min-h-screen bg-[#F5F5F5] text-white">
+  
+      <div className="relative h-48 md:h-64 bg-[#3593A6]">
         <img 
           src={artist.coverImage} 
           alt="Cover" 
           className="w-full h-full object-cover opacity-50"
         />
-        {/* Profile Picture - Overlapping */}
+  
         <div className="absolute -bottom-12 left-4 md:left-8">
           <div className="w-24 h-24 md:w-32 md:h-32 rounded-full border-4 border-black overflow-hidden">
             <img 
@@ -101,16 +100,16 @@ const ArtistProfile = () => {
       <div className="px-4 md:px-8 pt-16 pb-6">
         <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold">{artist.name}</h1>
+            <h1 className="text-2xl md:text-3xl font-bold text-black">{artist.name}</h1>
             <p className="text-gray-400 text-sm md:text-base">{artist.profession}</p>
             
             <div className="flex gap-6 mt-3 text-sm">
               <div className="flex items-center gap-1">
-                <span className="font-semibold">{formatNumber(followerCount)}</span>
+                <span className="font-semibold text-black">{formatNumber(followerCount)}</span>
                 <span className="text-gray-400">Followers</span>
               </div>
               <div className="flex items-center gap-1">
-                <span className="font-semibold">{formatNumber(artist.following)}</span>
+                <span className="font-semibold text-black">{formatNumber(artist.following)}</span>
                 <span className="text-gray-400">Following</span>
               </div>
             </div>
@@ -120,8 +119,8 @@ const ArtistProfile = () => {
             onClick={handleFollowToggle}
             className={`px-6 py-2 rounded-full font-medium transition-all ${
               isFollowing 
-                ? 'bg-gray-700 hover:bg-gray-600 text-white' 
-                : 'bg-blue-600 hover:bg-blue-700 text-white'
+                ? 'bg-gray-700 hover:bg-gray-700 text-white' 
+                : 'bg-[#3593A6] hover:bg-[#3593A6] text-black'
             }`}
           >
             {isFollowing ? 'Following' : 'Follow'}
@@ -136,8 +135,8 @@ const ArtistProfile = () => {
               onClick={() => setActiveTab(tab.toLowerCase().replace(' ', ''))}
               className={`pb-3 px-2 whitespace-nowrap transition-colors ${
                 activeTab === tab.toLowerCase().replace(' ', '')
-                  ? 'text-blue-500 border-b-2 border-blue-500'
-                  : 'text-gray-400 hover:text-white'
+                  ? 'text-[#3593A6] border-b-2 border-[#3593A6]'
+                  : 'text-gray-400 hover:text-black'
               }`}
             >
               {tab}
@@ -151,13 +150,13 @@ const ArtistProfile = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* About Section */}
           <div className="lg:col-span-2">
-            <div className="bg-gray-900 rounded-lg p-6">
+            <div className="bg-[#3593A6]/90 rounded-lg p-6">
               <h2 className="text-xl font-bold mb-4">About Taylor Swift</h2>
-              <p className="text-gray-300 leading-relaxed">{artist.about}</p>
+              <p className="text-gray-200 leading-relaxed">{artist.about}</p>
             </div>
 
             {/* Media Gallery */}
-            <div className="bg-gray-900 rounded-lg p-6 mt-6">
+            <div className="bg-white shadow-2xl rounded-lg p-6 mt-6">
               <h2 className="text-xl font-bold mb-4">Media Gallery</h2>
               <div className="relative">
                 <div className="flex gap-4 overflow-hidden">
@@ -182,15 +181,15 @@ const ArtistProfile = () => {
                 {/* Navigation Buttons */}
                 <button
                   onClick={prevImage}
-                  className="absolute left-2 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-75 rounded-full p-2 transition-all"
+                  className="absolute left-2 top-1/2 -translate-y-1/2 bg-white bg-opacity-50 hover:bg-opacity-75 rounded-full p-2 transition-all"
                 >
-                  <ChevronLeft className="w-6 h-6" />
+                 
                 </button>
                 <button
                   onClick={nextImage}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-75 rounded-full p-2 transition-all"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-white bg-opacity-50 hover:bg-opacity-75 rounded-full p-2 transition-all"
                 >
-                  <ChevronRight className="w-6 h-6" />
+                  
                 </button>
               </div>
             </div>
@@ -198,25 +197,25 @@ const ArtistProfile = () => {
 
           {/* Upcoming Gigs Sidebar */}
           <div>
-            <div className="bg-gray-900 rounded-lg p-6">
+            <div className="bg-[#3593A6]/50 rounded-lg p-6">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-bold">Upcoming Gigs</h2>
-                <Calendar className="w-5 h-5 text-gray-400" />
+                {/* <Calendar className="w-5 h-5 text-gray-400" /> */}
               </div>
               
               <div className="space-y-4">
                 {upcomingGigs.map((gig) => (
-                  <div key={gig.id} className="bg-gray-800 rounded-lg p-4">
+                  <div key={gig.id} className="bg-gray-100 rounded-lg p-4">
                     <div className="flex items-center justify-between mb-2">
                       <span className={`px-3 py-1 rounded-full text-xs font-medium ${
                         gig.status === 'confirmed' 
-                          ? 'bg-green-500 bg-opacity-20 text-green-400' 
-                          : 'bg-yellow-500 bg-opacity-20 text-yellow-400'
+                          ? 'bg-green-500 bg-opacity-20 text-green-100' 
+                          : 'bg-yellow-500 bg-opacity-20 text-yellow-100'
                       }`}>
                         {gig.status.charAt(0).toUpperCase() + gig.status.slice(1)}
                       </span>
                     </div>
-                    <h3 className="font-semibold mb-1">{gig.name}</h3>
+                    <h3 className="font-semibold mb-1 text-black">{gig.name}</h3>
                     <p className={`text-sm ${
                       gig.status === 'confirmed' ? 'text-green-400' : 'text-blue-400'
                     }`}>

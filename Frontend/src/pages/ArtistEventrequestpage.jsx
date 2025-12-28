@@ -166,7 +166,7 @@ function ArtistEventRequestPage() {
             className="md:w-[100%] min-h-[60px] border border-black rounded-md p-4"
             placeholder="Describe the event"
             value={eventDes}
-            onChange={e => setEventDes(e.target.value)}
+            onChange={e=> setEventDes(e.target.value)}
             rows="3"
           />
         </div>

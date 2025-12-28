@@ -13,27 +13,52 @@ export const AuthProvider = ({ children }) => {
 
 useEffect(() => {
   const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-    if (currentUser) {
-      setUser(currentUser);
-      try {
-        const token = await currentUser.getIdToken();
-        const res = await api.get("/auth/getuser", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        console.log(res.data.userType)
-        setRole(res.data.userType); 
-      } catch (error) {
-        console.error("Error fetching user role:", error); 
-        setRole(null);
-      }
-    } else {
+    if (!currentUser) {
       setUser(null);
       setRole(null);
+      setLoading(false);
+      return;
     }
-    setLoading(false);
+
+    setLoading(true);
+
+    setUser(currentUser);
+
+    try {
+      const token = await currentUser.getIdToken(true); 
+      const res = await api.get("/auth/getuser", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      setRole(res.data.user.userType);
+      console.log(role)
+      setLoading(false); 
+    } catch (error) {
+      console.error("Role fetch failed", error);
+      setRole(null);
+      setLoading(true); 
+    }
   });
+
   return () => unsubscribe();
 }, []);
+useEffect(() => {
+  if (!user || role || loading) return;
+
+  const recoverRole = async () => {
+    try {
+      const token = await user.getIdToken(true);
+      const res = await api.get("/auth/getuser", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setRole(res.data.user.userType);
+    } catch (e) {
+      console.error("Role recovery failed", e);
+    }
+  };
+
+  recoverRole();
+}, [user, role, loading]);
 
   const logout = async () => {
     await auth.signOut();

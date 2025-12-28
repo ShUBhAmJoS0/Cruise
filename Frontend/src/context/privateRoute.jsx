@@ -3,16 +3,15 @@ import { useAuth } from "../context/AuthContext";
 
 const ProtectedRoute = ({ allowedRoles, children }) => {
   const { user , role, loading } = useAuth();
+  
 if (loading) return <p>Loading...</p>;
-
+ console.log(role)
+ console.log(user)
   if (!user) return <Navigate to="/login"/>; 
   
-  if (allowedRoles && !role) {
-  return <p>Loading user info...</p>;
-}
 
   if (allowedRoles && !allowedRoles.includes(role)) {
-    console.log(role)
+   
     return <Navigate to="/unauthorized" />; 
   }
   console.log("Role missing, showing login page but no redirect loop yet");
