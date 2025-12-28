@@ -33,7 +33,7 @@ const Merchandise = () => {
     fetchProducts();
   }, [selectedCategory, sortOrder, search]);
 
-  // Handle Add to Cart
+
   const handleAddToCart = async (productId) => {
     try {
       await api.post("/api/cart", { productId, quantity: 1 });

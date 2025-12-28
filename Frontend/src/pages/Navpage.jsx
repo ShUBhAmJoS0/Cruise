@@ -11,7 +11,7 @@ const icons = {
   logout: "🚪",
 };
 
-export function NavPage({ children }) {
+export default function NavPage({ children }) {
   const { logout, user } = useAuth(); // your AuthContext provides user info
   const navigate = useNavigate();
 
