@@ -1,31 +1,44 @@
-import  { useState, useEffect, useRef } from 'react';
+     import { useState, useEffect, useRef } from 'react';
 import api from "../api/axios";
 
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const primaryColor = '#3593A6';
+
 const ExploreEvents = () => {
-    const navigate= useNavigate()
+  const navigate = useNavigate();
+  const { logout } = useAuth();
 
   // Data states
   const [upcomingEvents, setUpcomingEvents] = useState([]);
   const [trendingEvents, setTrendingEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-   const [user,setUser]=useState(null);
-   const { logout } = useAuth(); 
-  // Temporary filter states (UI only - no actual filtering)
-  const [tempCategories, setTempCategories] = useState({
-    Music: false,
-    Sports: false,
-    Family: false,
-    Arts: false,
+  const [user, setUser] = useState(null);
+
+  // Filter states with localStorage persistence
+  const [tempCategories, setTempCategories] = useState(() => {
+    const saved = localStorage.getItem('eventFilters_categories');
+    return saved ? JSON.parse(saved) : {
+      Music: false,
+      Sports: false,
+      Family: false,
+      Art: false,
+    };
   });
-  const [tempDate, setTempDate] = useState(null);
-  const [tempLocation, setTempLocation] = useState(null);
-  const [tempMinPrice, setTempMinPrice] = useState(0);
-  const [tempMaxPrice, setTempMaxPrice] = useState(500);
+  const [tempDate, setTempDate] = useState(() => {
+    return localStorage.getItem('eventFilters_date') || null;
+  });
+  const [tempLocation, setTempLocation] = useState(() => {
+    return localStorage.getItem('eventFilters_location') || null;
+  });
+  const [tempMinPrice, setTempMinPrice] = useState(() => {
+    return parseInt(localStorage.getItem('eventFilters_minPrice')) || 0;
+  });
+  const [tempMaxPrice, setTempMaxPrice] = useState(() => {
+    return parseInt(localStorage.getItem('eventFilters_maxPrice')) || 500;
+  });
 
   const filledTrackRef = useRef(null);
   const GAP = 30;
@@ -58,19 +71,52 @@ const ExploreEvents = () => {
     updateSlider();
   }, [tempMinPrice, tempMaxPrice]);
 
+  // Save filter states to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('eventFilters_categories', JSON.stringify(tempCategories));
+  }, [tempCategories]);
 
-  // Fetch events from backend
+  useEffect(() => {
+    localStorage.setItem('eventFilters_date', tempDate || '');
+  }, [tempDate]);
+
+  useEffect(() => {
+    localStorage.setItem('eventFilters_location', tempLocation || '');
+  }, [tempLocation]);
+
+  useEffect(() => {
+    localStorage.setItem('eventFilters_minPrice', tempMinPrice.toString());
+  }, [tempMinPrice]);
+
+  useEffect(() => {
+    localStorage.setItem('eventFilters_maxPrice', tempMaxPrice.toString());
+  }, [tempMaxPrice]);
+
+useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await api.get("/auth/getuser"); 
+        setUser(res.data);
+        console.log(res.data)
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchUser();
+  }, []);
+ 
   useEffect(() => {
         const fetchEvents = async () => {
       try {
         setLoading(true);
-        const response = await api.get('/event'); 
+        const response = await api.get('/event/');
 
 
        const eventData = response.data
 
 
-        if (eventData && eventData) { 
+        if (eventData && eventData) {
           setUpcomingEvents(eventData);
           setTrendingEvents(eventData);
           console.log(eventData)
@@ -78,7 +124,7 @@ const ExploreEvents = () => {
           throw new Error('Unexpected data format');
         }
 
-     
+
       } catch (err) {
         setError(err.message);
         console.error('Error fetching events:', err);
@@ -88,22 +134,96 @@ const ExploreEvents = () => {
     };
 
     fetchEvents();
-  }, []); 
+  }, []);
 
-  const handleApplyFilters = () => {
- 
-  };
+  // Auto-apply saved filters on component mount
+  useEffect(() => {
+    const hasSavedFilters = localStorage.getItem('eventFilters_categories') ||
+                           localStorage.getItem('eventFilters_date') ||
+                           localStorage.getItem('eventFilters_location') ||
+                           localStorage.getItem('eventFilters_minPrice') ||
+                           localStorage.getItem('eventFilters_maxPrice');
 
-  const handleClearAll = (e) => {
-    e.preventDefault();
-    setTempCategories({ Music: false, Sports: false, Family: false, Arts: false });
-    setTempDate(null);
-    setTempLocation(null);
-    setTempMinPrice(0);
-    setTempMaxPrice(500);
-  };
+    if (hasSavedFilters) {
+      // Small delay to ensure events are loaded first
+      setTimeout(() => {
+        handleApplyFilters();
+      }, 100);
+    }
+  }, []);
 
-  const categoriesList = ['Music', 'Sports', 'Family', 'Arts'];
+const handleApplyFilters = async () => {
+  try {
+    setLoading(true);
+
+    // Get selected categories
+    const selectedCats = Object.entries(tempCategories)
+      .filter(([_, isSelected]) => isSelected)
+      .map(([category]) => category);
+
+    // Prepare filters
+    const filters = {
+      category: selectedCats.length > 0 ? selectedCats.join(',') : undefined,
+      minPrice: tempMinPrice,
+      maxPrice: tempMaxPrice,
+      location: tempLocation,
+      date: tempDate
+    };
+
+    // Remove empty/undefined filters
+    Object.keys(filters).forEach(key =>
+      (filters[key] === null || filters[key] === undefined || filters[key] === '') && delete filters[key]
+    );
+
+    // If no filters are applied, fetch all events
+    if (Object.keys(filters).length === 0) {
+      const response = await api.get('/event');
+      setUpcomingEvents(response.data);
+      setTrendingEvents(response.data);
+      return;
+    }
+
+    // Apply filters via API call
+    const queryParams = new URLSearchParams(filters);
+    const response = await api.get(`/api/events/filter?${queryParams}`);
+    setUpcomingEvents(response.data);
+    setTrendingEvents(response.data);
+  } catch (error) {
+    console.error('Error applying filters:', error);
+    setError('Failed to apply filters');
+  } finally {
+    setLoading(false);
+  }
+};
+const handleClearAll = async (e) => {
+  e.preventDefault();
+  setTempCategories({ Music: false, Sports: false, Family: false, Art: false });
+  setTempDate(null);
+  setTempLocation(null);
+  setTempMinPrice(0);
+  setTempMaxPrice(500);
+
+  // Clear localStorage
+  localStorage.removeItem('eventFilters_categories');
+  localStorage.removeItem('eventFilters_date');
+  localStorage.removeItem('eventFilters_location');
+  localStorage.removeItem('eventFilters_minPrice');
+  localStorage.removeItem('eventFilters_maxPrice');
+
+  try {
+    setLoading(true);
+    const response = await api.get('/event');
+    setUpcomingEvents(response.data);
+    setTrendingEvents(response.data);
+  } catch (error) {
+    console.error('Error fetching all events:', error);
+    setError('Failed to clear filters');
+  } finally {
+    setLoading(false);
+  }
+};
+
+  const categoriesList = ['Music', 'Sports', 'Family', 'Art'];
   const dateOptions = ['Today', 'Tomorrow', 'This Week', 'This Month'];
   const locations = [
     'Hyatt Hotel',
@@ -112,7 +232,7 @@ const ExploreEvents = () => {
     'National Gallery',
     'Thundikhel',
   ];
-
+ 
   return (
     <>
       <style>{`
@@ -327,12 +447,12 @@ const ExploreEvents = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-7 mb-16">
                   {upcomingEvents.map((event, idx) => (
                     <div
-                      key={event.id || idx} 
+                      key={event.id || idx}
                       className="bg-white rounded-2xl overflow-hidden shadow-lg transition-all duration-400 hover:-translate-y-3 hover:shadow-2xl group cursor-pointer"
                     >
                           <img
                         className="h-52 bg-cover bg-center transition-transform duration-400 group-hover:scale-105"
-                        src= {`http://localhost:5000/${event.profileImage}`} 
+                        src= {`http://localhost:5000/${event.profileImage}`}
                       />
                       <div className="p-5">
                         <h3 className="text-xl font-bold mb-2">{event.title}</h3>
@@ -340,13 +460,13 @@ const ExploreEvents = () => {
                         <div className="max-h-0 overflow-hidden group-hover:max-h-96 group-hover:py-5 transition-all duration-500 bg-gray-50 border-t border-gray-200">
                           <p className="mb-3">
                             <strong style={{ color: primaryColor }}>Price:</strong>{' '}
-                            {event.price === 0 ? 'Free Entry' : `Starts from $${event.prices[1]}`}
+                           {event.prices?.Regular === 0 ? 'Free Entry' : `Starts from $${event.prices?.Regular}`}
                           </p>
                           <p className="mb-3">
                             <strong style={{ color: primaryColor }}>Location:</strong> {event.location}
                           </p>
                           <p className="mb-3">
-                            <strong style={{ color: primaryColor }}>Category:</strong> {"music"}
+                            <strong style={{ color: primaryColor }}>Category:</strong> {event.category}
                           </p>
                           <button
                             className="w-full py-3.5 text-white rounded-full font-bold mt-4 transition hover:opacity-90"
@@ -380,20 +500,20 @@ const ExploreEvents = () => {
                     >
                       <img
                         className="h-52 bg-cover bg-center transition-transform duration-400 group-hover:scale-105"
-                        src= {`http://localhost:5000/${event.profileImage}`} 
+                        src= {`http://localhost:5000/${event.profileImage}`}
                       />
                       <div className="p-5">
                         <h3 className="text-xl font-bold mb-2">{event.title}</h3>
                         <p className="text-gray-600 text-sm mb-4">{event.date}</p>
                         <div className="max-h-0 overflow-hidden group-hover:max-h-96 group-hover:py-5 transition-all duration-500 bg-gray-50 border-t border-gray-200">
                           <p className="mb-3">
-                            <strong style={{ color: primaryColor }}>Price:</strong> ${event.prices[1]}+
+                            {event.prices?.Regular === 0 ? 'Free Entry' : `Starts from $${event.prices?.Regular}`}
                           </p>
                           <p className="mb-3">
                             <strong style={{ color: primaryColor }}>Location:</strong> {event.location}
                           </p>
                           <p className="mb-3">
-                            <strong style={{ color: primaryColor }}>Category:</strong> {"music"}
+                            <strong style={{ color: primaryColor }}>Category:</strong> {event.category}
                           </p>
                           <button
                             className="w-full py-3.5 text-white rounded-full font-bold mt-4 transition hover:opacity-90"
