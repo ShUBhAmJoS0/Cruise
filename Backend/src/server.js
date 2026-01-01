@@ -14,6 +14,8 @@ import Order from "./model/Order.js";
 import OrderItem from "./model/OrderItems.js";
 import orderRoutes from "./routes/orderRoutes.js";
 import cartRoutes from "./routes/cartRoutes.js";
+import communityRoutes from "./routes/communityRoutes.js";
+
 
 const app=express();
 app.use(cors());
@@ -27,6 +29,7 @@ app.use("/api/merchandise", merchandiseRoutes);
 app.use("/artist",artistRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/orders", orderRoutes);
+app.use("/community", communityRoutes);
 
 
 const port =  5000;

@@ -14,6 +14,8 @@ import AddToCart from "./pages/AddtoCart";
 import ProtectedRoute from "./context/privateRoute";
 import PublicRoute from "./context/publicRoute";
 import  Usernavbar  from "./pages/userNavbar";
+import Community from "./pages/Community";
+
 function App() {
   return (
     <AuthProvider>
@@ -30,9 +32,10 @@ function App() {
           {/* Other pages from master */}
           <Route path="/events" element={<ProtectedRoute allowedRoles={["Attendee"]}><Usernavbar><ExploreEvents/></Usernavbar></ProtectedRoute>} />
           <Route path="/event/:id" element={<ProtectedRoute allowedRoles={["Attendee"]}><Bookingpage /></ProtectedRoute>} />
-          <Route path="/artist/Request" element={<ProtectedRoute allowedRoles={["Artist"]}><Usernavbar><ArtistEventRequestPage/></Usernavbar>></ProtectedRoute>}/>
+          <Route path="/artist/Request" element={<ProtectedRoute allowedRoles={["Artist"]}><Usernavbar><ArtistEventRequestPage/></Usernavbar></ProtectedRoute>}/>
           <Route path="/merchandise" element={<ProtectedRoute><Usernavbar><Merchandise /></Usernavbar></ProtectedRoute>} />
           <Route path="/cart" element={<ProtectedRoute allowedRoles={["Attendee"]}><Usernavbar><AddToCart /></Usernavbar></ProtectedRoute>}/>
+          <Route path="/community" element={ <ProtectedRoute allowedRoles={["Attendee"]}><Usernavbar><Community /></Usernavbar></ProtectedRoute>}/>
         </Routes>
       </BrowserRouter>
     </AuthProvider>
