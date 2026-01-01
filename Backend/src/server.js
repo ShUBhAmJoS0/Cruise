@@ -29,7 +29,8 @@ app.use("/api/merchandise", merchandiseRoutes);
 app.use("/artist",artistRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/orders", orderRoutes);
-app.use("/community", communityRoutes);
+app.use("/api/community", communityRoutes);
+await sequelize.sync();
 
 
 const port =  5000;

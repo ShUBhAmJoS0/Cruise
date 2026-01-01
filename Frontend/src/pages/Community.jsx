@@ -1,111 +1,136 @@
-import { useEffect, useState } from "react";
-import api from "../api/axios";
+import React, { useState, useEffect } from "react";
+import CreatePostModal from "./CreatePostModal";
+import PostCard from "./PostCard";
 
 export default function Community() {
-  const [content, setContent] = useState("");
-  const [posts, setPosts] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [post, setPost] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const currentUserId = 1; 
 
-
-  const fetchPosts = async () => {
-    try {
-      const response = await api.get("/community");
-      setPosts(response.data);
-    } catch (error) {
-      console.log(error);
-      alert("Failed to load community posts");
-    }
-  };
-
- 
+  // Fetch the latest post
   useEffect(() => {
-    fetchPosts();
+    const fetchPost = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/api/community");
+        const data = await res.json();
+        setPost(data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchPost();
   }, []);
 
-
-  const createPost = async () => {
-    if (!content.trim()) {
-      alert("Post cannot be empty");
-      return;
-    }
-
+  // Create a new post (text + optional image)
+  const handleCreatePost = async (content, image) => {
     try {
-      setLoading(true);
-      await api.post("/community", { content });
-      setContent("");
-      fetchPosts();
-    } catch (error) {
-      console.log(error);
-      alert("Failed to post");
-    } finally {
-      setLoading(false);
+      const formData = new FormData();
+      formData.append("content", content);
+      formData.append("userId", currentUserId);
+      if (image) formData.append("image", image);
+
+      const res = await fetch("http://localhost:5000/api/community", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json();
+      setPost(data); // replace current post
+      setShowModal(false);
+    } catch (err) {
+      console.error(err);
     }
   };
 
-
-  const likePost = async (postId) => {
+  // Like the post
+  const handleLike = async () => {
     try {
-      await api.post(`/community/${postId}/like`);
-      fetchPosts();
-    } catch (error) {
-      console.log(error);
-      alert("Failed to like post");
+      const res = await fetch(`http://localhost:5000/api/community/${post.id}/like`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: currentUserId }),
+      });
+      const data = await res.json();
+      setPost(data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // Add a comment
+  const handleComment = async (content) => {
+    try {
+      const res = await fetch(`http://localhost:5000/api/community/${post.id}/comment`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content, userId: currentUserId }),
+      });
+      const data = await res.json();
+      setPost({ ...post, CommunityComments: [...post.CommunityComments, data] });
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // Repost the post
+  const handleRepost = async () => {
+    try {
+      const res = await fetch(`http://localhost:5000/api/community/${post.id}/repost`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: currentUserId }),
+      });
+      const data = await res.json();
+      setPost(data);
+    } catch (err) {
+      console.error(err);
     }
   };
 
   return (
-    <div className="min-h-screen flex justify-center bg-gray-100 pt-20">
-      <div className="w-full max-w-2xl bg-white p-6 rounded-md shadow">
+    <div className="min-h-screen bg-gray-100">
+      {/* Sticky Header */}
+      <header className="sticky top-0 z-40 border-b border-gray-200 bg-white p-4">
+        <div className="max-w-2xl mx-auto flex items-center justify-between">
+          <h1 className="text-2xl font-bold" style={{ color: "#4ba0b1" }}>
+            Cruise
+          </h1>
+        </div>
+      </header>
 
-        <h2 className="text-2xl font-semibold text-[#3593A6] mb-4">
-          Community
-        </h2>
+      {/* Main Content */}
+      <div className="max-w-2xl mx-auto pt-6 px-4"> {/* pt-6 ensures content below navbar */}
 
-        {/* CREATE POST */}
-        <textarea
-          className="w-full border rounded-md p-3 h-24 mb-3"
-          placeholder="What's happening?"
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-        />
-
-        <button
-          onClick={createPost}
-          disabled={loading}
-          className="w-full bg-[#3593A6] text-white h-11 rounded-md"
-        >
-          {loading ? "Posting..." : "Post"}
-        </button>
-
-        {/* POSTS */}
-        <div className="mt-6 space-y-4">
-          {!posts || posts.length === 0 ? (
-            <p className="text-center text-gray-500">
-              No posts yet
-            </p>
-          ) : (
-            posts.map((post) => (
-              <div
-                key={post.id}
-                className="border rounded-md p-4"
-              >
-                <p className="font-semibold mb-1">
-                  {post.User?.name || "User"}
-                </p>
-
-                <p className="mb-3">{post.content}</p>
-
-                <button
-                  onClick={() => likePost(post.id)}
-                  className="text-sm text-[#3593A6]"
-                >
-                  Like ({post.likes})
-                </button>
-              </div>
-            ))
-          )}
+        {/* Create Post Button */}
+        <div className="bg-white p-4 rounded mb-4">
+          <button
+            className="w-full py-2 px-4 rounded border hover:bg-gray-50 text-left"
+            style={{ borderColor: "#4ba0b1" }}
+            onClick={() => setShowModal(true)}
+          >
+            Share what's on your mind...
+          </button>
         </div>
 
+        {/* Create Post Modal */}
+        {showModal && (
+          <CreatePostModal
+            onClose={() => setShowModal(false)}
+            onSubmit={handleCreatePost}
+          />
+        )}
+
+        {/* Latest Post */}
+        {post ? (
+          <PostCard
+            post={post}
+            onLike={handleLike}
+            onComment={handleComment}
+            onRepost={handleRepost}
+          />
+        ) : (
+          <div className="text-center text-gray-500">No post available or unauthorized</div>
+        )}
       </div>
     </div>
   );

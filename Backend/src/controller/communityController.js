@@ -1,79 +1,97 @@
 import Community from "../model/Community.js";
-import User from "../model/User.js";
+import CommunityLike from "../model/CommunityLike.js";
+import CommunityComment from "../model/CommunityComment.js";
+import CommunityRepost from "../model/CommunityRepost.js";
 
-/* CREATE POST */
+// GET latest single post
+export const getAllPosts = async (req, res) => {
+  try {
+    const latestPost = await Community.findOne({
+      order: [["createdAt", "DESC"]],
+      include: [CommunityLike, CommunityComment, CommunityRepost],
+    });
+
+    if (!latestPost) return res.json(null);
+    res.json(latestPost); 
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Something went wrong" });
+  }
+};
+
+// CREATE new post (text + optional image)
 export const createCommunityPost = async (req, res) => {
   try {
-    const { content } = req.body;
+    const { content, userId } = req.body;
+    let imageUrl = null;
+    if (req.file) imageUrl = `/uploads/${req.file.filename}`;
 
-    if (!content) {
-      return res.status(400).json({ message: "Post cannot be empty" });
-    }
+    const newPost = await Community.create({ content, userId, imageUrl });
 
-    const post = await Community.create({
-      content,
-      userId: req.user.id,
+    const fullPost = await Community.findOne({
+      where: { id: newPost.id },
+      include: [CommunityLike, CommunityComment, CommunityRepost],
     });
 
-    res.status(201).json(post);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Failed to post" });
+    res.json(fullPost);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Something went wrong" });
   }
 };
 
-/* GET POSTS */
-export const getCommunityPosts = async (req, res) => {
+// LIKE a post
+export const likePost = async (req, res) => {
   try {
-    const posts = await Community.findAll({
-      order: [["createdAt", "DESC"]],
+    const { id } = req.params;
+    const { userId } = req.body;
+
+    const existing = await CommunityLike.findOne({ where: { postId: id, userId } });
+    if (!existing) await CommunityLike.create({ postId: id, userId });
+
+    const post = await Community.findOne({
+      where: { id },
+      include: [CommunityLike, CommunityComment, CommunityRepost],
     });
 
-    const finalPosts = [];
-
-    for (const post of posts) {
-      const user = await User.findByPk(post.userId);
-
-      finalPosts.push({
-        id: post.id,
-        content: post.content,
-        likes: post.likes,
-        reshares: post.reshares,
-        createdAt: post.createdAt,
-        userName: user.name,
-        userEmail: user.email,
-      });
-    }
-
-    res.status(200).json(finalPosts);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Failed to load posts" });
+    res.json(post);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Something went wrong" });
   }
 };
 
-/* LIKE */
-export const likeCommunityPost = async (req, res) => {
+// ADD comment
+export const addComment = async (req, res) => {
   try {
-    const post = await Community.findByPk(req.params.id);
-    post.likes += 1;
-    await post.save();
+    const { id } = req.params;
+    const { content, userId } = req.body;
 
-    res.status(200).json(post);
-  } catch {
-    res.status(500).json({ message: "Failed to like" });
+    const newComment = await CommunityComment.create({ postId: id, userId, content });
+    res.json(newComment);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Something went wrong" });
   }
 };
 
-/* RESHARE */
-export const reshareCommunityPost = async (req, res) => {
+// REPOST a post
+export const repostPost = async (req, res) => {
   try {
-    const post = await Community.findByPk(req.params.id);
-    post.reshares += 1;
-    await post.save();
+    const { id } = req.params;
+    const { userId } = req.body;
 
-    res.status(200).json(post);
-  } catch {
-    res.status(500).json({ message: "Failed to reshare" });
+    const existing = await CommunityRepost.findOne({ where: { postId: id, userId } });
+    if (!existing) await CommunityRepost.create({ postId: id, userId });
+
+    const post = await Community.findOne({
+      where: { id },
+      include: [CommunityLike, CommunityComment, CommunityRepost],
+    });
+
+    res.json(post);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Something went wrong" });
   }
 };
