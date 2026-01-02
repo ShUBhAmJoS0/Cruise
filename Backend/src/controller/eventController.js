@@ -1,10 +1,12 @@
 // backend/src/controller/eventController.js
 
 import Event from "../model/Event.js";
+import sequelize from "../Database/db.js";
+import { buildEventFilters } from "../utils/eventFilters.js";
 
 export const DisplayAll = async (req, res) => {
   try {
-    const events = await Event.findAll();
+    const events = await Event.findAll({where:{status:"pending"}});
     // console.log(events)
     res.json(events);
   } catch (e) {
@@ -67,7 +69,17 @@ export const GetEvent = async (req, res) => {
   } catch (e) {
     console.error(e);
     res.status(500).json({ message: "Failed to fetch event" });
- }
+  }
+};
+export const filterEvent = async (req, res) => {
+  try {
+    const whereClause = buildEventFilters(req.query);
+    const events = await Event.findAll({ where: whereClause });
+    res.json(events);
+  } catch (err) {
+    console.error('Error fetching filtered events:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
 };
 
 export const GetrequestedEvent = async(req,res)=>{
@@ -88,3 +100,4 @@ res.status(200).send({
     res.status(500).send({message:e.message})
   }
 }
+

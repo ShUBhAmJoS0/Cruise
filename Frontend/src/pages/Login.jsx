@@ -30,7 +30,7 @@ export default function Login() {
     });
     
     const role = res.data.user.userType
-
+console.log(role)
     alert("Login successful!");
     if (role === "Admin") navigate("/admin");
 else if (role === "Artist") navigate("/artist/Request");
@@ -114,7 +114,7 @@ placeholder="Enter your password"
 
 }
 
-            </button>
+  </button>
 </div>
 
 

@@ -1,26 +1,27 @@
-import Order from "../model/Order.js";
-import OrderItem from "../model/Product.js";
-import Product from "../model/Product.js";
+// import Order from "../model/Order.js";
+// import OrderItem from "../model/OrderItems.js";
 
-export const checkout = async (req, res) => {
-  try {
-    const userId = req.user.uid;
+// import {Product} from "../model/Product.js";
 
-    const order = await Order.findOne({
-      where: { userId, status: "pending" },
-      include: [{ model: OrderItem, as: "OrderItems", include: Product }]
-    });
+// export const checkout = async (req, res) => {
+//   try {
+//     const userId = req.user.uid;
 
-    if (!order || order.OrderItems.length === 0) {
-      return res.status(400).json({ message: "Cart is empty" });
-    }
+//     const order = await Order.findOne({
+//       where: { userId, status: "pending" },
+//       include: [{ model: OrderItem, as: "OrderItems", include: Product }]
+//     });
 
-    order.status = "completed"; 
-    await order.save();
+//     if (!order || order.OrderItems.length === 0) {
+//       return res.status(400).json({ message: "Cart is empty" });
+//     }
 
-    res.json({ message: "Order placed successfully", order });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server error" });
-  }
-};
+//     order.status = "completed"; 
+//     await order.save();
+
+//     res.json({ message: "Order placed successfully", order });
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ message: "Server error" });
+//   }
+// };

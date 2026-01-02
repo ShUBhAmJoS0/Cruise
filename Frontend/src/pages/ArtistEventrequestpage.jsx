@@ -41,7 +41,7 @@ function ArtistEventRequestPage() {
     setSelectedImages(selectedImages.filter((_, i) => i !== index));
   };
 
-
+ 
     const LoadRequestedEvents = async () => {
       try {
         const res = await api.get("/artist/request");
@@ -53,12 +53,14 @@ function ArtistEventRequestPage() {
         alert(e.response?.data?.message || "Failed to load events");
       }
     };
-useEffect(() => {
+    
+  useEffect(() => {
   LoadRequestedEvents();
 }, []);
 
 
   const RequestEvent = async () => {
+    
     try {
   
       const formData = new FormData();
@@ -85,11 +87,11 @@ useEffect(() => {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
+        
       });
-      
       alert(res.data.message);
-      await LoadRequestedEvents ()
-      
+   
+         await LoadRequestedEvents();
   
       setEventTitle("");
       setEventLocation("");
@@ -103,8 +105,7 @@ useEffect(() => {
       setSelectedImage(null);
       setSelectedImages([]);
       setImagePreviewUrl(null);
-      
-      
+    
     } catch (error) {
       const msg = error.response?.data?.message || "Failed to create event";
       console.log(error.response?.data?.message);
@@ -113,7 +114,7 @@ useEffect(() => {
   };
 
   return (
-    <div className="h-[100dvh] w-[80%] ml-[20%] bg-[#F1F0F0] flex flex-col items-center p-2 md:p-10 overflow-y-auto">
+    <div className=" ml-[20%] bg-[#F5F5F5]  flex flex-col items-center p-2 md:p-10 overflow-y-auto">
       <h2 className="font-semibold mb-6 text-2xl">Add Events</h2>
       <div className="w-[100%] bg-white rounded-[20px] shadow-md md:p-6 flex flex-col">
         <div className="flex gap-4 flex-wrap justify-center">
@@ -165,7 +166,7 @@ useEffect(() => {
             className="md:w-[100%] min-h-[60px] border border-black rounded-md p-4"
             placeholder="Describe the event"
             value={eventDes}
-            onChange={e => setEventDes(e.target.value)}
+            onChange={e=> setEventDes(e.target.value)}
             rows="3"
           />
         </div>
@@ -358,7 +359,7 @@ useEffect(() => {
         </button>
       </div>
       
-      <div className="flex flex-col justify-center items-center w-[100%] mt-8">
+      <div className="flex flex-col justify-center items-center w-[100%] mt-8 bg-[white] rounded-[20px] p-3 shadow-sm">
         <h2 className="font-bold m-4">Manage Added Events</h2>
         <div className="mt-4 p-4 bg-gray-100 rounded-lg w-[100%]">
             {requestEvent.length === 0 ? (

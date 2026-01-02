@@ -1,6 +1,7 @@
 import { Sequelize } from "sequelize";
 import dotenv from "dotenv"
 
+
 dotenv.config()
 
 console.log("DB_NAME:", process.env.DB_NAME);
@@ -20,7 +21,7 @@ const sequelize = new Sequelize(
   }
 );
 sequelize.authenticate()
-    .then(() => console.log("✅ Database connected"))
-    .catch(err => console.error("❌ DB Connection Error:", err));
+    .then(() => console.log(" Database connected"))
+    .catch(err => console.error(" DB Connection Error:", err));
     
 export default sequelize;

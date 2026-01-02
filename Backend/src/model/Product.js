@@ -1,44 +1,44 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../Database/db.js";
-
-const Product = sequelize.define(
-  "Product",
-  {
-    id: {
-      type: DataTypes.STRING,
-      primaryKey: true,
-      allowNull: false,
+import User from "./User.js";
+export const Product= sequelize.define("product",{
+    productId:{
+        type:DataTypes.INTEGER,
+        autoIncrement:true,
+        primaryKey:true
     },
-    name: {
-      type: DataTypes.STRING,
-      allowNull: false,
+    createdBy:{
+      type: DataTypes.INTEGER,
+      allowNull:false,
+      references:{
+        model:User,
+        key:"id"
+      }
     },
-    price: {
-      type: DataTypes.FLOAT,
-      allowNull: false,
+    productName:{
+        type:DataTypes.STRING,
+        allowNull:false
     },
-    bg: {
-      type: DataTypes.STRING,
+    productDescription: { type: DataTypes.TEXT, allowNull: false },
+    skuNumber:{
+        type:DataTypes.STRING,
+        allowNull:false
     },
-    label: {
-      type: DataTypes.STRING,
+    productCategory:{
+        type:DataTypes.STRING,
+        allowNull:false
     },
-    number: {
-      type: DataTypes.STRING,
+    productPrice:{
+        type:DataTypes.DOUBLE,
+        allowNull:false
     },
-    category: {
-      type: DataTypes.STRING,
-      allowNull: false,
+    productQuantity:{
+        type:DataTypes.INTEGER,
+        allowNull:false
     },
-    date: {
-      type: DataTypes.DATE,
-      allowNull: false,
-    },
-  },
-  {
-    tableName: "products",
-    timestamps: true,
-  }
-);
-
-export default Product;
+    productImage:{
+        type:DataTypes.STRING,
+        allowNull:false
+    }
+}
+)

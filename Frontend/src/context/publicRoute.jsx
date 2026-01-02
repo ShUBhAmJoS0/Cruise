@@ -8,7 +8,8 @@ if (loading) return <p>Loading...</p>;
 
   if (user) {
      console.log(role)
-  if (user && !role) return <p>Loading user info...</p>;
+    
+ 
     switch (role) {
        
       case "Admin":

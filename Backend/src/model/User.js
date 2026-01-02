@@ -36,10 +36,26 @@ firebase_uid:{
     type: DataTypes.DATE,
     field: "updated_at",
     defaultValue: DataTypes.NOW
+  },
+    profileImage: { type: DataTypes.STRING, allowNull: true , defaultValue:'/uploads/events/defaultprofilepic.png'},
+  coverImage: { type: DataTypes.STRING, allowNull: true },
+  bio: { type: DataTypes.TEXT, allowNull: true },
+  social:{type:DataTypes.STRING, allowNull:true},
+  followersCount: {
+    type: DataTypes.VIRTUAL(DataTypes.INTEGER),
+    defaultValue: 0
+  },
+
+  followingCount: {
+    type: DataTypes.VIRTUAL(DataTypes.INTEGER),
+    defaultValue: 0
   }
-}, {
+
+}, 
+{
   tableName: "users",
   timestamps: true,
   underscored: true
-});
+}
+);
  export default User;

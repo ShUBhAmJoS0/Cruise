@@ -5,44 +5,86 @@ import api from "../api/axios.js";
 
 export const AuthContext = createContext();
 
+
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);     
   const [role, setRole] = useState(null);      
   const [loading, setLoading] = useState(true);
+  const [dbuser, setDbuser] = useState(null);
 
-// In AuthContext.jsx - improve error handling
-useEffect(() => {
-  const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-    if (currentUser) {
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      if (!currentUser) {
+        setUser(null);
+        setRole(null);
+        setDbuser(null);
+        setLoading(false);  
+        return;
+      }
+
+      setLoading(true);
       setUser(currentUser);
+
       try {
-        const token = await currentUser.getIdToken();
+        const token = await currentUser.getIdToken(true); 
+        const res = await api.get("/auth/getuser", {
+          headers: { Authorization:` Bearer ${token}` },
+        });
+        console.log(res);
+
+  
+        if (res.data && res.data.user) {
+          setRole(res.data.user.userType);
+          setDbuser(res.data.user);
+          console.log("Role set:", res.data.user.userType);
+        } else {
+        
+          throw new Error("User data not found in response");
+        }
+
+        setLoading(false); 
+      } catch (error) {
+        console.error("Role fetch failed", error);
+        setRole(null);
+        setDbuser(null);
+        setLoading(false); 
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+
+  useEffect(() => {
+    if (!user || role || loading) return;
+
+    const recoverRole = async () => {
+      try {
+        const token = await user.getIdToken(true);
         const res = await api.get("/auth/getuser", {
           headers: { Authorization: `Bearer ${token}` },
         });
-        console.log(res.data.userType)
-        setRole(res.data.userType); 
-      } catch (error) {
-        console.error("Error fetching user role:", error); 
-        setRole(null);
+        if (res.data && res.data.user) {
+          setRole(res.data.user.userType);
+          setDbuser(res.data.user);
+        }
+      } catch (e) {
+        console.error("Role recovery failed", e);
       }
-    } else {
-      setUser(null);
-      setRole(null);
-    }
-    setLoading(false);
-  });
-  return () => unsubscribe();
-}, []);
+    };
+
+    recoverRole();
+  }, [user, role, loading]);
 
   const logout = async () => {
     await auth.signOut();
     setUser(null);
-    setRole(null); 
+    setRole(null);
+    setDbuser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, role, setRole, logout, loading }}>
+    <AuthContext.Provider value={{ dbuser, setDbuser, setUser, user, role, setRole, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );
