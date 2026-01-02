@@ -21,7 +21,9 @@ export const getAllPosts = async (req, res) => {
 
 // CREATE new post (text + optional image)
 export const createCommunityPost = async (req, res) => {
+
   try {
+    console.log("aPI HIT FOR COMMUNITY POST")
     const { content, userId } = req.body;
     let imageUrl = null;
     if (req.file) imageUrl = `/uploads/${req.file.filename}`;

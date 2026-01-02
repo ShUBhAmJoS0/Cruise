@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import CreatePostModal from "./CreatePostModal";
 import PostCard from "./PostCard";
+import api from "../api/axios";
 
 export default function Community() {
   const [post, setPost] = useState(null);
@@ -11,7 +12,7 @@ export default function Community() {
   useEffect(() => {
     const fetchPost = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/community");
+        const res = await api.get("/api/community");
         const data = await res.json();
         setPost(data);
       } catch (err) {
@@ -30,12 +31,11 @@ export default function Community() {
       formData.append("userId", currentUserId);
       if (image) formData.append("image", image);
 
-      const res = await fetch("http://localhost:5000/api/community", {
-        method: "POST",
+      const res = await api.post("/api/community", {
         body: formData,
       });
       const data = await res.json();
-      setPost(data); // replace current post
+      setPost(data);
       setShowModal(false);
     } catch (err) {
       console.error(err);
@@ -89,17 +89,9 @@ export default function Community() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      {/* Sticky Header */}
-      <header className="sticky top-0 z-40 border-b border-gray-200 bg-white p-4">
-        <div className="max-w-2xl mx-auto flex items-center justify-between">
-          <h1 className="text-2xl font-bold" style={{ color: "#4ba0b1" }}>
-            Cruise
-          </h1>
-        </div>
-      </header>
 
       {/* Main Content */}
-      <div className="max-w-2xl mx-auto pt-6 px-4"> {/* pt-6 ensures content below navbar */}
+      <div className="max-w-2xl mx-auto pt-6 px-4 mt-[20%]"> 
 
         {/* Create Post Button */}
         <div className="bg-white p-4 rounded mb-4">
