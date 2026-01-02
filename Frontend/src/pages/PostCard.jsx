@@ -18,7 +18,7 @@ export default function PostCard({post, userId, onLike, onComment, onRepost,}) {
       <p className="mb-3 text-gray-800">{post.content}</p>
       {post.image && (
         <img
-          src={`http://localhost:5000/${post.image}`}
+          src={`http://localhost:5000${post.image}`}
           alt="post"
           className="rounded mb-3 max-h-96 object-cover"
         />

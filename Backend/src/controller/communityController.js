@@ -54,7 +54,7 @@ export const createCommunityPost = async (req, res) => {
     const post = await Community.create({
       content,
       userId,
-      imageUrl,
+      image:imageUrl,
     });
 
     const fullPost = await Community.findOne({
