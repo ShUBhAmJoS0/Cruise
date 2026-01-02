@@ -24,7 +24,7 @@ export const addProduct = async (req, res) => {
      productImage: imageUrl,
     });
 
-    res.status(200).send({ data:product, message:"Product added successfully", product });
+    res.status(200).send({ data:product, message:"Product added successfully"});
   } catch (error) {
     console.error(error);
     res.status(500).send({ message: "Failed to add product", error });
@@ -55,7 +55,7 @@ export const editProduct = async (req, res) => {
       productImage:imageUrl,
     });
 
-    res.status(200).send({ data:product,message: "Product updated successfully", product });
+    res.status(200).send({ data:product,message: "Product updated successfully"});
   } catch (error) {
     console.error(error);
     res.status(500).send({ message: "Failed to update product", error });

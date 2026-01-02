@@ -7,7 +7,6 @@ import { buildEventFilters } from "../utils/eventFilters.js";
 export const DisplayAll = async (req, res) => {
   try {
     const events = await Event.findAll({where:{status:"pending"}});
-    // console.log(events)
     res.json(events);
   } catch (e) {
     console.error(e);
@@ -65,7 +64,7 @@ export const GetEvent = async (req, res) => {
     if (!event) {
       return res.status(404).json({ message: "Event not found" });
     }
-    res.json(event);
+    res.status(200).json(event);
   } catch (e) {
     console.error(e);
     res.status(500).json({ message: "Failed to fetch event" });

@@ -38,10 +38,11 @@ function AppRoutes() {
 
         {/* users */}
         <Route path="/events" element={<ProtectedRoute allowedRoles={["Attendee"]}><ExploreEvents /></ProtectedRoute>} />
-        <Route path="/merchandise" element={<ProtectedRoute allowedRoles={["Attendee"]}><ExploreEvents /></ProtectedRoute>} />
+        <Route path="/merchandise" element={<ProtectedRoute allowedRoles={["Attendee"]}><Merchandise></Merchandise></ProtectedRoute>} />
         <Route path="/event/:id" element={<ProtectedRoute allowedRoles={["Attendee"]}><Bookingpage /></ProtectedRoute>} />
 <Route path="/searchartists" element={<ProtectedRoute allowedRoles={["Attendee"]}><FindArtists></FindArtists></ProtectedRoute>}/>
 <Route path="/about" element={<ProtectedRoute allowedRoles={["Attendee"]}><About /></ProtectedRoute>} />
+
         {/* artist */}
         <Route path="/artist/Request" element={<ProtectedRoute allowedRoles={["Artist"]}><ArtistEventRequestPage /></ProtectedRoute>} />
         <Route path="/artist/Addmerch" element={<ProtectedRoute allowedRoles={["Artist"]}><AddMerch /></ProtectedRoute>} />
@@ -52,7 +53,7 @@ function AppRoutes() {
   ) : (
     <Routes>
       <Route path="/" element={<Landing />} />
-      <Route path="/artist/profile/:id" element={<ArtistProfile />} />
+      <Route path="/artist/profile/:id" element={<ProtectedRoute allowedRoles={["Attendee"]}><ArtistProfile /></ProtectedRoute>} />
     </Routes>
   );
 }

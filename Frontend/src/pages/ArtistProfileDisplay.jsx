@@ -17,7 +17,7 @@ const ArtistProfile = () => {
         const res = await api.get(`/artist/profile/${artistId}`);
         console.log(res.data.data);
 
-        setArtist(res.data.data);
+        setArtist(res.data.data.artist);
         setIsFollowing(res.data.data.isFollowing);
       } catch (err) {
         console.error("Failed to fetch artist", err);
@@ -84,7 +84,7 @@ const ArtistProfile = () => {
       {/* COVER */}
       <div className="relative h-56 bg-[#3593A6]">
         <img
-          src={artist.coverImage}
+          src={`http://localhost:5000/${artist.coverImage}`}
           alt="cover"
           className="w-full h-full object-cover opacity-60"
         />
@@ -92,7 +92,7 @@ const ArtistProfile = () => {
         <div className="absolute -bottom-14 left-6">
           <div className="w-28 h-28 rounded-full border-4 border-white overflow-hidden bg-white">
             <img
-              src={artist.profileImage}
+              src={`http://localhost:5000/${artist.profileImage}`}
               alt={artist.name}
               className="w-full h-full object-cover"
             />
@@ -123,7 +123,7 @@ const ArtistProfile = () => {
 
         <button
           onClick={handleFollowToggle}
-          className={`px-6 py-2 rounded-full font-semibold transition ${
+          className={`px-4 h-10 rounded-md font-semibold transition ${
             isFollowing
               ? "bg-gray-300 text-gray-800 hover:bg-gray-400"
               : "bg-[#3593A6] text-white hover:bg-[#2c7f8f]"
@@ -168,7 +168,7 @@ const ArtistProfile = () => {
             {gigs.length > 0 ? (
               gigs.map((gig) => (
                 <div key={gig.id} className="border rounded-lg p-3 mb-3">
-                  <h3 className="font-semibold">{gig.name}</h3>
+                  <h3 className="font-semibold">{gig.title}</h3>
                   <p className="text-sm text-gray-500">{gig.status}</p>
                 </div>
               ))
