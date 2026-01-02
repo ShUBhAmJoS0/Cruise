@@ -1,72 +1,86 @@
 import React, { useState } from "react";
 
-export default function PostCard({ post, onLike, onComment, onRepost }) {
+export default function PostCard({post, userId, onLike, onComment, onRepost,}) {
   const [commentText, setCommentText] = useState("");
+  const [showComments, setShowComments] = useState(false);
 
-  if (!post) return null;
+  const hasLiked =
+    post.Likes?.some((like) => like.userId === userId) || false;
 
-  const handleAddComment = () => {
+  const handleSubmitComment = () => {
     if (!commentText.trim()) return;
     onComment(commentText);
     setCommentText("");
   };
 
   return (
-    <div className="bg-white p-4 rounded mb-4 shadow">
-      {post.content && <p className="mb-2">{post.content}</p>}
-
-      {post.imageUrl && (
+    <div className="bg-white rounded shadow mb-4 p-4">
+      <p className="mb-3 text-gray-800">{post.content}</p>
+      {post.image && (
         <img
-          src={`http://localhost:5000${post.imageUrl}`}
-          alt="Post"
-          className="w-full max-h-60 object-cover rounded mb-2"
+          src={`http://localhost:5000/${post.image}`}
+          alt="post"
+          className="rounded mb-3 max-h-96 object-cover"
         />
       )}
 
-      <div className="flex gap-4 mb-2">
+      <div className="flex justify-between text-sm text-gray-600 mb-3">
         <button
           onClick={onLike}
-          className="px-2 py-1 rounded hover:bg-gray-50"
-          style={{ color: "#4ba0b1" }}
+          className={`hover:underline ${
+            hasLiked ? "text-blue-600 font-semibold" : ""
+          }`}
         >
-          👍 Like ({post.CommunityLikes?.length || 0})
+          👍 {hasLiked ? "Liked" : "Like"} ({post.Likes?.length || 0})
         </button>
+
         <button
-          onClick={onRepost}
-          className="px-2 py-1 rounded hover:bg-gray-50"
-          style={{ color: "#4ba0b1" }}
+          onClick={() => setShowComments(!showComments)}
+          className="hover:underline"
         >
-          🔁 Repost ({post.CommunityReposts?.length || 0})
+          💬 Comment ({post.Comments?.length || 0})
+        </button>
+
+        <button onClick={onRepost} className="hover:underline">
+          🔁 Repost ({post.Repost?.length || 0})
         </button>
       </div>
 
-      <div className="space-y-1 mb-2">
-        {post.CommunityComments?.map((c) => (
-          <div
-            key={c.id}
-            className="text-sm border-b border-gray-200 pb-1"
-          >
-            {c.content}
+      {/* COMMENTS SECTION */}
+      {showComments && (
+        <div className="mt-3">
+          {/* EXISTING COMMENTS */}
+          {post.Comments && post.Comments.length > 0 ? (
+            post.Comments.map((comment) => (
+              <div
+                key={comment.id}
+                className="bg-gray-100 p-2 rounded mb-2 text-sm"
+              >
+                {comment.content}
+              </div>
+            ))
+          ) : (
+            <p className="text-sm text-gray-400">No comments yet</p>
+          )}
+
+          {/* ADD COMMENT */}
+          <div className="flex gap-2 mt-2">
+            <input
+              type="text"
+              value={commentText}
+              onChange={(e) => setCommentText(e.target.value)}
+              placeholder="Write a comment..."
+              className="flex-1 border rounded px-3 py-1 text-sm"
+            />
+            <button
+              onClick={handleSubmitComment}
+              className="bg-blue-500 text-white px-3 rounded text-sm"
+            >
+              Post
+            </button>
           </div>
-        ))}
-      </div>
-
-      <div className="flex gap-2">
-        <input
-          type="text"
-          placeholder="Add a comment..."
-          value={commentText}
-          onChange={(e) => setCommentText(e.target.value)}
-          className="flex-1 border p-1 rounded focus:outline-none focus:border-[#4ba0b1]"
-        />
-        <button
-          onClick={handleAddComment}
-          className="px-3 py-1 rounded text-white"
-          style={{ backgroundColor: "#4ba0b1" }}
-        >
-          Comment
-        </button>
-      </div>
+        </div>
+      )}
     </div>
   );
 }

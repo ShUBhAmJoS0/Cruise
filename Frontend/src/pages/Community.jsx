@@ -4,26 +4,24 @@ import PostCard from "./PostCard";
 import api from "../api/axios";
 
 export default function Community() {
-  const [post, setPost] = useState(null);
+  const [posts, setPosts] = useState([]);
   const [showModal, setShowModal] = useState(false);
-  const currentUserId = 1; 
+  const currentUserId = 1;
 
-  // Fetch the latest post
   useEffect(() => {
-    const fetchPost = async () => {
+    const loadPosts = async () => {
       try {
         const res = await api.get("/api/community");
-        const data = await res.json();
-        setPost(data);
+        setPosts(res.data || []);
       } catch (err) {
-        console.error(err);
+        console.error("LOAD POSTS ERROR:", err);
       }
     };
 
-    fetchPost();
+    loadPosts();
   }, []);
 
-  // Create a new post (text + optional image)
+  
   const handleCreatePost = async (content, image) => {
     try {
       const formData = new FormData();
@@ -31,80 +29,78 @@ export default function Community() {
       formData.append("userId", currentUserId);
       if (image) formData.append("image", image);
 
-      const res = await api.post("/api/community", {
-        body: formData,
+      await api.post("/api/community", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
       });
-      const data = await res.json();
-      setPost(data);
+
+
+      const res = await api.get("/api/community");
+      setPosts(res.data || []);
+
       setShowModal(false);
     } catch (err) {
-      console.error(err);
+      console.error("CREATE POST ERROR:", err);
     }
   };
 
-  // Like the post
-  const handleLike = async () => {
+
+  const handleLike = async (postId) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/community/${post.id}/like`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: currentUserId }),
+      await api.post(`/api/community/${postId}/like`, {
+        userId: currentUserId,
       });
-      const data = await res.json();
-      setPost(data);
+
+      const res = await api.get("/api/community");
+      setPosts(res.data || []);
     } catch (err) {
-      console.error(err);
+      console.error("LIKE ERROR:", err);
     }
   };
 
-  // Add a comment
-  const handleComment = async (content) => {
+ 
+  const handleComment = async (postId, content) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/community/${post.id}/comment`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content, userId: currentUserId }),
+      await api.post(`/api/community/${postId}/comment`, {
+        content,
+        userId: currentUserId,
       });
-      const data = await res.json();
-      setPost({ ...post, CommunityComments: [...post.CommunityComments, data] });
+
+      const res = await api.get("/api/community");
+      setPosts(res.data || []);
     } catch (err) {
-      console.error(err);
+      console.error("COMMENT ERROR:", err);
     }
   };
 
-  // Repost the post
-  const handleRepost = async () => {
+
+  const handleRepost = async (postId) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/community/${post.id}/repost`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: currentUserId }),
+      await api.post(`/api/community/${postId}/repost`, {
+        userId: currentUserId,
       });
-      const data = await res.json();
-      setPost(data);
+
+      const res = await api.get("/api/community");
+      setPosts(res.data || []);
     } catch (err) {
-      console.error(err);
+      console.error("REPOST ERROR:", err);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
+  <div className="min-h-screen bg-gray-100 mt-38">
+      <div className="max-w-2xl mx-auto px-4">
 
-      {/* Main Content */}
-      <div className="max-w-2xl mx-auto pt-6 px-4 mt-[20%]"> 
-
-        {/* Create Post Button */}
-        <div className="bg-white p-4 rounded mb-4">
+        {/* CREATE POST */}
+        <div className="bg-white p-4 rounded shadow mb-4">
           <button
-            className="w-full py-2 px-4 rounded border hover:bg-gray-50 text-left"
-            style={{ borderColor: "#4ba0b1" }}
             onClick={() => setShowModal(true)}
+            className="w-full text-left px-4 py-2 border rounded hover:bg-gray-50"
+            style={{ borderColor: "#4ba0b1" }}
           >
             Share what's on your mind...
           </button>
         </div>
 
-        {/* Create Post Modal */}
         {showModal && (
           <CreatePostModal
             onClose={() => setShowModal(false)}
@@ -112,16 +108,24 @@ export default function Community() {
           />
         )}
 
-        {/* Latest Post */}
-        {post ? (
-          <PostCard
-            post={post}
-            onLike={handleLike}
-            onComment={handleComment}
-            onRepost={handleRepost}
-          />
+        {/* POSTS */}
+        {posts.length > 0 ? (
+          posts.map((post) => (
+            <PostCard
+              key={post.id}
+              post={post}
+              userId={currentUserId}
+              onLike={() => handleLike(post.id)}
+              onComment={(content) =>
+                handleComment(post.id, content)
+              }
+              onRepost={() => handleRepost(post.id)}
+            />
+          ))
         ) : (
-          <div className="text-center text-gray-500">No post available or unauthorized</div>
+          <p className="text-center text-gray-500">
+            No posts yet
+          </p>
         )}
       </div>
     </div>

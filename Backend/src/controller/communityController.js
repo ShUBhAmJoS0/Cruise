@@ -3,63 +3,95 @@ import CommunityLike from "../model/CommunityLike.js";
 import CommunityComment from "../model/CommunityComment.js";
 import CommunityRepost from "../model/CommunityRepost.js";
 
-// GET latest single post
+
+const postIncludes = [
+  {
+    model: CommunityComment,
+    as: "Comments",
+  },
+  {
+    model: CommunityLike,
+    as: "Likes",
+  },
+  {
+    model: CommunityRepost,
+    as: "Repost",
+  },
+];
+
+// GET latest community post
 export const getAllPosts = async (req, res) => {
   try {
-    const latestPost = await Community.findOne({
+    const posts = await Community.findAll({
       order: [["createdAt", "DESC"]],
-      include: [CommunityLike, CommunityComment, CommunityRepost],
+      include: postIncludes,
     });
 
-    if (!latestPost) return res.json(null);
-    res.json(latestPost); 
+    res.json(posts);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Something went wrong" });
+    console.error("GET POSTS ERROR:", error);
+    res.status(500).json({ error: error.message });
   }
 };
 
-// CREATE new post (text + optional image)
+
+// CREATE community post
 export const createCommunityPost = async (req, res) => {
-
   try {
-    console.log("aPI HIT FOR COMMUNITY POST")
-    const { content, userId } = req.body;
-    let imageUrl = null;
-    if (req.file) imageUrl = `/uploads/${req.file.filename}`;
+    const content = req.body.content?.trim() || "";
+    const userId = Number(req.body.userId);
 
-    const newPost = await Community.create({ content, userId, imageUrl });
+    if (!userId) {
+      return res.status(400).json({ message: "userId is required" });
+    }
+
+    if (!content && !req.file) {
+      return res.status(400).json({ message: "Post cannot be empty" });
+    }
+
+    const imageUrl = req.file ? `/uploads/${req.file.filename}` : null;
+
+    const post = await Community.create({
+      content,
+      userId,
+      imageUrl,
+    });
 
     const fullPost = await Community.findOne({
-      where: { id: newPost.id },
-      include: [CommunityLike, CommunityComment, CommunityRepost],
+      where: { id: post.id },
+      include: postIncludes,
     });
 
-    res.json(fullPost);
+    res.status(201).json(fullPost);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Something went wrong" });
+    console.error("CREATE POST ERROR:", error);
+    res.status(500).json({ error: error.message });
   }
 };
 
-// LIKE a post
+// LIKE post
 export const likePost = async (req, res) => {
   try {
     const { id } = req.params;
     const { userId } = req.body;
 
-    const existing = await CommunityLike.findOne({ where: { postId: id, userId } });
-    if (!existing) await CommunityLike.create({ postId: id, userId });
+    const existingLike = await CommunityLike.findOne({
+      where: { communityId: id, userId },
+    });
 
-    const post = await Community.findOne({
-      where: { id },
-      include: [CommunityLike, CommunityComment, CommunityRepost],
+    if (existingLike) {
+      await existingLike.destroy(); // UNLIKE
+    } else {
+      await CommunityLike.create({ communityId: id, userId });
+    }
+
+    const post = await Community.findByPk(id, {
+      include: ["Likes", "Comments", "Repost"],
     });
 
     res.json(post);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Something went wrong" });
+  } catch (err) {
+    res.status(500).json({ message: "Like toggle failed" });
   }
 };
 
@@ -67,33 +99,55 @@ export const likePost = async (req, res) => {
 export const addComment = async (req, res) => {
   try {
     const { id } = req.params;
-    const { content, userId } = req.body;
+    const content = req.body.content?.trim();
+    const userId = Number(req.body.userId);
 
-    const newComment = await CommunityComment.create({ postId: id, userId, content });
-    res.json(newComment);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Something went wrong" });
-  }
-};
+    if (!content || !userId) {
+      return res
+        .status(400)
+        .json({ message: "content and userId are required" });
+    }
 
-// REPOST a post
-export const repostPost = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { userId } = req.body;
-
-    const existing = await CommunityRepost.findOne({ where: { postId: id, userId } });
-    if (!existing) await CommunityRepost.create({ postId: id, userId });
+    await CommunityComment.create({
+      communityId: id,
+      content,
+      userId,
+    });
 
     const post = await Community.findOne({
       where: { id },
-      include: [CommunityLike, CommunityComment, CommunityRepost],
+      include: postIncludes,
     });
 
     res.json(post);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Something went wrong" });
+    console.error("COMMENT ERROR:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// REPOST post
+export const repostPost = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = Number(req.body.userId);
+
+    if (!userId) {
+      return res.status(400).json({ message: "userId is required" });
+    }
+
+    await CommunityRepost.findOrCreate({
+      where: { communityId: id, userId },
+    });
+
+    const post = await Community.findOne({
+      where: { id },
+      include: postIncludes,
+    });
+
+    res.json(post);
+  } catch (error) {
+    console.error("REPOST ERROR:", error);
+    res.status(500).json({ error: error.message });
   }
 };
