@@ -43,6 +43,7 @@ const Merchandise = () => {
         quantity: 1, 
       });
       setCartUpdated(true);
+      alert("added to cart sucessfully");
       setTimeout(() => setCartUpdated(false), 1500);
     } catch (err) {
       console.error("Failed to add to cart:", err);
@@ -123,7 +124,7 @@ console.log("ola")
           {/* Sidebar */}
           <aside className="w-70 bg-[#3593A6]/22 rounded-2xl p-5 sticky ">
             <h2 className="text-lg font-semibold mb-4">Categories</h2>
-            {["All", "Clothing", "Accessories", "Signed items"].map((cat) => (
+            {["All", "Clothing", "Accessories", "Signed"].map((cat) => (
               <button
                 key={cat}
                 className={`w-full text-left mb-3 py-2 px-4 rounded-md text-sm font-medium ${
@@ -159,7 +160,7 @@ console.log("ola")
                     />
                   </div>
 
-                  <span className="text-xs text-gray-400 tracking-wide mb-1">{product.createdBy}</span>
+                  <span className="text-xs text-gray-400 tracking-wide mb-1">{product.User.name}</span>
                   <span className="text-xs text-gray-400">{product.skuNumber}</span>
                   <p className="text-sm mb-1">{product.productName}</p>
                   <p className="text-sm font-semibold mb-3">${product.productPrice}</p>

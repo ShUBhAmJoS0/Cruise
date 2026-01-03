@@ -73,8 +73,8 @@ const CheckoutPage = () => {
           <div className="flex-1">
             <h2 className="font-semibold">{item.product?.productName || "Unknown Product"}</h2>
             <p className="text-sm text-gray-500">Artist: {item.artist?.name || "Unknown"}</p>
-            <p className="text-sm font-medium">${item.product?.productPrice ?? 0}</p>
-
+            <p className="text-sm font-medium text-gray-500">${item.product.productPrice}</p>
+     <p className="text-sm font-medium text-gray-500 mt-5 mb-5">{item.product.productDescription}</p>
             <div className="flex items-center gap-2 mt-2">
               <button
                 className="px-2 bg-gray-200 rounded"
@@ -88,7 +88,7 @@ const CheckoutPage = () => {
             </div>
           </div>
           <p className="font-medium">
-            ${( (item.Product?.productPrice ?? 0) * item.quantity ).toFixed(2)}
+            ${( (item.product?.productPrice ?? 0) * item.quantity ).toFixed(2)}
           </p>
         </div>
       ))}

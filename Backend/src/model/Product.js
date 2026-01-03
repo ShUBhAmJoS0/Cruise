@@ -40,5 +40,9 @@ export const Product= sequelize.define("product",{
         type:DataTypes.STRING,
         allowNull:false
     }
+
 }
+
 )
+Product.belongsTo(User, { foreignKey: "createdBy" });
+User.hasMany(Product, { foreignKey: "createdBy"});

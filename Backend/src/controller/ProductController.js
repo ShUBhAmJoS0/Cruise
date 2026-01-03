@@ -1,6 +1,7 @@
 
 import { Product } from "../model/Product.js";
 import { Op } from "sequelize";
+import User from "../model/User.js";
 export const addProduct = async (req, res) => {
   try {
     console.log("hit apit")
@@ -142,6 +143,11 @@ export const getAllMerch = async (req, res) => {
     const allmerch = await Product.findAll({
       where: whereClause,
       order,
+      include:[
+        {
+          model: User
+        }
+      ]
     });
 
     if (allmerch.length === 0) {

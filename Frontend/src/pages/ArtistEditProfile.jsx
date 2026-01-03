@@ -44,6 +44,7 @@ try{
     formData.append("sociallink", data.sociallink);
  formData.append("profilePic", profilePic);
  formData.append("coverPic", coverPic);
+  formData.append("about", data.about);
  const response = await api.put("/artist/updateProfile", formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
@@ -106,7 +107,7 @@ getProfiledetail()
           <p className="mt-4 text-gray-600 text-sm text-center">
             Click image to change profile picture
           </p>
-          <button onClick={()=>{setProfilePic(null),setPreview(null)}}  className="w-full bg-[#93CAD5] hover:bg-[#82c7a1] text-white font-semibold p-3 rounded-lg mt-4 transition">Remove profile image</button>
+          <button onClick={()=>{setPreview(null)}}  className="w-full bg-[#93CAD5] hover:bg-[#82c7a1] text-white font-semibold p-3 rounded-lg mt-4 transition">Remove profile image</button>
        
                     <div className="mt-10 relative w-32 h-32  overflow-hidden border-4 flex justify-center items-center border-[#93CAD5] shadow-md cursor-pointer hover:opacity-90 transition">
             <img src={getImageUrl(coverpreview) || "/images/defaultprofilepic.png"} alt="Profile" className="w-full h-full object-cover" />
@@ -154,6 +155,15 @@ getProfiledetail()
               <input 
               type="text"
                {...register("bio")}
+                placeholder="something to stand your out....."
+                className="w-full p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#93CAD5] focus:border-transparent transition resize-none h-24"
+              />
+            </div>
+                  <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">about</label>
+              <input 
+              type="text"
+               {...register("about")}
                 placeholder="Tell us about yourself..."
                 className="w-full p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#93CAD5] focus:border-transparent transition resize-none h-24"
               />

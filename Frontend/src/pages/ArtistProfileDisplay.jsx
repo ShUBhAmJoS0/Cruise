@@ -12,6 +12,7 @@ const ArtistProfile = () => {
   const [activeTab, setActiveTab] = useState("about");
   const[merch,setMerch]= useState([]);
   const [ reviews,setReviews]=useState([]);
+
   const navigate = useNavigate();
   useEffect(() => {
     const fetchArtist = async () => {
@@ -132,6 +133,19 @@ if (activeTab === "reviews") {
       console.error("Follow toggle failed", err);
     }
   };
+    const handleAddToCart = async (product) => {
+    try {
+      await api.post("/api/cart", {
+        productId: product.productId,
+        quantity: 1, 
+      });
+       alert("added to cart sucessfully")
+    } catch (err) {
+      console.error("Failed to add to cart:", err);
+      alert("Failed to add to cart.");
+    }
+  };
+
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -158,7 +172,7 @@ if (activeTab === "reviews") {
         <div>
           <h1 className="text-3xl font-bold text-gray-900">{artist.name}</h1>
           <p className="text-gray-500 mt-1">{artist.bio}</p>
-
+          <a className="text-[#2c7f8f] mt-1" href={artist.social}> visit my instagram</a>
           <div className="flex gap-6 mt-4">
             <div>
               <span className="font-semibold">
@@ -212,7 +226,7 @@ if (activeTab === "reviews") {
               <h2 className="text-xl font-bold mb-3">
                 About {artist.name}
               </h2>
-              <p className="text-gray-700">{artist.bio}</p>
+              <p className="text-gray-700">{artist.about}</p>
             </div>
           )}
                     {activeTab === "events" && (
@@ -274,7 +288,7 @@ if (activeTab === "reviews") {
                 <img
                   src={`http://localhost:5000/${item.productImage}`}
                   alt={item.name}
-                  className="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-300"
+                  className="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-300"
                 />
 
                 {item.stock === 0 && (
@@ -285,30 +299,31 @@ if (activeTab === "reviews") {
               </div>
 
               {/* Content */}
-              <div className="p-4">
+              <div className="p-4 flex flex-col">
                 <h3 className="font-semibold text-lg">{item.productName}</h3>
                 <p className="text-gray-500 text-sm mb-2">
                   {item.productCategory}
                 </p>
 
-                <div className="flex items-center justify-between mt-3">
+                <div className="flex items-center justify-between ">
                   <span className="text-lg font-bold text-[#3593A6]">
                     ${item.productPrice}
                   </span>
-
-                  <button
+                  
+                </div>
+                <button
                     disabled={item.stock === 0}
-                    className={`px-4 py-2 text-sm rounded-lg transition
+                    className={`px-4 py-2 mt-2 text-sm rounded-md transition
                       ${
                         item.stock === 0
                           ? "bg-gray-300 text-gray-600 cursor-not-allowed"
                           : "bg-[#3593A6] text-white hover:bg-[#3eacc2]"
                       }
                     `}
+                    onClick={()=>handleAddToCart(item)}
                   >
                     Add to Cart
                   </button>
-                </div>
               </div>
             </div>
           ))}

@@ -133,6 +133,7 @@ await user.update({
   social:body.sociallink ,
   coverImage:coverimage ,
   profileImage:imageUrl,
+  about:body.about
 
 }
 
