@@ -7,15 +7,10 @@ import authRoutes from "./routes/authRoutes.js";
 import eventRoutes from "./routes/EventRoutes.js";
 import bookingRoutes from "./routes/bookingRoutes.js";
 import eventFilters from './routes/eventFiltersRoutes.js';
-// import { seedEvents } from "./model/seed.js";
-import merchandiseRoutes from "./routes/merchandiseRoutes.js";
 import artistRoutes from "./routes/artistRoutes.js";
 import authToken from "./middleware/firebaseAuth.js";
-import {Product} from "./model/Product.js";
-// import Order from "./model/Order.js";
-// import OrderItem from "./model/OrderItems.js";
-// import orderRoutes from "./routes/orderRoutes.js";
-// import cartRoutes from "./routes/cartRoutes.js";
+import orderRoutes from "./routes/orderRoutes.js";
+import cartRoutes from "./routes/cartRoutes.js";
 
 const app=express();
 app.use(cors());
@@ -27,10 +22,9 @@ app.use(authToken)
 app.use("/auth",authRoutes)
 app.use("/event",eventRoutes)
 app.use("/api/booking",bookingRoutes)
-app.use("/api/merchandise", merchandiseRoutes);
 app.use("/artist",artistRoutes);
-// app.use("/api/cart", cartRoutes);
-// app.use("/api/orders", orderRoutes);
+app.use("/merch", orderRoutes);
+app.use("/api/cart",cartRoutes)
 
 
 const port =  5000;

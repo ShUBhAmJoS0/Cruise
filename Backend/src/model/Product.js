@@ -29,7 +29,7 @@ export const Product= sequelize.define("product",{
         allowNull:false
     },
     productPrice:{
-        type:DataTypes.DOUBLE,
+        type:DataTypes.DECIMAL(10, 2),
         allowNull:false
     },
     productQuantity:{

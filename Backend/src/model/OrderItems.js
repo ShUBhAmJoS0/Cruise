@@ -1,21 +1,22 @@
-// import { DataTypes } from "sequelize";
-// import sequelize from "../Database/db.js";
-// import {Product }from "./Product.js";
-// import Order from "./Order.js";
 
-// const OrderItem = sequelize.define("OrderItem", {
-//   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-//   orderId: { type: DataTypes.INTEGER, references: { model: Order, key: "id" }, allowNull: false },
-//   productId: { type: DataTypes.STRING, references: { model: Product, key: "id" }, allowNull: false },
-//   quantity: { type: DataTypes.INTEGER, defaultValue: 1, allowNull: false },
-//   priceAtPurchase: { type: DataTypes.FLOAT, allowNull: false }
-// }, {
-//   tableName: "order_items",
-//   timestamps: true
-// });
+import { DataTypes } from "sequelize";
+import sequelize from "../Database/db.js";
+import {Product} from "./Product.js";
+import User from "./User.js";
+import Order from "./Order.js";
 
-// // Associations
-// OrderItem.belongsTo(Product, { foreignKey: "productId" });
-// OrderItem.belongsTo(Order, { foreignKey: "orderId" });
+const OrderItem = sequelize.define("OrderItem", {
+  id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+  orderId: { type: DataTypes.INTEGER, allowNull: false },
+  productId: { type: DataTypes.INTEGER, allowNull: false },
+  artistId: { type: DataTypes.INTEGER, allowNull: false },
+  quantity: { type: DataTypes.INTEGER, allowNull: false },
+  price: { type: DataTypes.DECIMAL(10, 2), allowNull: false },
+  totalPrice: { type: DataTypes.DECIMAL(10, 2), allowNull: false },
+});
 
-// export default OrderItem;
+OrderItem.belongsTo(Order, { foreignKey: "orderId" });
+OrderItem.belongsTo(Product, { foreignKey: "productId" });
+OrderItem.belongsTo(User, { foreignKey: "artistId", as: "artist" });
+
+export default OrderItem;

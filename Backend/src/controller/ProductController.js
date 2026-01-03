@@ -1,6 +1,6 @@
 
 import { Product } from "../model/Product.js";
-
+import { Op } from "sequelize";
 export const addProduct = async (req, res) => {
   try {
     console.log("hit apit")
@@ -100,5 +100,60 @@ try {
     res.status(500).send({message:error.message})
 }
 }
+export const getproductBycreator = async(req,res)=>{
+  try{
+const artistId=req.params.id;
+console.log(artistId)
+const artistmerch = await Product.findAll({where:{createdBy:artistId}})
+ if(!artistmerch){
+    return res.status(404).send({message:"no  merch from this artist"})
+ }
+ return res.status(200).send({data:artistmerch,message:"fetched all products from this artist sucessfully"})
+  }
+  catch(e){
+    console.log(e)
+    res.status(500).send({message:error.message})
+  }
+}
+
+
+
+export const getAllMerch = async (req, res) => {
+  try {
+    const { category, sort, search } = req.query;
+
+    const whereClause = {};
+
+    if (category) {
+      whereClause.productCategory = category;
+    }
+    console.log(category)
+    if (search) {
+      whereClause.productName = {
+        [Op.iLike]: `%${search}%`,
+      };
+    }
+
+    let order = [["createdAt", "DESC"]];
+    if (sort === "Oldest") {
+      order = [["createdAt", "ASC"]];
+    }
+
+    const allmerch = await Product.findAll({
+      where: whereClause,
+      order,
+    });
+
+    if (allmerch.length === 0) {
+      console.log("not found")
+      return res.status(200).json({ data:[],message: "No merch found" });
+    }
+
+    return res.status(200).send({data:allmerch,message:"fetched sucessfuly"});
+  } catch (e) {
+    console.error(e);
+    return res.status(500).json({ message: e.message });
+  }
+};
 
 
