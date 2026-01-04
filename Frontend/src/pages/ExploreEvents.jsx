@@ -17,6 +17,18 @@ const ExploreEvents = () => {
   const [error, setError] = useState(null);
   const [user, setUser] = useState(null);
 
+  // Search state
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // Filter events based on search query (title only)
+  const filteredUpcomingEvents = upcomingEvents.filter(event =>
+    event.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const filteredTrendingEvents = trendingEvents.filter(event =>
+    event.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   // Filter states with localStorage persistence
   const [tempCategories, setTempCategories] = useState(() => {
     const saved = localStorage.getItem('eventFilters_categories');
@@ -413,6 +425,8 @@ const handleClearAll = async (e) => {
               type="text"
               placeholder="Search Events"
               className="w-full py-2.5 px-5 border border-gray-300 rounded-full text-sm md:text-base focus:outline-none"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
           {loading && (
@@ -434,15 +448,15 @@ const handleClearAll = async (e) => {
                 Upcoming Events
               </h2>
               <p className="text-gray-600 mb-8">
-                Showing {upcomingEvents.length} event{upcomingEvents.length !== 1 ? 's' : ''}
+                Showing {filteredUpcomingEvents.length} event{filteredUpcomingEvents.length !== 1 ? 's' : ''}
               </p>
-              {upcomingEvents.length === 0 ? (
+              {filteredUpcomingEvents.length === 0 ? (
                 <p className="text-center text-gray-500 text-xl py-10">
                   No upcoming events available at the moment.
                 </p>
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-7 mb-16">
-                  {upcomingEvents.map((event, idx) => (
+                  {filteredUpcomingEvents.map((event, idx) => (
                     <div
                       key={event.id || idx}
                       className="bg-white rounded-2xl overflow-hidden shadow-lg transition-all duration-400 hover:-translate-y-3 hover:shadow-2xl group cursor-pointer"
@@ -483,14 +497,14 @@ const handleClearAll = async (e) => {
               <h2 className="text-4xl font-bold my-8" style={{ color: primaryColor }}>
                 Trending Events
               </h2>
-              {trendingEvents.length === 0 ? (
+              {filteredTrendingEvents.length === 0 ? (
                 <p className="text-center text-gray-500 text-xl py-10">
                   No trending events available at the moment.
                 </p>
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-7">
-                  
-                  {trendingEvents.map((event, idx) => (
+
+                  {filteredTrendingEvents.map((event, idx) => (
                     <div
                       key={event.id || idx}
                       className="bg-white rounded-2xl overflow-hidden shadow-lg transition-all duration-400 hover:-translate-y-3 hover:shadow-2xl group cursor-pointer"
