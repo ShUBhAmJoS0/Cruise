@@ -9,8 +9,7 @@ import Bookingpage from "./pages/BookingPage";
 import ExploreEvents from "./pages/ExploreEvents";
 import Merchandise from "./pages/Merchandise";
 import ArtistEventRequestPage from "./pages/ArtistEventrequestpage"
-import ProtectedRoute from "./context/privateRoute";
-import PublicRoute from "./context/publicRoute";
+import ProtectedRoute from "./context/privateRoute";import PublicRoute from "./context/publicRoute";
 import { Layout } from "./component/NavBarLayout";
 import { AddMerch } from "./pages/ArtistAddMerch";
 import { ArtistDashboard } from "./pages/ArtistDashboard";
@@ -21,6 +20,7 @@ import About from "./pages/About";
 import CartPage from "./pages/AddtoCart";
 import CheckoutPage from "./pages/Checkoutpage";
 import ReceiptPage from "./pages/Receptpage";
+import Community from "./pages/Community";
 
 function AppRoutes() {
   const location = useLocation();
@@ -48,6 +48,8 @@ function AppRoutes() {
         <Route path="/cart" element={<ProtectedRoute allowedRoles={["Attendee"]}><CartPage /></ProtectedRoute>} />
 <Route path="/checkout" element={<ProtectedRoute allowedRoles={["Attendee"]}><CheckoutPage /></ProtectedRoute>} />
 <Route path="/receipt" element={<ProtectedRoute allowedRoles={["Attendee"]}><ReceiptPage /></ProtectedRoute>} />
+<Route path="/community" element={<ProtectedRoute allowedRoles={["Attendee"]}><Community></Community></ProtectedRoute>} />
+
         {/* artist */}
         <Route path="/artist/Request" element={<ProtectedRoute allowedRoles={["Artist"]}><ArtistEventRequestPage /></ProtectedRoute>} />
         <Route path="/artist/Addmerch" element={<ProtectedRoute allowedRoles={["Artist"]}><AddMerch /></ProtectedRoute>} />
@@ -62,13 +64,15 @@ function AppRoutes() {
       <Route path="/artist/profile/:id" element={<ProtectedRoute allowedRoles={["Attendee"]}><ArtistProfile /></ProtectedRoute>} />
     </Routes>
   );
+
 }
 
 function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
-        <AppRoutes />
+    
+            <AppRoutes />
       </BrowserRouter>
     </AuthProvider>
   );
