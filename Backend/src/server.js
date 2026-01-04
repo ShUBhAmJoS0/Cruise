@@ -11,7 +11,6 @@ import artistRoutes from "./routes/artistRoutes.js";
 import authToken from "./middleware/firebaseAuth.js";
 import orderRoutes from "./routes/orderRoutes.js";
 import cartRoutes from "./routes/cartRoutes.js";
-import merchandiseRoutes from "./routes/merchandiseRoutes.js";import artistRoutes from "./routes/artistRoutes.js";import authToken from "./middleware/firebaseAuth.js";
 import communityRoutes from "./routes/communityRoutes.js"
 
 const app=express();
@@ -35,7 +34,7 @@ app.use("/api/booking",bookingRoutes)
 app.use("/artist",artistRoutes);
 app.use("/merch", orderRoutes);
 app.use("/api/cart",cartRoutes)
-app.use("/api/merchandise", merchandiseRoutes)
+
 
 
 
