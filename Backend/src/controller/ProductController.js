@@ -2,6 +2,8 @@
 import { Product } from "../model/Product.js";
 import { Op } from "sequelize";
 import User from "../model/User.js";
+import OrderItem from "../model/OrderItems.js";
+import Order from "../model/Order.js";
 export const addProduct = async (req, res) => {
   try {
     console.log("hit apit")
@@ -101,6 +103,18 @@ try {
     res.status(500).send({message:error.message})
 }
 }
+
+export const getproductbuyers = async(req,res)=>{
+  console.log("api hit")
+  try {
+    const userId = req.user.id;
+    const productbuys = await Product.findAll({ where: { createdBy: userId}, include: [ { model: OrderItem, include: [ { model: Order, include: [{ model: User, attributes: ["name"] }] } ] } ] });
+    res.status(200).send({data:productbuys,message:"fetched all merch buyers sucessfully"});
+  } catch (error) {
+    console.log(error.message)
+    res.status(500).send({message:error.message})
+  }
+}
 export const getproductBycreator = async(req,res)=>{
   try{
 const artistId=req.params.id;
@@ -116,7 +130,6 @@ const artistmerch = await Product.findAll({where:{createdBy:artistId}})
     res.status(500).send({message:error.message})
   }
 }
-
 
 
 export const getAllMerch = async (req, res) => {

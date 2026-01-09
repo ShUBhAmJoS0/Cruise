@@ -1,71 +1,80 @@
 import { ShoppingBag } from "lucide-react";
+import { useEffect } from "react";
+import { useState } from "react";
 import DataTable from "react-data-table-component";
+import api from "../api/axios";
 
-const merchData = [
-  {
-    id: 1,
-    name: "Band Hoodie",
-    addedDate: "2025-12-20",
-    price: 1500,
-    ordered: 30,
-    inStock: 70,
-    profit: 20000,
-    buyers: [
-      {
-        name: "Ramesh Thapa",
-        quantity: 2,
-        amount: 3000,
-        status: "Shipped",
-      },
-      {
-        name: "Anita Lama",
-        quantity: 1,
-        amount: 1500,
-        status: "Pending",
-      },
-    ],
-  },
-];
+// const merchData = [
+//   {
+//     id: 1,
+//     name: "Band Hoodie",
+//     addedDate: "2025-12-20",
+//     price: 1500,
+//     ordered: 30,
+//     inStock: 70,
+//     profit: 20000,
+//     buyers: [
+//       {
+//         name: "Ramesh Thapa",
+//         quantity: 2,
+//         amount: 3000,
+//         status: "Shipped",
+//       },
+//       {
+//         name: "Anita Lama",
+//         quantity: 1,
+//         amount: 1500,
+//         status: "Pending",
+//       },
+//     ],
+//   },
+// ];
 const merchColumns = [
   {
     name: "Product",
-    selector: row => row.name,
+    selector: row => row.productName,
     sortable: true,
     grow: 2,
   },
   {
     name: "Date Added",
-    selector: row => row.addedDate,
+    selector: row =>  row.createdAt,
   },
   {
     name: "Ordered",
-    selector: row => row.ordered,
+    selector: row => `${row.OrderItems.reduce((sum, item) => sum + item.quantity, 0)}`,
     center: true,
   },
   {
     name: "In Stock",
-    selector: row => row.inStock,
+    selector: row => row.productQuantity,
     center: true,
   },
   {
+    name: "Revenue",
+    selector: row => `Rs. ${row.OrderItems.reduce((a, b) => a + Number(b.totalPrice), 0)}`,
+    right: true,
+  },
+    {
     name: "Profit",
-    selector: row => `Rs. ${row.profit}`,
+    selector: row => `Rs. ${Math.round((row.OrderItems.reduce((a, b) => a + Number(b.totalPrice), 0))*0.13)}`,
     right: true,
   },
 ];
-const MerchExpanded = ({ data }) => (
+const MerchExpanded = ({ data}) => (
+
   <div className="bg-[#f4fbfd] p-6 rounded-xl mx-6 mb-6 shadow-inner">
     <h4 className="font-semibold text-lg mb-4 text-[#3593A6]">
    Purchase Details
     </h4>
 
-    {data.buyers.map((b, i) => (
+    {data.OrderItems.map((b, i) => (
       <div
         key={i}
         className="flex justify-between items-center bg-white p-4 rounded-lg mb-3 shadow-sm"
       >
         <div>
-          <p className="font-medium">{b.name}</p>
+          <p className="font-medium">{b.Order?.User?.name}</p>
           <p className="text-sm text-gray-500">
             Qty: {b.quantity}
           </p>
@@ -73,16 +82,16 @@ const MerchExpanded = ({ data }) => (
 
         <div className="text-right">
           <p className="font-semibold text-[#3593A6]">
-            Rs. {b.amount}
+            Rs. {b.Order?.totalPrice}
           </p>
           <span
             className={`text-xs px-3 py-1 rounded-full ${
-              b.status === "Shipped"
+              b.Order.status === "Shipped"
                 ? "bg-green-100 text-green-700"
                 : "bg-yellow-100 text-yellow-700"
             }`}
           >
-            {b.status}
+            {b.Order?.status}
           </span>
         </div>
       </div>
@@ -90,6 +99,22 @@ const MerchExpanded = ({ data }) => (
   </div>
 );
 export function ViewMerchandiseTable() {
+    const[merchData,setGetItems]=useState([]);
+    const getMerchItems = async () => {
+    try {
+      const res = await api.get("/artist/allmerch/details");
+      console.log(res.data.data)
+      console.log(res.data.message)
+      setGetItems(res.data.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+getMerchItems();
+  }, []);
+
   return (
     <div className="ml-80 p-8">
       <h2 className="text-2xl font-bold mb-6 text-[#3593A6]">
