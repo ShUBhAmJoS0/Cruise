@@ -20,7 +20,7 @@ export const buyAllCartItems = async (req, res) => {
     let items = [];
 
     if (cartItemId) {
-      const item = await CartItem.findByPk(cartItemId, { include: Product });
+      const item = await CartItem.findByPk(cartItemId, { include: [{model:Product}] });
       if (!item) return res.status(404).json({ message: "Cart item not found" });
 
       item.quantity = quantity || item.quantity;
@@ -29,23 +29,28 @@ export const buyAllCartItems = async (req, res) => {
     } else if (cartItemIds && cartItemIds.length > 0) {
       items = await CartItem.findAll({
         where: { id: cartItemIds },
-        include: Product,
+        include: [{model:Product}],
       });
-
+console.log(items)
       if (!items.length)
         return res.status(400).json({ message: "No items found in cart" });
 
     } else {
       return res.status(400).json({ message: "No items specified to buy" });
     }
-
+console.log("Cart items fetched for order:", items.map(i => ({
+  id: i.id,
+  productId: i.productId,
+  quantity: i.quantity,
+  productQuantity: i.product?.productQuantity
+})));
     for (const i of items) {
-      if (!i.Product)
+      if (!i.product)
         return res.status(400).json({ message: "Product not found" });
 
-      if (i.Product.productQuantity < i.quantity) {
+      if (i.product.productQuantity < i.quantity) {
         return res.status(400).json({
-          message: `Only ${i.Product.productQuantity} items left for ${i.Product.productName}`,
+          message: `Only ${i.Product.productQuantity} items left for ${i.product.productName}`,
         });
       }
     }
@@ -53,7 +58,7 @@ export const buyAllCartItems = async (req, res) => {
     let totalPrice = 0;
     items.forEach(i => {
       totalPrice +=
-        (i.Product.productPrice || 0) *
+        (i.product.productPrice || 0) *
         i.quantity *
         (1 + TAX_RATE - DISCOUNT);
     });
@@ -70,12 +75,12 @@ export const buyAllCartItems = async (req, res) => {
         productId: i.productId,
         artistId: i.artistId,
         quantity: i.quantity,
-        price: i.Product.productPrice,
-        totalPrice: i.Product.productPrice * i.quantity,
+        price: i.product.productPrice,
+        totalPrice: i.product.productPrice * i.quantity,
       });
 
-      await i.Product.update({
-        productQuantity: i.Product.productQuantity - i.quantity,
+      await i.product.update({
+        productQuantity: i.product.productQuantity - i.quantity,
       });
 
       await i.destroy();

@@ -82,7 +82,7 @@ const MerchExpanded = ({ data}) => (
 
         <div className="text-right">
           <p className="font-semibold text-[#3593A6]">
-            Rs. {b.Order?.totalPrice}
+            Rs. {b.totalPrice}
           </p>
           <span
             className={`text-xs px-3 py-1 rounded-full ${

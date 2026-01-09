@@ -102,7 +102,7 @@ const TicketButton = ({ label, desc,des, active, onClick }) => {
 };
 
 export default function BookingPage() {
-  const { id : eventId } = useParams(); // expects route like /booking/:id
+  const { id : eventId } = useParams();
 
   // Event + form state
   const [event, setEvent] = useState(null);
