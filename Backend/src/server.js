@@ -7,9 +7,12 @@ import authRoutes from "./routes/authRoutes.js";
 import eventRoutes from "./routes/EventRoutes.js";
 import bookingRoutes from "./routes/bookingRoutes.js";
 import eventFilters from './routes/eventFiltersRoutes.js';
-import merchandiseRoutes from "./routes/merchandiseRoutes.js";import artistRoutes from "./routes/artistRoutes.js";import authToken from "./middleware/firebaseAuth.js";
+import merchandiseRoutes from "./routes/merchandiseRoutes.js";
+import artistRoutes from "./routes/artistRoutes.js";
+import authToken from "./middleware/firebaseAuth.js";
 import {Product} from "./model/Product.js";
 import communityRoutes from "./routes/communityRoutes.js"
+import orderHistoryRoutes from "./routes/orderHistoryRoutes.js";
 
 const app=express();
 
@@ -31,6 +34,7 @@ app.use("/event",eventRoutes)
 app.use("/api/booking",bookingRoutes)
 app.use("/api/merchandise", merchandiseRoutes)
 app.use("/artist",artistRoutes);
+app.use("/api/orderhistory", orderHistoryRoutes);
 
 
 const port =  5000;
@@ -38,6 +42,7 @@ const port =  5000;
     try{
         await sequelize.authenticate();
         console.log("database connected");
+
         await sequelize.sync({alter: true});
         console.log("Models synced");
 
