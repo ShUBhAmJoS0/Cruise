@@ -10,6 +10,7 @@ import ExploreEvents from "./pages/ExploreEvents";
 import Merchandise from "./pages/Merchandise";
 import ArtistEventRequestPage from "./pages/ArtistEventrequestpage"
 import ProtectedRoute from "./context/privateRoute";import PublicRoute from "./context/publicRoute";
+import AdminRoute from "./context/adminRoute";
 import { Layout } from "./component/NavBarLayout";
 import { AddMerch } from "./pages/ArtistAddMerch";
 import { ArtistDashboard } from "./pages/ArtistDashboard";
@@ -21,10 +22,12 @@ import CartPage from "./pages/AddtoCart";
 import CheckoutPage from "./pages/Checkoutpage";
 import ReceiptPage from "./pages/Receptpage";
 import Community from "./pages/Community";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminLogin from "./pages/admin/AdminLogin";
 
 function AppRoutes() {
   const location = useLocation();
-  const noNavPatterns = ["/", "/artist/profile/"]; 
+  const noNavPatterns = ["/", "/artist/profile/", "/admin"]; 
  const showLayout = !noNavPatterns.some(path => {
     if (path === "/") {
       return location.pathname === "/"; 
@@ -62,6 +65,8 @@ function AppRoutes() {
     <Routes>
       <Route path="/" element={<Landing />} />
       <Route path="/artist/profile/:id" element={<ProtectedRoute allowedRoles={["Attendee"]}><ArtistProfile /></ProtectedRoute>} />
+      <Route path="/admin/login" element={<AdminLogin />} />
+      <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
     </Routes>
   );
 
