@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../api/axios";
-import {Users2,PaintRollerIcon,Trophy,Music, Brush} from "lucide-react"
+import {Users2,Trophy,Music, Brush,MapPin,CheckCircle2} from "lucide-react"
 
 function ArtistEventRequestPage() {
   const [EventTitle, setEventTitle] = useState("");
@@ -110,7 +110,46 @@ function ArtistEventRequestPage() {
 
   return (
     <div className="ml-[20%] bg-[#F5F5F5] flex flex-col p-2 md:p-10 overflow-y-auto min-h-screen">
-      {/* Header Section */}
+       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="bg-gradient-to-br from-[#93CAD5] to-[#3593A6] p-6 rounded-2xl shadow-lg text-white transform hover:scale-105 transition">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm opacity-90 mb-1">Total events</p>
+              <p className="text-3xl font-bold">{requestEvent.length}</p>
+            </div>
+            <div className="bg-white/20 p-4 rounded-xl">
+           <MapPin className="w-8 h-8"></MapPin>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-gradient-to-br from-[#a2de79] to-[#7bc963] p-6 rounded-2xl shadow-lg text-white transform hover:scale-105 transition">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm opacity-90 mb-1">Completed</p>
+              <p className="text-3xl font-bold">{requestEvent.filter(item => item.status== "completed").length}</p>
+            </div>
+            <div className="bg-white/20 p-4 rounded-xl">
+            <CheckCircle2 className="w-8 h-8"></CheckCircle2>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-gradient-to-br from-[#e07a7d] to-[#d65659] p-6 rounded-2xl shadow-lg text-white transform hover:scale-105 transition">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm opacity-90 mb-1">Pending</p>
+              <p className="text-3xl font-bold">{requestEvent.filter(item => item.status==="pending").length}</p>
+            </div>
+            <div className="bg-white/20 p-4 rounded-xl">
+              <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+      </div>
       <div className="mb-8">
         <div className="flex items-center gap-4 mb-2">
           <div className="bg-[#3593A6] p-3 rounded-xl">
@@ -381,7 +420,7 @@ function ArtistEventRequestPage() {
         {/* Submit Button */}
         <button
           type="button"
-          className="w-full bg-[#3593A6] text-white py-5 rounded-2xl text-lg font-bold hover:bg-[#93CAD5] transition shadow-lg hover:shadow-xl transform hover:scale-[1.02]"
+          className="w-full border-2 border-[#3593A6] text-[#3593A6] py-5 rounded-2xl text-lg font-bold hover:bg-[#93CAD5] hover:text-white  transition hover:shadow-xl transform hover:scale-[1.02]"
           onClick={RequestEvent}
         >
           Submit Event Request

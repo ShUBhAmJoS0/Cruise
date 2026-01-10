@@ -1,5 +1,5 @@
 import express from "express";
-import { AddEvent, GetrequestedEvent } from "../controller/eventController.js";
+import { AddEvent, getEventbookings, GetrequestedEvent } from "../controller/eventController.js";
 import upload from "../Config/multer.js";
 import { artistOnly } from "../middleware/Artistonly.js";
 import { addProduct, deleteProduct, editProduct, getAllProduct, getproductbuyers, getproductBycreator} from "../controller/ProductController.js";
@@ -28,7 +28,7 @@ router.put("/addmerch/:id",upload.fields([
 router.put("/updateProfile",upload.fields([
   { name: 'profilePic', maxCount: 1 },{name:"coverPic",maxCount:1}]),artistOnly,updateUser)
     router.get("/allmerch/details",artistOnly,getproductbuyers)
-    
+    router.get("/allevents/details",artistOnly,getEventbookings)
   router.get("/all",AttendeeOnly,getallArtists)
   router.get("/profile/:id",AttendeeOnly,getArtistbyid)
   router.get("/gig/:id",AttendeeOnly,getpendingArtistgigs)

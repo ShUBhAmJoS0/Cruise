@@ -3,22 +3,22 @@ import DataTable from "react-data-table-component";
 import { Users, Calendar, MapPin, DollarSign, Mic2 } from "lucide-react";
 import api from "../api/axios";
 
+
 export default function ArtistViewEvents() {
   const [events, setEvents] = useState([]);
 
   const LoadRequestedEvents = async () => {
     try {
-      const res = await api.get("/artist/request");
-      setEvents(res.data.data || []);
+      const res = await api.get("/artist/allevents/details");
+      console.log(res.data.data)
+      setEvents(res.data.data );
     } catch (error) {
       alert("Failed to load events");
     }
   };
-
   useEffect(() => {
     LoadRequestedEvents();
   }, []);
-
 
   const columns = [
     {
@@ -28,7 +28,7 @@ export default function ArtistViewEvents() {
     },
     {
       name: "Date",
-      selector: (row) => row.eventDate,
+      selector: (row) => new Date(row.date).toLocaleDateString(),
       sortable: true,
     },
     {
@@ -37,32 +37,32 @@ export default function ArtistViewEvents() {
     },
     {
       name: "Bookings",
-      selector: (row) => row.bookings?.length || 0,
+      selector: (row) => row.Bookings?.length || 0,
       sortable: true,
     },
     {
       name: "Revenue",
       selector: (row) =>
-        `Rs. ${(row.bookings?.length || 0) * row.pricePerTicket}`,
+        `Rs. ${(row.Bookings.reduce((sum,b)=>sum+Number(b.totalPrice),0))}`,
       sortable: true,
     },
   ];
-
+if(!events){
+  return (<p>Loading</p>)
+}
   return (
     <div className="p-8 bg-gray-50 min-h-screen ml-[20%]">
-
-
       <div className="grid grid-cols-4 gap-6 mb-8 ">
         <Stat title="Events" value={events.length} icon={<Calendar />} />
         <Stat
           title="Bookings"
-          value={events.reduce((a, e) => a + (e.bookings?.length || 0), 0)}
+          value={events.reduce((a, e) => a + (e.Bookings?.length || 0), 0)}
           icon={<Users />}
         />
         <Stat
           title="Revenue"
           value={`Rs. ${events.reduce(
-            (a, e) => a + (e.bookings?.length || 0) * e.pricePerTicket,
+            (a, e) => a + Number(e.Bookings?.reduce((b,c)=>b+Number(c.totalPrice),0)),
             0
           )}`}
           icon={<DollarSign />}
@@ -70,7 +70,6 @@ export default function ArtistViewEvents() {
         <Stat title="Cities" value="5+" icon={<MapPin />} />
       </div>
 
-      {/* 📊 Data Table */}
       <div className="bg-[#3593A6]/40 rounded-2xl shadow-lg p-6">
 
 
@@ -98,27 +97,34 @@ export default function ArtistViewEvents() {
 
 const ExpandedEvent = ({ data }) => {
   return (
-    <div className="grid grid-cols-2 gap-6 p-4 bg-gray-50 rounded-xl">
-      <div>
-        <h4 className="font-semibold mb-3">👥 People Who Booked</h4>
-        {data.bookings?.map((b, i) => (
+    <div className="w-full p-4 bg-gray-50 rounded-xl flex flex-col  gap-6">
+      <div className="w-full">
+        <h4 className="font-semibold mb-3">People Who Booked</h4>
+        {data.Bookings?.map((b, i) => (
           <div
             key={i}
-            className="flex justify-between bg-white p-3 mb-2 rounded-lg shadow-sm"
+            className="flex flex-col md:flex-row justify-between bg-white p-3 mb-4 rounded-lg shadow-sm gap-4"
           >
-            <span>{b.name}</span>
-            <span className="text-sm text-gray-500">{b.bookedAt}</span>
+            {/* Booking Info */}
+            <div className="flex-1 flex flex-col md:flex-row justify-between items-start md:items-center gap-2 md:gap-4 p-10">
+              <span>{b.User.name}</span>
+              <span>{b.customerName}</span>
+              <span className="text-sm text-gray-500">
+                {new Date(b.createdAt).toLocaleDateString()}
+              </span>
+            </div>
+
+            {/* Event Summary */}
+            <div className="flex-1 bg-[#e6f4f7] rounded-xl p-4 shadow-sm">
+              <h4 className="font-semibold mb-3">Event Summary</h4>
+              <p>Total Tickets: {b.quantity}</p>
+              <p>Total Revenue: Rs. {b.totalPrice}</p>
+              <p className="text-green-600 font-semibold">
+                Profit: Rs. {Math.round(b.totalPrice * 0.13)}
+              </p>
+            </div>
           </div>
         ))}
-      </div>
-
-      <div className="bg-white rounded-xl p-4 shadow-sm">
-        <h4 className="font-semibold mb-3">📈 Event Summary</h4>
-        <p>Total Tickets: {data.bookings.length}</p>
-        <p>Total Revenue: Rs. {data.bookings.length * data.pricePerTicket}</p>
-        <p className="text-green-600 font-semibold">
-          Profit: Rs. {data.bookings.length * data.pricePerTicket - 5000}
-        </p>
       </div>
     </div>
   );
@@ -126,7 +132,7 @@ const ExpandedEvent = ({ data }) => {
 
 
 const Stat = ({ title, value, icon }) => (
-  <div className="bg-white p-5 rounded-xl shadow flex items-center gap-4">
+  <div className="bg-white p-5 rounded-xl shadow flex items-center  gap-4">
     <div className="p-3 bg-[#3593A6]/10 text-[#3593A6] rounded-lg">
       {icon}
     </div>

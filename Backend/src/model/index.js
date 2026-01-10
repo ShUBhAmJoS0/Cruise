@@ -4,6 +4,8 @@ import OrderItem from "./OrderItems.js";
 import { Product } from "./Product.js";
 import User from "./User.js";
 import Follow from "./follow.js";
+import Booking from "./Booking.js";
+import Event from "./Event.js";
 
 
 User.hasMany(Follow, {
@@ -30,6 +32,10 @@ OrderItem.belongsTo(User, { foreignKey: "artistId", as: "artist" });
 Order.belongsTo(User, { foreignKey: "userId" });
 CartItem.belongsTo(Product, { foreignKey: "productId"});
 CartItem.belongsTo(User, { foreignKey: "artistId", as: "artist" });
+User.hasMany(Booking, { foreignKey: "createdBy" });
+Booking.belongsTo(User, { foreignKey: "createdBy" });
+Event.hasMany(Booking, { foreignKey: "EventId" });
+Booking.belongsTo(Event, { foreignKey: "EventId" });
 export {
   User,
   Product,

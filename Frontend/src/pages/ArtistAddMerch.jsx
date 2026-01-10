@@ -30,7 +30,7 @@ function AddMerch() {
       formData.append("sku", data.sku || "");
       if (selectedImage) formData.append("image", selectedImage);
 
-      const res = await api.post("/artist/addmerch", formData, {
+      const res = await api.post("/artist/allmerch/details", formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       alert(res.data.message);
@@ -46,7 +46,7 @@ function AddMerch() {
 
   const getMerchItems = async () => {
     try {
-      const res = await api.get("/artist/addmerch");
+      const res = await api.get("/artist/allmerch/details");
       setGetItems(res.data.data);
     } catch (error) {
       console.log(error);
@@ -170,13 +170,13 @@ function AddMerch() {
 
   return (
     <div className="flex bg-gradient-to-br from-[#F5F5F5] to-[#E8F4F8] flex-col ml-[20%] w-[80%] p-10 min-h-screen">
-      {/* Header with Stats */}
+
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-800 mb-2">Inventory Management</h1>
         <p className="text-gray-600">Manage your merchandise and track inventory</p>
       </div>
 
-      {/* Quick Stats Cards */}
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div className="bg-gradient-to-br from-[#93CAD5] to-[#3593A6] p-6 rounded-2xl shadow-lg text-white transform hover:scale-105 transition">
           <div className="flex items-center justify-between">
@@ -373,7 +373,7 @@ function AddMerch() {
                   </div>
                   <div>
                     <p className="text-xs text-gray-500">Units Sold</p>
-                    <p className="text-2xl font-bold text-gray-800">32</p>
+                    <p className="text-2xl font-bold text-gray-800">{showPopup.OrderItems.reduce((sum, item) => sum + item.quantity, 0)}</p>
                   </div>
                 </div>
               </div>
@@ -387,7 +387,7 @@ function AddMerch() {
                   </div>
                   <div>
                     <p className="text-xs text-gray-500">Remaining Stock</p>
-                    <p className="text-2xl font-bold text-gray-800">32</p>
+                    <p className="text-2xl font-bold text-gray-800">{showPopup.productQuantity}</p>
                   </div>
                 </div>
               </div>
@@ -395,12 +395,12 @@ function AddMerch() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-gradient-to-br from-[#a2de79]/20 to-[#7bc963]/20 p-4 rounded-xl">
                   <p className="text-xs text-gray-500 mb-1">Total Sales</p>
-                  <p className="text-xl font-bold text-gray-800">$960</p>
+                  <p className="text-xl font-bold text-gray-800">{showPopup.OrderItems.reduce((a, b) => a + Number(b.totalPrice), 0)}</p>
                 </div>
 
                 <div className="bg-gradient-to-br from-[#93CAD5]/20 to-[#3593A6]/20 p-4 rounded-xl">
                   <p className="text-xs text-gray-500 mb-1">Net Profit</p>
-                  <p className="text-xl font-bold text-gray-800">$320</p>
+                  <p className="text-xl font-bold text-gray-800">{showPopup.OrderItems.reduce((a, b) => a + Number(b.totalPrice), 0)*0.40}</p>
                 </div>
               </div>
             </div>

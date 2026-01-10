@@ -1,34 +1,10 @@
-import { ShoppingBag } from "lucide-react";
+import { ShoppingCart, DollarSign, MapPin,  ShoppingBag, Users, Shirt } from "lucide-react";
 import { useEffect } from "react";
 import { useState } from "react";
 import DataTable from "react-data-table-component";
 import api from "../api/axios";
 
-// const merchData = [
-//   {
-//     id: 1,
-//     name: "Band Hoodie",
-//     addedDate: "2025-12-20",
-//     price: 1500,
-//     ordered: 30,
-//     inStock: 70,
-//     profit: 20000,
-//     buyers: [
-//       {
-//         name: "Ramesh Thapa",
-//         quantity: 2,
-//         amount: 3000,
-//         status: "Shipped",
-//       },
-//       {
-//         name: "Anita Lama",
-//         quantity: 1,
-//         amount: 1500,
-//         status: "Pending",
-//       },
-//     ],
-//   },
-// ];
+
 const merchColumns = [
   {
     name: "Product",
@@ -38,7 +14,7 @@ const merchColumns = [
   },
   {
     name: "Date Added",
-    selector: row =>  row.createdAt,
+    selector: row =>  `${new Date(row.createdAt).toLocaleDateString()}`,
   },
   {
     name: "Ordered",
@@ -57,7 +33,7 @@ const merchColumns = [
   },
     {
     name: "Profit",
-    selector: row => `Rs. ${Math.round((row.OrderItems.reduce((a, b) => a + Number(b.totalPrice), 0))*0.13)}`,
+    selector: row => `Rs. ${Math.round((row.OrderItems.reduce((a, b) => a + Number(b.totalPrice), 0))*0.20)}`,
     right: true,
   },
 ];
@@ -98,6 +74,18 @@ const MerchExpanded = ({ data}) => (
     ))}
   </div>
 );
+const Stat = ({ title, value, icon }) => (
+  <div className="bg-white p-5 rounded-xl shadow flex items-center gap-4">
+    <div className="p-3 bg-[#3593A6]/10 text-[#3593A6] rounded-lg">
+      {icon}
+    </div>
+    <div>
+      <p className="text-sm text-gray-500">{title}</p>
+      <h3 className="text-xl font-bold">{value}</h3>
+    </div>
+  </div>
+);
+
 export function ViewMerchandiseTable() {
     const[merchData,setGetItems]=useState([]);
     const getMerchItems = async () => {
@@ -116,7 +104,47 @@ getMerchItems();
   }, []);
 
   return (
+    
     <div className="ml-80 p-8">
+          <div className="grid grid-cols-4 gap-6 mb-8 ">
+        <Stat title="Merch items" value={merchData.length} icon={<Shirt />} />
+        <Stat
+          title="Revenue"
+          value={"Rs "+`${merchData.reduce(
+  (productAcc, product) =>
+    productAcc +
+    product.OrderItems.reduce(
+      (orderAcc, item) => orderAcc + Number(item.totalPrice),
+      0
+    ),
+  0
+)}`}
+          icon={<Users />}
+        />
+        <Stat
+          title="profit"
+ value={"Rs "+`${merchData.reduce(
+  (productAcc, product) =>
+    productAcc +
+    Math.round((product.OrderItems.reduce(
+      (orderAcc, item) => orderAcc + Number(item.totalPrice),
+      0
+    ))*0.20),
+  0
+)}`}
+          icon={<DollarSign />}
+        />
+        <Stat title="Total Orders" value={"Rs "+`${merchData.reduce(
+  (productAcc, product) =>
+    productAcc +
+    Math.round((product.OrderItems.reduce(
+      (orderAcc, item) => orderAcc + Number(item.quantity),
+      0
+    ))),
+  0
+)}`} icon={<ShoppingCart />} />
+      </div>
+
       <h2 className="text-2xl font-bold mb-6 text-[#3593A6]">
         Merchandise Sales Overview
       </h2>
