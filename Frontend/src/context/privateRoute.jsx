@@ -1,14 +1,20 @@
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 const ProtectedRoute = ({ allowedRoles, children }) => {
   const { user , role, loading } = useAuth();
+  const location = useLocation();
   
 if (loading) return <p>Loading...</p>;
  console.log(role)
  console.log(user)
-  if (!user) return <Navigate to="/login"/>; 
-  
+  // For admin routes, redirect to admin login if not authenticated
+  if (!user) {
+    if (location.pathname.startsWith('/admin')) {
+      return <Navigate to="/admin/login"/>;
+    }
+    return <Navigate to="/login"/>; 
+  }
 
   if (allowedRoles && !allowedRoles.includes(role)) {
    
