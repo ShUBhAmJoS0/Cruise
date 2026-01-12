@@ -77,11 +77,11 @@ function ImageSlider({ images}) {
 }
 
 
-async function createBooking(data) {
+async function createBooking(data, eventId) {
   const token = await auth.currentUser.getIdToken();
-  const res = await api.post("/api/booking", data,{
+  const res = await api.post("/api/booking", { ...data, eventId },{
       headers: { Authorization: `Bearer ${token}` }
-    });   
+    });
   return res.data;
 }
 
@@ -168,7 +168,7 @@ export default function BookingPage() {
         billing_address: billingAddress,
         email,
         card_number: cardNumber,
-      });
+      }, eventId);
       alert ("Booking Confirmed!");
     } finally {
       setLoading(false);
@@ -176,7 +176,7 @@ export default function BookingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gray-100 pt-20">
       <div className="w-full h-full  overflow-auto bg-[#F1F0F0]">
         {/* Header */}
         <div className="bg-gradient-to-r from-[#3593A6] to-[#93CAD5] text-white p-4 md:p-12 flex items-center">
