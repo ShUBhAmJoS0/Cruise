@@ -3,6 +3,8 @@
 import Event from "../model/Event.js";
 import sequelize from "../Database/db.js";
 import { buildEventFilters } from "../utils/eventFilters.js";
+import Booking from "../model/Booking.js";
+import User from "../model/User.js";
 
 export const DisplayAll = async (req, res) => {
   try {
@@ -97,6 +99,18 @@ res.status(200).send({
   }
   catch(e){
     res.status(500).send({message:e.message})
+  }
+}
+export const getEventbookings = async(req,res)=>{
+  console.log("get event bookings api hit")
+  try {
+    const artistId = req.user.id;
+    const eventbookings = await Event.findAll({where:{createdBy:artistId},include:[{model:Booking,include:[{model:User,attributes:["name"]}]}]})
+    console.log(eventbookings)
+    res.status(200).send({data:eventbookings,message:"sucessfully fetched event bookings"})
+  } catch (error) {
+    res.status(500).send({message:error})
+    
   }
 }
 

@@ -1,8 +1,6 @@
 
 import { DataTypes } from "sequelize";
 import sequelize from "../Database/db.js";
-import User from "./User.js";
-import { Product } from "./Product.js";
 
 const CartItem = sequelize.define("CartItem", {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
@@ -13,8 +11,7 @@ const CartItem = sequelize.define("CartItem", {
   addedAt: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
 });
 
-// Associations
-CartItem.belongsTo(Product, { foreignKey: "productId" } );
-CartItem.belongsTo(User, { foreignKey: "artistId", as: "artist" });
+
+
 
 export default CartItem;

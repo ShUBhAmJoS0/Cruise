@@ -21,6 +21,8 @@ import CartPage from "./pages/AddtoCart";
 import CheckoutPage from "./pages/Checkoutpage";
 import ReceiptPage from "./pages/Receptpage";
 import Community from "./pages/Community";
+import ArtistViewEvents from "./pages/Vieweventartist";
+import { ViewMerchandiseTable } from "./pages/viewmerchartist";
 
 function AppRoutes() {
   const location = useLocation();
@@ -55,7 +57,8 @@ function AppRoutes() {
         <Route path="/artist/Addmerch" element={<ProtectedRoute allowedRoles={["Artist"]}><AddMerch /></ProtectedRoute>} />
         <Route path="/artist/Profile" element={<ProtectedRoute allowedRoles={["Artist"]}><ArtistDashboard /></ProtectedRoute>} />
         <Route path="/artist/EditProfile" element={<ProtectedRoute allowedRoles={["Artist"]}><ArtistEditProfile></ArtistEditProfile></ProtectedRoute>} />
-
+        <Route path="/artist/viewevent" element={<ProtectedRoute allowedRoles={["Artist"]}><ArtistViewEvents></ArtistViewEvents></ProtectedRoute>}/>
+        <Route path="/artist/viewmerch" element={<ProtectedRoute allowedRoles={["Artist"]}><ViewMerchandiseTable/></ProtectedRoute>}/>
       </Routes>
     </Layout>
   ) : (

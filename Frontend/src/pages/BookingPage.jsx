@@ -18,7 +18,7 @@ async function fetchEvent(eventId) {
   return res.data;
  
 }
-//Sliding images function
+
 function ImageSlider({ images}) {
     const[currentIndex,setCurrentIndex] = useState(0);
 
@@ -27,7 +27,7 @@ function ImageSlider({ images}) {
 
 
   const [startIndex, setStartIndex] = useState(0);
-  const visibleCount = 3; // Number of images visible at a time
+  const visibleCount = 3; 
 
   const next = () => {
     setStartIndex((prev) =>
@@ -86,7 +86,7 @@ async function createBooking(data) {
 }
 
 
-const TicketButton = ({ label, desc,des, active, onClick }) => {
+const TicketButton = ({ label, desc,des,qunt, active, onClick }) => {
   return (
     <button
       type="button"
@@ -96,13 +96,14 @@ const TicketButton = ({ label, desc,des, active, onClick }) => {
     >
       <div className="font-semibold">{label}</div>
       <div className="text-xs text-gray-500 mt-1">{desc}</div>
-      <div className="text-xs text-gray-500 mt-1">{des}</div>
+      <div className="text-xs text-gray-500 mt-1">Price: {des}</div>
+      <div className="text-xs text-gray-500 mt-1">Available: {qunt}</div>
     </button>
   );
 };
 
 export default function BookingPage() {
-  const { id : eventId } = useParams(); // expects route like /booking/:id
+  const { id : eventId } = useParams();
 
   // Event + form state
   const [event, setEvent] = useState(null);
@@ -142,6 +143,7 @@ export default function BookingPage() {
   }
 
   const ticketPrices = event.prices || {};
+  const ticketQuantity = event.Quantity|| {};
   const price =ticketPrices[ticketType]||0;
   const subtotal = price * quantity;
   const tax = Math.round(subtotal * 0.05);
@@ -167,6 +169,7 @@ export default function BookingPage() {
         customer_name: name,
         billing_address: billingAddress,
         email,
+        event_id:eventId,
         card_number: cardNumber,
       });
       alert ("Booking Confirmed!");
@@ -199,10 +202,6 @@ export default function BookingPage() {
               {event.time}
             </p>
             <p>
-              <span className="font-semibold text-[#3593A6] mr-2">Services:</span>{" "}
-              {event.services}
-            </p>
-            <p>
               <span className="font-semibold text-[#3593A6] mr-2">Description:</span>{" "}
               {event.description}
             </p>
@@ -222,6 +221,7 @@ export default function BookingPage() {
                     label="VIP"
                     desc="Front row seating "
                     des={ticketPrices["VIP"]}
+                    qunt={ticketQuantity["VIP"]}
                     active={ticketType === "VIP"}
                     onClick={() => setTicketType("VIP")}
                   />
@@ -229,6 +229,7 @@ export default function BookingPage() {
                     label="Standard"
                     desc="General admission"
                     des={ticketPrices["Standard"]}
+                    qunt={ticketQuantity["Standard"]}
                     active={ticketType === "Standard"}
                     onClick={() => setTicketType("Standard")}
                   />
@@ -236,6 +237,7 @@ export default function BookingPage() {
                     label="Student"
                     desc="Student ID required"
                     des={ticketPrices["Student"]}
+                    qunt={ticketQuantity["Student"]}
                     active={ticketType === "Student"}
                     onClick={() => setTicketType("Student")}
                   />

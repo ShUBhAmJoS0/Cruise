@@ -85,7 +85,6 @@ console.log("ola")
             Exclusive merchandise from your favorite events and artists.
           </p>
 
-
           <div className="flex flex-col md:flex-row gap-4 md:items-center">
             <div className="flex items-center bg-white rounded-lg shadow px-3 py-2 w-full md:w-80">
               <span className="mr-2 text-gray-400 text-sm"></span>
@@ -148,38 +147,47 @@ console.log("ola")
                 No products found 
               </p>
             ) : (
-              products.map((product) => (
-                <div
-                  key={product.id}
-                  className="bg-white group rounded-2xl p-5 w-60 shadow flex flex-col hover:shadow-lg transition"
-                >
-                  <div className="bg-gray-100 rounded-xl h-40 flex items-center justify-center mb-4">
-                    <img 
-                      src={`http://localhost:5000/${product.productImage}`} 
-                      className="w-full h-full rounded-2xl group-hover:scale-105 transition-transform duration-300"
-                    />
-                  </div>
+              products.map((item) => (
+                           <div key={item.productId} className="min-w-[200px] flex-shrink-0 bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-lg border border-gray-100 overflow-hidden group hover:shadow-2xl transform hover:scale-105 transition">
+              <div className="relative h-48 overflow-hidden">
+                <img src={`http://localhost:5000/${item.productImage}`} alt={item.productName} className="w-full h-full object-contain group-hover:scale-110 transition duration-300" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition flex items-end p-4">
+                </div>
+              </div>
+              
+              <div className="p-4">
+                <h3 className="font-bold text-gray-800 mb-1 truncate">{item.productName}</h3>
+                <p className="text-[#3593A6] font-bold text-lg mb-3">${item.productPrice}</p>
+                
+                <div className="flex gap-2 mb-3">
+                  <span className="bg-[#93CAD5]/10 text-[#3593A6] px-3 py-1 rounded-full text-xs font-semibold">
+                  Available: {item.productQuantity}
+                  </span>
+                   <span className="bg-[#93CAD5]/10 text-[#3593A6] px-3 py-1 rounded-full text-xs font-semibold">
+                  Product by: {item.User.name}
+                  </span>
+                </div>
 
-                  <span className="text-xs text-gray-400 tracking-wide mb-1">{product.User.name}</span>
-                  <span className="text-xs text-gray-400">{product.skuNumber}</span>
-                  <p className="text-sm mb-1">{product.productName}</p>
-                  <p className="text-sm font-semibold mb-3">${product.productPrice}</p>
-
-                  <button
-                    className="mt-auto py-2 rounded-lg text-sm font-medium text-white bg-[#95c9d3] hover:bg-[#7fbac6] transition-all hover:scale-105"
-                    onClick={() => handleAddToCart(product)}
+                <div className="space-y-2">
+                  <button 
+                    onClick={()=>handleAddToCart(item)} 
+                    className="w-full p-2.5 bg-gradient-to-r from-[#3593A6] to-[#93CAD5] text-white rounded-lg font-semibold hover:shadow-lg transition transform hover:scale-105"
                   >
-                    Add to Cart
-                  </button> 
-                  <button
-                    className="mt-3 py-2 rounded-lg text-sm font-medium text-black border border-[#7fbac6] hover:bg-[#7fbac6]/10 transition-all hover:scale-105"
-                    onClick={() => handleBuyNow(product)}
+                   Add to cart
+                  </button>
+                  <button 
+                    className="w-full p-2.5  text-[#3593A6] border-2 border-[#93CAD5] rounded-lg font-semibold hover:shadow-lg transition transform hover:scale-105" 
+                    onClick={()=>handleBuyNow(item)}
                   >
-                    Buy 
+                    Buy now
                   </button>
                 </div>
+              </div>
+            </div>
+                
               ))
             )}
+            
           </div>
         </section>
       </main>

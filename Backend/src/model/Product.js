@@ -1,6 +1,7 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../Database/db.js";
 import User from "./User.js";
+import OrderItem from "./OrderItems.js";
 export const Product= sequelize.define("product",{
     productId:{
         type:DataTypes.INTEGER,
@@ -44,5 +45,4 @@ export const Product= sequelize.define("product",{
 }
 
 )
-Product.belongsTo(User, { foreignKey: "createdBy" });
-User.hasMany(Product, { foreignKey: "createdBy"});
+

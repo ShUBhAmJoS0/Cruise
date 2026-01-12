@@ -72,7 +72,7 @@ export const getpendingArtistgigs = async(req,res)=>{4
 export const createReview = async (req, res) => {
   try {
     const { comment, artistId } = req.body;
-    const userId = req.user.id; // from auth middleware
+    const userId = req.user.id; 
 
     if (!comment || !artistId) {
       return res.status(400).json({ message: "Comment is required" });

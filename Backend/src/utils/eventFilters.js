@@ -18,14 +18,14 @@ export const buildEventFilters = (query) => {
     }
   }
 
-  // Add location filter
+
   if (location) {
     whereClause.location = {
       [Op.iLike]: `%${location}%`
     };
   }
 
-  // Add date filter
+
   if (date) {
     const today = new Date();
     let start, end;

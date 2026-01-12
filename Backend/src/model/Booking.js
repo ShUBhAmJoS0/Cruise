@@ -1,6 +1,7 @@
 // backend/src/model/Booking.js
 import { DataTypes } from "sequelize";
 import sequelize from "../Database/db.js";
+import Event from "./Event.js";
 import User from "./User.js";
 
 const Booking = sequelize.define(
@@ -54,6 +55,14 @@ const Booking = sequelize.define(
         model:User,
         key:"id"
       }
+    },
+    EventId:{
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: Event,
+        key: "id",
+      },
     },
     createdAt: {
       type: DataTypes.DATE,
