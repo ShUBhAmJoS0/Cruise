@@ -11,7 +11,9 @@ import artistRoutes from "./routes/artistRoutes.js";
 import authToken from "./middleware/firebaseAuth.js";
 import orderRoutes from "./routes/orderRoutes.js";
 import cartRoutes from "./routes/cartRoutes.js";
+import artistRoutes from "./routes/artistRoutes.js";
 import communityRoutes from "./routes/communityRoutes.js"
+import orderHistoryRoutes from "./routes/orderHistoryRoutes.js";
 
 import "./model/index.js"
 const app=express();
@@ -40,6 +42,7 @@ app.use("/merch", orderRoutes);
 app.use("/api/cart",cartRoutes)
 
 
+app.use("/api/orderhistory", orderHistoryRoutes);
 
 
 const port =  5000;
@@ -47,6 +50,7 @@ const port =  5000;
     try{
         await sequelize.authenticate();
         console.log("database connected");
+
         await sequelize.sync({alter: true});
         console.log("Models synced");
 
