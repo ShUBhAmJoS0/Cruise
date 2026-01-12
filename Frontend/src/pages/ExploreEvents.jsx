@@ -471,7 +471,7 @@ const handleClearAll = async (e) => {
                         <div className="max-h-0 overflow-hidden group-hover:max-h-96 group-hover:py-5 transition-all duration-500 bg-gray-50 border-t border-gray-200">
                           <p className="mb-3">
                             <strong style={{ color: primaryColor }}>Price:</strong>{' '}
-                           {event.prices?.Regular === 0 ? 'Free Entry' : `Starts from $${event.prices?.Regular}`}
+                           {event.prices?.Regular === 0 ? 'Free Entry' : `Starts from $${event.prices?.Standard }`}
                           </p>
                           <p className="mb-3">
                             <strong style={{ color: primaryColor }}>Location:</strong> {event.location}
@@ -518,7 +518,7 @@ const handleClearAll = async (e) => {
                         <p className="text-gray-600 text-sm mb-4">{event.date}</p>
                         <div className="max-h-0 overflow-hidden group-hover:max-h-96 group-hover:py-5 transition-all duration-500 bg-gray-50 border-t border-gray-200">
                           <p className="mb-3">
-                            {event.prices?.Regular === 0 ? 'Free Entry' : `Starts from $${event.prices?.Regular}`}
+                            {event.prices?.Regular === 0 ? 'Free Entry' : `Starts from $${event.prices?.Standard}`}
                           </p>
                           <p className="mb-3">
                             <strong style={{ color: primaryColor }}>Location:</strong> {event.location}
