@@ -11,7 +11,6 @@ import artistRoutes from "./routes/artistRoutes.js";
 import authToken from "./middleware/firebaseAuth.js";
 import orderRoutes from "./routes/orderRoutes.js";
 import cartRoutes from "./routes/cartRoutes.js";
-import artistRoutes from "./routes/artistRoutes.js";
 import communityRoutes from "./routes/communityRoutes.js"
 import orderHistoryRoutes from "./routes/orderHistoryRoutes.js";
 
