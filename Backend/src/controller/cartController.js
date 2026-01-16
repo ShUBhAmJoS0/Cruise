@@ -1,92 +1,77 @@
-// import Order from "../model/Order.js";
-// import OrderItem from "../model/OrderItems.js";
-// import {Product} from "../model/Product.js";
 
+import CartItem from "../model/Cart.js";
+import {Product} from "../model/Product.js";
 
-// export const getOrCreateCart = async (userId) => {
-//   console.log("function hit")
-//   let order = await Order.findOne({ where: { userId, status: "pending" } });
-//   if (!order) {
-//     order = await Order.create({ userId, status: "pending" });
-//   }
-//   return order;
-// };
+export const addToCart = async (req, res) => {
+     console.log("api hit")
+  const { productId, quantity } = req.body;
+  const userId = req.user.id; 
+  try {
+    console.log(productId)
+    const product = await Product.findByPk(productId);
+    if (!product) {
+             console.log("product not fount")
+        return res.status(404).json({ message: "Product not found" }) 
+   };
 
-// export const addToCart = async (req, res) => {
-//   try {
-//     console.log("api hit");
+    const existing = await CartItem.findOne({ where: { userId, productId } });
+    if (existing) {
+      existing.quantity += quantity;
+      await existing.save();
+      return res.status(200).json({ data: existing, message: "Cart updated" });
+    }
 
-//     const userId = req.user.id;
-//     const { productId, quantity } = req.body;
+    const newItem = await CartItem.create({
+      userId,
+      productId,
+      artistId: product.createdBy, 
+      quantity,
+    });
 
-//     const product = await Product.findByPk(productId);
-//     if (!product) {
-//       return res.status(404).json({ message: "Product not found" });
-//     }
+    res.status(201).json({ data: newItem, message: "Added to cart" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: err.message });
+  }
+};
 
-//     const order = await getOrCreateCart(userId);
+export const viewCart = async (req, res) => {
+    console.log("fetch cart item api hit ")
+  const userId = req.user.id;
+  console.log(userId)
+  try {
+    const cart = await CartItem.findAll({
+      where: { userId },
+      include: [{ model: Product }, { association: "artist", attributes: ["name"] }],
+    });
+    console.log(cart)
+    res.status(200).json({ data: cart });
+  } catch (err) {
+    console.log(err)
+    res.status(500).json({ message: err.message });
+  }
+};
 
-//     let item = await OrderItem.findOne({
-//       where: { orderId: order.id, productId }
-//     });
+export const updateCartQuantity = async (req, res) => {
+  const { cartItemId } = req.params;
+  const { quantity } = req.body;
+  try {
+    const item = await CartItem.findByPk(cartItemId);
+    if (!item) return res.status(404).json({ message: "Cart item not found" });
+    item.quantity = quantity;
+    await item.save();
+    res.json({ data: item, message: "Quantity updated" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
 
-//     if (item) {
-//       item.quantity += quantity;
-//       await item.save();
-//     } else {
-//       await OrderItem.create({
-//         orderId: order.id,
-//         productId,
-//         quantity,
-//         priceAtPurchase: product.price
-//       });
-//     }
-
-//     return res.status(200).json({
-//       data: order.id,
-//       message: "Added to cart"
-//     });
-
-//   } catch (err) {
-//     console.error(err);
-//     return res.status(500).json({ message: "Server error" });
-//   }
-// };
-
-// export const updateCartItem = async (req, res) => {
-//   try {
-//     const userId = req.user.id;
-//     const { itemId } = req.params;
-//     const { quantity } = req.body;
-
-//     const order = await getOrCreateCart(userId);
-//     const item = await OrderItem.findOne({ where: { id: itemId, orderId: order.id } });
-//     if (!item) return res.status(404).json({ message: "Item not found" });
-
-//     if (quantity < 1) await item.destroy();
-//     else {
-//       item.quantity = quantity;
-//       await item.save();
-//     }
-
-//     res.json({ message: "Cart updated" });
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ message: "Server error" });
-//   }
-// };
-
-// export const removeCartItem = async (req, res) => {
-//   try {
-//     const userId = req.user.uid;
-//     const { itemId } = req.params;
-
-//     const order = await getOrCreateCart(userId);
-//     await OrderItem.destroy({ where: { id: itemId, orderId: order.id } });
-
-//     res.json({ message: "Item removed" });
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ message: "Server error" });
-//   }
-// };
+export const removeCartItem = async (req, res) => {
+  const { cartItemId } = req.params;
+  try {
+    await CartItem.destroy({ where: { id: cartItemId } });
+    res.json({ message: "Item removed from cart" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};

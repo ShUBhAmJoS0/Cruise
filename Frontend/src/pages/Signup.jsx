@@ -14,9 +14,9 @@ export default function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [retype,setRetype] = useState("");
-  const[User,setUser] = useState("");
+  const[User,setUserr] = useState("");
   const[showpassword,setShowpassword] = useState(false);
-  const { setRole } = useAuth();
+  const { setRole,setUser,setDbuser} = useAuth();
   const signupUser = async () => {
    if (!name || !email || !password || !retype) {
       alert("All fields are required");
@@ -42,9 +42,23 @@ export default function Signup() {
         userType: User,
         id_token: idToken,
       });
-      setRole(User);
+   
+      
+      if (!res.data?.user) {
+  alert("Something went wrong. Try again.");
+  return;
+}
+setUser(firebaseUser)
+console.log(res.data.user.userType)
+setRole(res.data.user.userType);
+setDbuser(res.data.user)
+
       alert("Signup successful!");
-      navigate("/login");
+       const role = res.data.user.userType
+console.log(role)
+    if (role === "Admin") navigate("/admin");
+else if (role === "Artist") navigate("/artist/Request");
+else navigate("/events");
     }
      catch (error) {
         console.log(error)
@@ -161,7 +175,7 @@ export default function Signup() {
                 name="User"
                 value="Attendee"
                 checked={User === "Attendee"}
-                onChange={(e) => setUser(e.target.value)}
+                onChange={(e) => setUserr(e.target.value)}
               />
               Attendee
             </label>
@@ -173,7 +187,7 @@ export default function Signup() {
                 name="User"
                 value="Artist"
                 checked={User === "Artist"}
-                onChange={(e) => setUser(e.target.value)}
+                onChange={(e) => setUserr(e.target.value)}
               />
               Artist
             </label>

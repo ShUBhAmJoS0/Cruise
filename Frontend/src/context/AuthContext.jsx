@@ -28,7 +28,7 @@ export const AuthProvider = ({ children }) => {
       try {
         const token = await currentUser.getIdToken(true); 
         const res = await api.get("/auth/getuser", {
-          headers: { Authorization:` Bearer ${token}` },
+          headers: { Authorization: `Bearer ${token}` },
         });
         console.log(res);
 

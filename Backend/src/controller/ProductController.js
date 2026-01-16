@@ -1,6 +1,9 @@
 
 import { Product } from "../model/Product.js";
-
+import { Op } from "sequelize";
+import User from "../model/User.js";
+import OrderItem from "../model/OrderItems.js";
+import Order from "../model/Order.js";
 export const addProduct = async (req, res) => {
   try {
     console.log("hit apit")
@@ -24,7 +27,7 @@ export const addProduct = async (req, res) => {
      productImage: imageUrl,
     });
 
-    res.status(200).send({ data:product, message:"Product added successfully", product });
+    res.status(200).send({ data:product, message:"Product added successfully"});
   } catch (error) {
     console.error(error);
     res.status(500).send({ message: "Failed to add product", error });
@@ -55,7 +58,7 @@ export const editProduct = async (req, res) => {
       productImage:imageUrl,
     });
 
-    res.status(200).send({ data:product,message: "Product updated successfully", product });
+    res.status(200).send({ data:product,message: "Product updated successfully"});
   } catch (error) {
     console.error(error);
     res.status(500).send({ message: "Failed to update product", error });
@@ -100,5 +103,76 @@ try {
     res.status(500).send({message:error.message})
 }
 }
+
+export const getproductbuyers = async(req,res)=>{
+  console.log("api hit")
+  try {
+    const userId = req.user.id;
+    const productbuys = await Product.findAll({ where: { createdBy: userId}, include: [ { model: OrderItem, include: [ { model: Order, include: [{ model: User, attributes: ["name"] }] } ] } ] });
+    res.status(200).send({data:productbuys,message:"fetched all merch buyers sucessfully"});
+  } catch (error) {
+    console.log(error.message)
+    res.status(500).send({message:error.message})
+  }
+}
+export const getproductBycreator = async(req,res)=>{
+  try{
+const artistId=req.params.id;
+console.log(artistId)
+const artistmerch = await Product.findAll({where:{createdBy:artistId}})
+ if(!artistmerch){
+    return res.status(404).send({message:"no  merch from this artist"})
+ }
+ return res.status(200).send({data:artistmerch,message:"fetched all products from this artist sucessfully"})
+  }
+  catch(e){
+    console.log(e)
+    res.status(500).send({message:error.message})
+  }
+}
+
+
+export const getAllMerch = async (req, res) => {
+  try {
+    const { category, sort, search } = req.query;
+
+    const whereClause = {};
+
+    if (category) {
+      whereClause.productCategory = category;
+    }
+    console.log(category)
+    if (search) {
+      whereClause.productName = {
+        [Op.iLike]: `%${search}%`,
+      };
+    }
+
+    let order = [["createdAt", "DESC"]];
+    if (sort === "Oldest") {
+      order = [["createdAt", "ASC"]];
+    }
+
+    const allmerch = await Product.findAll({
+      where: whereClause,
+      order,
+      include:[
+        {
+          model: User
+        }
+      ]
+    });
+
+    if (allmerch.length === 0) {
+      console.log("not found")
+      return res.status(200).json({ data:[],message: "No merch found" });
+    }
+
+    return res.status(200).send({data:allmerch,message:"fetched sucessfuly"});
+  } catch (e) {
+    console.error(e);
+    return res.status(500).json({ message: e.message });
+  }
+};
 
 

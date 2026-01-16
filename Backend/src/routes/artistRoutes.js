@@ -1,10 +1,10 @@
 import express from "express";
-import { AddEvent, GetrequestedEvent } from "../controller/eventController.js";
+import { AddEvent, getEventbookings, GetrequestedEvent } from "../controller/eventController.js";
 import upload from "../Config/multer.js";
 import { artistOnly } from "../middleware/Artistonly.js";
-import { addProduct, deleteProduct, editProduct, getAllProduct} from "../controller/ProductController.js";
+import { addProduct, deleteProduct, editProduct, getAllProduct, getproductbuyers, getproductBycreator} from "../controller/ProductController.js";
 import { updateUser } from "../controller/authController.js";
-import { getallArtists, getArtistbyid, getArtistgigs } from "../controller/Artistscontroller.js";
+import { createReview, getallArtists, getArtistbyid, getArtistgigs, getpendingArtistgigs, getReviewsByArtist } from "../controller/Artistscontroller.js";
 import { AttendeeOnly } from "../middleware/Attendeonly.js";
 
 
@@ -27,10 +27,16 @@ router.put("/addmerch/:id",upload.fields([
   
 router.put("/updateProfile",upload.fields([
   { name: 'profilePic', maxCount: 1 },{name:"coverPic",maxCount:1}]),artistOnly,updateUser)
-
+    router.get("/allmerch/details",artistOnly,getproductbuyers)
+    router.get("/allevents/details",artistOnly,getEventbookings)
   router.get("/all",AttendeeOnly,getallArtists)
   router.get("/profile/:id",AttendeeOnly,getArtistbyid)
-  router.get("/gig/:id",AttendeeOnly,getArtistgigs)
+  router.get("/gig/:id",AttendeeOnly,getpendingArtistgigs)
+  router.get("/allgigs/:id",AttendeeOnly,getArtistgigs)
+    router.get("/allmerch/:id",AttendeeOnly,getproductBycreator)
+    router.get("/allreview/:id",AttendeeOnly,getReviewsByArtist)
+    router.post("/allreview",AttendeeOnly,createReview)
+
 export default router
 
 

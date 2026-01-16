@@ -1,19 +1,20 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import api from "../api/axios";
+import { useNavigate } from "react-router-dom";
 
-const AddToCart = () => {
-  const [cart, setCart] = useState(null);
-  const [loading, setLoading] = useState(true);
+const CartPage = () => {
+  const [cart, setCart] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
-  // Fetch cart items
   const fetchCart = async () => {
     setLoading(true);
     try {
       const res = await api.get("/api/cart");
-      setCart(res.data);
+      console.log(res.data.data)
+      setCart(res.data.data);
     } catch (err) {
-      console.error("Failed to fetch cart:", err);
-      alert("Failed to fetch cart");
+      console.error("Error fetching cart:", err);
     } finally {
       setLoading(false);
     }
@@ -23,86 +24,83 @@ const AddToCart = () => {
     fetchCart();
   }, []);
 
-  // Update quantity
-  const updateQuantity = async (itemId, quantity) => {
+  const updateQuantity = async (id, qty) => {
+    if (qty < 1) return;
     try {
-      if (quantity < 1) {
-        // Remove item if quantity < 1
-        await api.delete(`/api/cart/${itemId}`);
-      } else {
-        await api.patch(`/api/cart/${itemId}`, { quantity });
-      }
-      fetchCart(); // refresh cart after update
+      await api.put(`/api/cart/${id}`, { quantity: qty });
+      fetchCart();
     } catch (err) {
-      console.error("Failed to update quantity:", err);
-      alert("Failed to update quantity");
+      console.error(err);
     }
   };
 
-  // Remove item
-  const removeItem = async (itemId) => {
+  const removeItem = async (id) => {
     try {
-      await api.delete(`/api/cart/${itemId}`);
-      fetchCart(); // refresh cart after removal
+      await api.delete(`/api/cart/${id}`);
+      fetchCart();
     } catch (err) {
-      console.error("Failed to remove item:", err);
-      alert("Failed to remove item");
+      console.error(err);
     }
   };
 
-  if (loading) return <p className="p-4">Loading cart...</p>;
-
-  if (!cart || !cart.OrderItems || cart.OrderItems.length === 0)
-    return <p className="p-4">Your cart is empty.</p>;
+  const buyAll = () => {
+    const ids = cart.map(item => item.id);
+    navigate("/checkout", { state: { cartItemIds: ids } });
+  };
 
   return (
-    <div className="max-w-4xl mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Your Cart</h1>
-      <div className="space-y-4">
-        {cart.OrderItems.map((item) => (
-          <div
-            key={item.id}
-            className="flex justify-between items-center bg-gray-100 p-3 rounded-lg"
-          >
-            <div>
-              <p className="font-semibold">{item.Product.name}</p>
-              <p>${item.priceAtPurchase}</p>
-            </div>
+    <main className="max-w-6xl mx-auto mt-20 px-4">
+      <h1 className="text-3xl font-bold mb-6">Your Cart</h1>
 
-            <div className="flex items-center gap-2">
-              <button
-                className="px-2 py-1 bg-gray-300 rounded"
-                onClick={() => updateQuantity(item.id, item.quantity - 1)}
-              >
-                -
-              </button>
-              <span>{item.quantity}</span>
-              <button
-                className="px-2 py-1 bg-gray-300 rounded"
-                onClick={() => updateQuantity(item.id, item.quantity + 1)}
-              >
-                +
-              </button>
-              <button
-                className="px-2 py-1 bg-red-400 text-white rounded"
-                onClick={() => removeItem(item.id)}
-              >
-                Remove
-              </button>
+      {cart.length === 0 && !loading && <p>No items in cart</p>}
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {cart.map(item => (
+          <div key={item.id} className="flex bg-white rounded-lg shadow p-4 gap-4">
+            <img
+              src={`http://localhost:5000/${item.product.productImage}`}
+              className="w-24 h-24 rounded-lg object-cover"
+            />
+            <div className="flex-1">
+              <h2 className="font-semibold">{item.product.productName}</h2>
+              <p className="text-sm text-gray-500">Artist: {item.artist.username}</p>
+              <p className="text-sm font-medium">${item.product.productPrice}</p>
+
+              <div className="flex items-center gap-2 mt-2">
+                <button
+                  className="px-2 bg-gray-200 rounded"
+                  onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                >-</button>
+                <span>{item.quantity}</span>
+                <button
+                  className="px-2 bg-gray-200 rounded"
+                  onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                >+</button>
+
+                <button
+                  className="ml-auto px-3 py-1 bg-red-500 text-white rounded"
+                  onClick={() => removeItem(item.id)}
+                >
+                  Remove
+                </button>
+              </div>
             </div>
           </div>
         ))}
       </div>
 
-      <div className="mt-6 text-right font-bold text-lg">
-        Total: $
-        {cart.OrderItems.reduce(
-          (acc, item) => acc + item.quantity * item.priceAtPurchase,
-          0
-        )}
-      </div>
-    </div>
+      {cart.length > 0 && (
+        <div className="mt-6 flex justify-end">
+          <button
+            className="px-6 py-3 bg-green-600 text-white rounded hover:bg-green-500"
+            onClick={buyAll}
+          >
+            Buy All
+          </button>
+        </div>
+      )}
+    </main>
   );
 };
 
-export default AddToCart;
+export default CartPage;

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
-// Icon placeholders (replace with SVGs if you want)
+
 const icons = {
   profile: "👤",
   booking: "📅",
@@ -22,7 +22,7 @@ export default function NavPage({ children }) {
 
   const handleMenuClick = (menu) => {
     setSelected(menu);
-    // Later: Add navigation logic here if needed
+
   };
 
   const handleLogout = async () => {

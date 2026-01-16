@@ -7,13 +7,14 @@ import authRoutes from "./routes/authRoutes.js";
 import eventRoutes from "./routes/EventRoutes.js";
 import bookingRoutes from "./routes/bookingRoutes.js";
 import eventFilters from './routes/eventFiltersRoutes.js';
-import merchandiseRoutes from "./routes/merchandiseRoutes.js";
 import artistRoutes from "./routes/artistRoutes.js";
 import authToken from "./middleware/firebaseAuth.js";
-import {Product} from "./model/Product.js";
+import orderRoutes from "./routes/orderRoutes.js";
+import cartRoutes from "./routes/cartRoutes.js";
 import communityRoutes from "./routes/communityRoutes.js"
 import orderHistoryRoutes from "./routes/orderHistoryRoutes.js";
 
+import "./model/index.js"
 const app=express();
 
 app.use(
@@ -26,14 +27,20 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static('uploads'));
-app.use("/api/events", eventFilters);
-app.use("/api/community", communityRoutes);
+
+
 app.use(authToken)
 app.use("/auth",authRoutes)
+app.use("/api/community", communityRoutes);
+//asignig routes
+app.use("/api/events", eventFilters);
 app.use("/event",eventRoutes)
 app.use("/api/booking",bookingRoutes)
-app.use("/api/merchandise", merchandiseRoutes)
 app.use("/artist",artistRoutes);
+app.use("/merch", orderRoutes);
+app.use("/api/cart",cartRoutes)
+
+
 app.use("/api/orderhistory", orderHistoryRoutes);
 
 

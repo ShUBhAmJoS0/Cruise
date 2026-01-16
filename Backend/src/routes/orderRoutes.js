@@ -1,11 +1,9 @@
 import express from "express";
-import { checkout } from "../controller/orderController.js";
-import authToken from "../middleware/firebaseAuth.js";
+import {  getAllMerch} from "../controller/ProductController.js";
+import { AttendeeOnly } from "../middleware/Attendeonly.js";
 
 const router = express.Router();
 
-router.use(authToken);
-
-router.post("/checkout", checkout);
+router.get("/", AttendeeOnly, getAllMerch);
 
 export default router;
