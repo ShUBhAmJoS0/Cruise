@@ -104,6 +104,20 @@ export const createBookingController = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
-export const Getmybookings=()=>{
+export const Getmybookings=async(req,res)=>{
+  console.log("Fetching bookings for user:", req.user);
+  try{
+  const uid = req.user.id
+  const bookings = await Booking.findAll({where:{createdBy:uid}})
+  if (bookings.length===0){
+    return res.status(500).send({message:"No bookings found"})
+  }
+  res.status(200).send({data:bookings,message:"fetched all bookings successfully"})
+ 
+ 
+}
+catch(e){
+res.status(500).send({message:"Failed to fetch bookings"})
+}
 
 }
