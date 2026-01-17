@@ -89,16 +89,13 @@ export const updateEvent = async (req, res) => {
         !body.time || !body.category) {
       return res.status(400).json({ message: "All required fields must be filled" });
     }
-
+  let finalImages=[];
     let profileImagePath = existingEvent.profileImage; 
-    let imagePaths = existingEvent.images || []; 
-    if (req.files?.profileImage?.[0]) {
-      profileImagePath = req.files.profileImage[0].path.replace(/\\/g, '/');
-    }
+       const existingImages = JSON.parse(req.body.existingImages);
 
     if (req.files?.images && req.files.images.length > 0) {
-      const newImagePaths = req.files.images.map(file => file.path.replace(/\\/g, '/'));
-      imagePaths = [...imagePaths, ...newImagePaths];
+      const newImages = req.files?.images.map(file => file.path.replace(/\\/g, '/'));
+      finalImages = [...existingImages, ...newImages];
     }
 
     await Event.update(
@@ -109,7 +106,7 @@ export const updateEvent = async (req, res) => {
         date: body.date,
         time: body.time,
         category: body.category,
-        images: imagePaths,
+        images: finalImages,
         profileImage: profileImagePath,
         prices: prices,
         Quantity: quantity,

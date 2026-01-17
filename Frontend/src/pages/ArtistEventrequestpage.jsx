@@ -1,48 +1,72 @@
 import { useEffect, useState } from "react";
 import api from "../api/axios";
 import { Users2, Trophy, Music, Brush, MapPin, CheckCircle2, X } from "lucide-react";
+import { Controller, useForm } from "react-hook-form";
+
 
 function ArtistEventRequestPage() {
-  const [EventTitle, setEventTitle] = useState("");
-  const [EventLocation, setEventLocation] = useState("");
-  const [Category, setCategory] = useState("");
-  const [EventDate, setEventDate] = useState("");
-  const [EventTime, setEventTime] = useState("");
-  const [Price, setPrice] = useState({
-    Standard: "",
-    Student: "",
-    VIP: ""
-  });
-  const [Quantity, setQuantity] = useState({
-    Standard: "",
-    Student: "",
-    VIP: ""
-  });
-  const [selected, setSelected] = useState("");
-  const [eventDes, setEventDes] = useState("");
   const [requestEvent, setRequestEvent] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null);
   const [selectedImages, setSelectedImages] = useState([]);
   const [imagePreviewUrl, setImagePreviewUrl] = useState(null);
   
+
+  const { register, handleSubmit, reset, setValue, watch, control } = useForm({
+    defaultValues: {
+      EventTitle: "",
+      EventLocation: "",
+      Category: "",
+      EventDate: "",
+      EventTime: "",
+      Price: {
+        Standard: "",
+        Student: "",
+        VIP: ""
+      },
+      Quantity: {
+        Standard: "",
+        Student: "",
+        VIP: ""
+      },
+      selected: "",
+      eventDes: ""
+    }
+  });
+
+  const selectedCategory = watch("selected");
+  
   // Edit Modal States
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState(null);
-  const [editFormData, setEditFormData] = useState({
-    title: "",
-    location: "",
-    date: "",
-    time: "",
-    category: "",
-    description: "",
-    prices: { Standard: "", Student: "", VIP: "" },
-    quantity: { Standard: "", Student: "", VIP: "" },
-    selectedCategory: ""
-  });
   const [editCoverImage, setEditCoverImage] = useState(null);
   const [editCoverPreview, setEditCoverPreview] = useState(null);
   const [editGalleryImages, setEditGalleryImages] = useState([]);
-const [removedGalleryImages, setRemovedGalleryImages] = useState([]);
+  const [existingGalleryImages, setExistingGalleryImages] = useState([]);
+
+  // Edit Event Form
+  const { 
+    register: registerEdit, 
+    handleSubmit: handleSubmitEdit, 
+    reset: resetEdit, 
+    setValue: setValueEdit,
+    watch: watchEdit,
+    control: controlEdit
+  } = useForm({
+    defaultValues: {
+      title: "",
+      location: "",
+      date: "",
+      time: "",
+      category: "",
+      description: "",
+      prices: { Standard: "", Student: "", VIP: "" },
+      quantity: { Standard: "", Student: "", VIP: "" },
+      selectedCategory: ""
+    }
+  });
+
+  const editSelectedCategory = watchEdit("selectedCategory");
+
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -76,18 +100,18 @@ const [removedGalleryImages, setRemovedGalleryImages] = useState([]);
     LoadRequestedEvents();
   }, []);
 
-  const RequestEvent = async () => {
+  const onSubmit = async (data) => {
     try {
       const formData = new FormData();
       
-      formData.append('title', EventTitle);
-      formData.append('date', EventDate);
-      formData.append('time', EventTime);
-      formData.append('location', EventLocation);
-      formData.append('category', Category);
-      formData.append('description', eventDes);
-      formData.append('prices', JSON.stringify(Price));
-      formData.append('Quantity', JSON.stringify(Quantity));
+      formData.append('title', data.EventTitle);
+      formData.append('date', data.EventDate);
+      formData.append('time', data.EventTime);
+      formData.append('location', data.EventLocation);
+      formData.append('category', data.Category);
+      formData.append('description', data.eventDes);
+      formData.append('prices', JSON.stringify(data.Price));
+      formData.append('Quantity', JSON.stringify(data.Quantity));
       
       if (selectedImage) {
         formData.append('profileImage', selectedImage);
@@ -106,15 +130,7 @@ const [removedGalleryImages, setRemovedGalleryImages] = useState([]);
    
       await LoadRequestedEvents();
   
-      setEventTitle("");
-      setEventLocation("");
-      setEventDate("");
-      setEventTime("");
-      setCategory("");
-      setEventDes("");
-      setPrice({ Standard: "", Student: "", VIP: "" });
-      setQuantity({ Standard: "", Student: "", VIP: "" });
-      setSelected("");
+      reset();
       setSelectedImage(null);
       setSelectedImages([]);
       setImagePreviewUrl(null);
@@ -126,13 +142,11 @@ const [removedGalleryImages, setRemovedGalleryImages] = useState([]);
     }
   };
 
-
   const handleEditClick = async (event) => {
     try {
-
       const res = await api.get(`/event/${event.id}`);
       const eventData = res.data;
-      console.log(eventData)
+      console.log(eventData);
       setEditingEvent(eventData);
 
       const parsedPrices = typeof eventData.prices === 'string' 
@@ -149,7 +163,7 @@ const [removedGalleryImages, setRemovedGalleryImages] = useState([]);
         "Music": "music"
       };
       
-      setEditFormData({
+      resetEdit({
         title: eventData.title,
         location: eventData.location,
         date: eventData.date?.split('T')[0] || "",
@@ -162,14 +176,18 @@ const [removedGalleryImages, setRemovedGalleryImages] = useState([]);
       });
       
       setEditCoverPreview(eventData.profileImage ? `http://localhost:5000/${eventData.profileImage}` : null);
+      setEditCoverImage(null);
+      
+      // Separate existing images from new ones
+      setExistingGalleryImages(eventData.images || []);
+      setEditGalleryImages([]);
+      
       setIsEditModalOpen(true);
-      setEditGalleryImages(eventData.images || [])
     } catch (error) {
       console.error("Failed to fetch event details:", error);
       alert("Failed to load event details");
     }
   };
-
 
   const handleEditCoverChange = (e) => {
     const file = e.target.files[0];
@@ -181,46 +199,59 @@ const [removedGalleryImages, setRemovedGalleryImages] = useState([]);
 
   const handleEditGalleryChange = (e) => {
     const files = Array.from(e.target.files);
-
     const filesWithPreviews = files.map(file => ({
       file: file,
       preview: URL.createObjectURL(file),
-      name: file.name
+      name: file.name,
+      isNew: true
     }));
     setEditGalleryImages(prev => [...prev, ...filesWithPreviews]);
   };
 
-const removeEditGalleryImage = (index) => {
-  const img = editGalleryImages[index];
-  if (img?.preview) {
-    URL.revokeObjectURL(img.preview);
-  }
+  const removeExistingGalleryImage = (index) => {
+    setExistingGalleryImages(prev => prev.filter((_, i) => i !== index));
+  };
 
-  setEditGalleryImages(prev => prev.filter((_, i) => i !== index));
-};
+  const removeEditGalleryImage = (index) => {
+    const img = editGalleryImages[index];
+    if (img?.preview) {
+      URL.revokeObjectURL(img.preview);
+    }
+    setEditGalleryImages(prev => prev.filter((_, i) => i !== index));
+  };
 
-  const handleUpdateEvent = async () => {
+  const onEditSubmit = async (data) => {
     try {
       const formData = new FormData();
       
-      formData.append('title', editFormData.title);
-      formData.append('date', editFormData.date);
-      formData.append('time', editFormData.time);
-      formData.append('location', editFormData.location);
-      formData.append('category', editFormData.category);
-      formData.append('description', editFormData.description);
-      formData.append('prices', JSON.stringify(editFormData.prices));
-      formData.append('Quantity', JSON.stringify(editFormData.quantity));
+      formData.append('title', data.title);
+      formData.append('date', data.date);
+      formData.append('time', data.time);
+      formData.append('location', data.location);
+      formData.append('category', data.category);
+      formData.append('description', data.description);
+      formData.append('prices', JSON.stringify(data.prices));
+      formData.append('Quantity', JSON.stringify(data.quantity));
       
+      // Add cover image if changed
       if (editCoverImage) {
         formData.append('profileImage', editCoverImage);
       }
-      console.log(editGalleryImages)
-    editGalleryImages.forEach((img) => {
-      if (img?.file) {
-        formData.append("images", img.file);
-      }
-    });
+      
+      // Add existing images that weren't removed
+      formData.append('existingImages', JSON.stringify(existingGalleryImages));
+      
+      // Add new gallery images
+      editGalleryImages.forEach((img) => {
+        if (img?.file) {
+          formData.append("images", img.file);
+        }
+      });
+
+      console.log("Sending update with:", {
+        existingImages: existingGalleryImages,
+        newImages: editGalleryImages.length
+      });
 
       const res = await api.put(`/artist/request/${editingEvent.id}`, formData, {
         headers: {
@@ -232,17 +263,16 @@ const removeEditGalleryImage = (index) => {
       setIsEditModalOpen(false);
       await LoadRequestedEvents();
       
-
       setEditingEvent(null);
       setEditCoverImage(null);
       setEditCoverPreview(null);
       setEditGalleryImages([]);
+      setExistingGalleryImages([]);
     } catch (error) {
       console.error("Failed to update event:", error);
       alert(error.response?.data?.message || "Failed to update event");
     }
   };
-
 
   const handleDeleteEvent = async (eventId) => {
     if (!window.confirm("Are you sure you want to delete this event?")) {
@@ -302,7 +332,6 @@ const removeEditGalleryImage = (index) => {
         </div>
       </div>
 
-
       <div className="mb-8">
         <div className="flex items-center gap-4 mb-2">
           <div className="bg-[#3593A6] p-3 rounded-xl">
@@ -315,8 +344,7 @@ const removeEditGalleryImage = (index) => {
         <p className="text-gray-600 ml-16">Create and manage your event requests</p>
       </div>
 
-      <div className="w-full bg-white rounded-3xl shadow-xl p-8 mb-10 border border-gray-100">
-
+      <form onSubmit={handleSubmit(onSubmit)} className="w-full bg-white rounded-3xl shadow-xl p-8 mb-10 border border-gray-100">
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-1 h-8 bg-[#3593A6] rounded-full"></div>
@@ -330,8 +358,7 @@ const removeEditGalleryImage = (index) => {
                 type="text"
                 className="h-[55px] border-2 border-gray-200 rounded-xl p-4 focus:border-[#93CAD5] focus:outline-none transition"
                 placeholder="Enter event title"
-                value={EventTitle}
-                onChange={e => setEventTitle(e.target.value)}
+                {...register("EventTitle")}
               />
             </div>
             
@@ -341,8 +368,7 @@ const removeEditGalleryImage = (index) => {
                 type="text"
                 className="h-[55px] border-2 border-gray-200 rounded-xl p-4 focus:border-[#93CAD5] focus:outline-none transition"
                 placeholder="Enter event location"
-                value={EventLocation}
-                onChange={e => setEventLocation(e.target.value)}
+                {...register("EventLocation")}
               />
             </div>
             
@@ -351,8 +377,7 @@ const removeEditGalleryImage = (index) => {
               <input
                 type="date"
                 className="h-[55px] border-2 border-gray-200 rounded-xl p-4 focus:border-[#93CAD5] focus:outline-none transition"
-                value={EventDate}
-                onChange={e => setEventDate(e.target.value)}
+                {...register("EventDate")}
               />
             </div>
             
@@ -361,8 +386,7 @@ const removeEditGalleryImage = (index) => {
               <input
                 type="time"
                 className="h-[55px] border-2 border-gray-200 rounded-xl p-4 focus:border-[#93CAD5] focus:outline-none transition"
-                value={EventTime}
-                onChange={e => setEventTime(e.target.value)}
+                {...register("EventTime")}
               />
             </div>
           </div>
@@ -372,9 +396,8 @@ const removeEditGalleryImage = (index) => {
             <textarea
               className="min-h-[100px] border-2 border-gray-200 rounded-xl p-4 focus:border-[#93CAD5] focus:outline-none transition resize-none"
               placeholder="Describe the event in detail..."
-              value={eventDes}
-              onChange={e => setEventDes(e.target.value)}
               rows="4"
+              {...register("eventDes")}
             />
           </div>
         </div>
@@ -385,31 +408,37 @@ const removeEditGalleryImage = (index) => {
             <h3 className="text-xl font-bold text-gray-800">Event Category</h3>
           </div>
           
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {[
-              { id: "family", label: "Family", icon: <Users2 className="text-[#5ba3b0]"/> },
-              { id: "art", label: "Art", icon: <Brush className="text-[#5ba3b0]"/> },
-              { id: "sports", label: "Sports", icon: <Trophy className="text-[#5ba3b0]"/> },
-              { id: "music", label: "Music", icon: <Music className="text-[#5ba3b0]"/> }
-            ].map(cat => (
-              <button
-                key={cat.id}
-                type="button"
-                className={`h-24 border-2 rounded-2xl flex flex-col items-center justify-center gap-2 transition-all transform hover:scale-105 ${
-                  selected === cat.id 
-                    ? "border-[#3593A6] bg-[#93CAD5]/20 shadow-lg" 
-                    : "border-gray-200 hover:border-[#93CAD5]"
-                }`}
-                onClick={() => {
-                  setSelected(cat.id);
-                  setCategory(cat.label);
-                }}
-              >
-                <span className="text-3xl">{cat.icon}</span>
-                <span className="font-semibold text-gray-700">{cat.label}</span>
-              </button>
-            ))}
-          </div>
+          <Controller
+            name="selected"
+            control={control}
+            render={({ field }) => (
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {[
+                  { id: "family", label: "Family", icon: <Users2 className="text-[#5ba3b0]"/> },
+                  { id: "art", label: "Art", icon: <Brush className="text-[#5ba3b0]"/> },
+                  { id: "sports", label: "Sports", icon: <Trophy className="text-[#5ba3b0]"/> },
+                  { id: "music", label: "Music", icon: <Music className="text-[#5ba3b0]"/> }
+                ].map(cat => (
+                  <button
+                    key={cat.id}
+                    type="button"
+                    className={`h-24 border-2 rounded-2xl flex flex-col items-center justify-center gap-2 transition-all transform hover:scale-105 ${
+                      selectedCategory === cat.id 
+                        ? "border-[#3593A6] bg-[#93CAD5]/20 shadow-lg" 
+                        : "border-gray-200 hover:border-[#93CAD5]"
+                    }`}
+                    onClick={() => {
+                      field.onChange(cat.id);
+                      setValue("Category", cat.label);
+                    }}
+                  >
+                    <span className="text-3xl">{cat.icon}</span>
+                    <span className="font-semibold text-gray-700">{cat.label}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          />
         </div>
 
         <div className="mb-8">
@@ -433,10 +462,9 @@ const removeEditGalleryImage = (index) => {
                       <input
                         type="number"
                         min="0"
-                        value={Price[type]}
-                        onChange={(e) => setPrice({ ...Price, [type]: e.target.value })}
                         className="h-11 border-2 border-gray-200 rounded-lg px-3 text-center focus:border-[#93CAD5] focus:outline-none transition"
                         placeholder="0.00"
+                        {...register(`Price.${type}`)}
                       />
                     </div>
                     
@@ -445,10 +473,9 @@ const removeEditGalleryImage = (index) => {
                       <input
                         type="number"
                         min="0"
-                        value={Quantity[type]}
-                        onChange={(e) => setQuantity({ ...Quantity, [type]: e.target.value })}
                         className="h-11 border-2 border-gray-200 rounded-lg px-3 text-center focus:border-[#93CAD5] focus:outline-none transition"
                         placeholder="0"
+                        {...register(`Quantity.${type}`)}
                       />
                     </div>
                   </div>
@@ -566,13 +593,12 @@ const removeEditGalleryImage = (index) => {
         </div>
 
         <button
-          type="button"
+          type="submit"
           className="w-full border-2 border-[#3593A6] text-[#3593A6] py-5 rounded-2xl text-lg font-bold hover:bg-[#93CAD5] hover:text-white transition hover:shadow-xl transform hover:scale-[1.02]"
-          onClick={RequestEvent}
         >
           Submit Event Request
         </button>
-      </div>
+      </form>
 
       <div className="w-full bg-white rounded-3xl shadow-xl p-8 border border-gray-100">
         <div className="flex items-center gap-4 mb-6">
@@ -642,7 +668,6 @@ const removeEditGalleryImage = (index) => {
       {isEditModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-3xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-            {/* Modal Header */}
             <div className="sticky top-0 bg-white border-b border-gray-200 p-6 flex items-center justify-between rounded-t-3xl">
               <h2 className="text-2xl font-bold text-gray-800">Edit Event</h2>
               <button
@@ -653,8 +678,7 @@ const removeEditGalleryImage = (index) => {
               </button>
             </div>
 
-            {/* Modal Body */}
-            <div className="p-6">
+            <form onSubmit={handleSubmitEdit(onEditSubmit)} className="p-6">
               {/* Event Details */}
               <div className="mb-6">
                 <h3 className="text-lg font-bold text-gray-800 mb-4">Event Details</h3>
@@ -664,8 +688,7 @@ const removeEditGalleryImage = (index) => {
                     <input
                       type="text"
                       className="w-full h-12 border-2 border-gray-200 rounded-xl p-3 focus:border-[#93CAD5] focus:outline-none"
-                      value={editFormData.title}
-                      onChange={(e) => setEditFormData({...editFormData, title: e.target.value})}
+                      {...registerEdit("title")}
                     />
                   </div>
                   <div>
@@ -673,8 +696,7 @@ const removeEditGalleryImage = (index) => {
                     <input
                       type="text"
                       className="w-full h-12 border-2 border-gray-200 rounded-xl p-3 focus:border-[#93CAD5] focus:outline-none"
-                      value={editFormData.location}
-                      onChange={(e) => setEditFormData({...editFormData, location: e.target.value})}
+                      {...registerEdit("location")}
                     />
                   </div>
                   <div>
@@ -682,8 +704,7 @@ const removeEditGalleryImage = (index) => {
                     <input
                       type="date"
                       className="w-full h-12 border-2 border-gray-200 rounded-xl p-3 focus:border-[#93CAD5] focus:outline-none"
-                      value={editFormData.date}
-                      onChange={(e) => setEditFormData({...editFormData, date: e.target.value})}
+                      {...registerEdit("date")}
                     />
                   </div>
                   <div>
@@ -691,8 +712,7 @@ const removeEditGalleryImage = (index) => {
                     <input
                       type="time"
                       className="w-full h-12 border-2 border-gray-200 rounded-xl p-3 focus:border-[#93CAD5] focus:outline-none"
-                      value={editFormData.time}
-                      onChange={(e) => setEditFormData({...editFormData, time: e.target.value})}
+                      {...registerEdit("time")}
                     />
                   </div>
                 </div>
@@ -701,8 +721,7 @@ const removeEditGalleryImage = (index) => {
                   <textarea
                     className="w-full border-2 border-gray-200 rounded-xl p-3 focus:border-[#93CAD5] focus:outline-none resize-none"
                     rows="4"
-                    value={editFormData.description}
-                    onChange={(e) => setEditFormData({...editFormData, description: e.target.value})}
+                    {...registerEdit("description")}
                   />
                 </div>
               </div>
@@ -710,32 +729,37 @@ const removeEditGalleryImage = (index) => {
               {/* Category */}
               <div className="mb-6">
                 <h3 className="text-lg font-bold text-gray-800 mb-4">Category</h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                  {[
-                    { id: "family", label: "Family", icon: <Users2 className="text-[#5ba3b0]"/> },
-                    { id: "art", label: "Art", icon: <Brush className="text-[#5ba3b0]"/> },
-                    { id: "sports", label: "Sports", icon: <Trophy className="text-[#5ba3b0]"/> },
-                    { id: "music", label: "Music", icon: <Music className="text-[#5ba3b0]"/> }
-                  ].map(cat => (
-                    <button
-                      key={cat.id}
-                      type="button"
-                      className={`h-20 border-2 rounded-xl flex flex-col items-center justify-center gap-1 transition ${
-                        editFormData.selectedCategory === cat.id 
-                          ? "border-[#3593A6] bg-[#93CAD5]/20" 
-                          : "border-gray-200 hover:border-[#93CAD5]"
-                      }`}
-                      onClick={() => setEditFormData({
-                        ...editFormData, 
-                        selectedCategory: cat.id,
-                        category: cat.label
-                      })}
-                    >
-                      {cat.icon}
-                      <span className="font-semibold text-sm">{cat.label}</span>
-                    </button>
-                  ))}
-                </div>
+                <Controller
+                  name="selectedCategory"
+                  control={controlEdit}
+                  render={({ field }) => (
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                      {[
+                        { id: "family", label: "Family", icon: <Users2 className="text-[#5ba3b0]"/> },
+                        { id: "art", label: "Art", icon: <Brush className="text-[#5ba3b0]"/> },
+                        { id: "sports", label: "Sports", icon: <Trophy className="text-[#5ba3b0]"/> },
+                        { id: "music", label: "Music", icon: <Music className="text-[#5ba3b0]"/> }
+                      ].map(cat => (
+                        <button
+                          key={cat.id}
+                          type="button"
+                          className={`h-20 border-2 rounded-xl flex flex-col items-center justify-center gap-1 transition ${
+                            editSelectedCategory === cat.id 
+                              ? "border-[#3593A6] bg-[#93CAD5]/20" 
+                              : "border-gray-200 hover:border-[#93CAD5]"
+                          }`}
+                          onClick={() => {
+                            field.onChange(cat.id);
+                            setValueEdit("category", cat.label);
+                          }}
+                        >
+                          {cat.icon}
+                          <span className="font-semibold text-sm">{cat.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                />
               </div>
 
               {/* Pricing */}
@@ -752,11 +776,7 @@ const removeEditGalleryImage = (index) => {
                             type="number"
                             min="0"
                             className="w-full h-10 border-2 border-gray-200 rounded-lg px-2 text-center focus:border-[#93CAD5] focus:outline-none"
-                            value={editFormData.prices[type]}
-                            onChange={(e) => setEditFormData({
-                              ...editFormData,
-                              prices: {...editFormData.prices, [type]: e.target.value}
-                            })}
+                            {...registerEdit(`prices.${type}`)}
                           />
                         </div>
                         <div>
@@ -765,11 +785,7 @@ const removeEditGalleryImage = (index) => {
                             type="number"
                             min="0"
                             className="w-full h-10 border-2 border-gray-200 rounded-lg px-2 text-center focus:border-[#93CAD5] focus:outline-none"
-                            value={editFormData.quantity[type]}
-                            onChange={(e) => setEditFormData({
-                              ...editFormData,
-                              quantity: {...editFormData.quantity, [type]: e.target.value}
-                            })}
+                            {...registerEdit(`quantity.${type}`)}
                           />
                         </div>
                       </div>
@@ -811,8 +827,34 @@ const removeEditGalleryImage = (index) => {
 
               {/* Gallery Images */}
               <div className="mb-6">
-
-           
+                <h3 className="text-lg font-bold text-gray-800 mb-4">Event Gallery</h3>
+                
+                {/* Existing Images */}
+                {existingGalleryImages.length > 0 && (
+                  <div className="mb-4">
+                    <p className="text-sm font-semibold text-gray-700 mb-2">Current Images ({existingGalleryImages.length})</p>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                      {existingGalleryImages.map((img, index) => (
+                        <div key={index} className="relative group">
+                          <div className="w-full h-28 rounded-lg overflow-hidden border-2 border-gray-200">
+                            <img 
+                              src={`http://localhost:5000/${img}`}
+                              alt={`Gallery ${index + 1}`}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => removeExistingGalleryImage(index)}
+                            className="absolute top-2 right-2 bg-red-500 text-white p-1.5 rounded-lg hover:bg-red-600 transition opacity-0 group-hover:opacity-100"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
                 
                 {/* Add New Images */}
                 <div className="space-y-3">
@@ -832,35 +874,27 @@ const removeEditGalleryImage = (index) => {
                     className="hidden"
                   />
                   
-                  {/* New Images to Upload */}
+                  {/* New Images Preview */}
                   {editGalleryImages.length > 0 && (
                     <div>
-                      <p className="text-sm font-semibold text-gray-700 mb-2 mt-4">New Images added ({editGalleryImages.length})</p>
-                      <div className="grid grid-cols-2 gap-2">
-                        {editGalleryImages.map((file, index) => (
-                          <div key={index} className="flex items-center justify-between bg-green-50 border-2 border-green-200 p-3 rounded-lg">
-                            <div className="flex items-center gap-2">
-                      
-                    
+                      <p className="text-sm font-semibold text-gray-700 mb-2 mt-4">New Images ({editGalleryImages.length})</p>
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                        {editGalleryImages.map((img, index) => (
+                          <div key={index} className="relative group">
+                            <div className="w-full h-28 rounded-lg overflow-hidden border-2 border-green-300 bg-green-50">
+                              <img 
+                                src={img.preview}
+                                alt={`New ${index + 1}`}
+                                className="w-full h-full object-cover"
+                              />
                             </div>
-                       <div className="w-full h-28 rounded-lg overflow-hidden border-2 border-gray-200 flex">
-                            <img 
-                              src={
-        file.preview
-          ? file.preview
-          : `http://localhost:5000/${file}`
-      }
-                              alt={`Gallery ${index + 1}`}
-                              className="w-full h-full object-cover"
-                              
-                            />
                             <button
+                              type="button"
                               onClick={() => removeEditGalleryImage(index)}
-                              className="text-red-600 hover:bg-red-100 p-1 rounded transition"
+                              className="absolute top-2 right-2 bg-red-500 text-white p-1.5 rounded-lg hover:bg-red-600 transition opacity-0 group-hover:opacity-100"
                             >
                               <X className="w-4 h-4" />
                             </button>
-                            </div>
                           </div>
                         ))}
                       </div>
@@ -872,19 +906,20 @@ const removeEditGalleryImage = (index) => {
               {/* Action Buttons */}
               <div className="flex gap-3 pt-4 border-t">
                 <button
+                  type="button"
                   onClick={() => setIsEditModalOpen(false)}
                   className="flex-1 px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-xl font-semibold hover:bg-gray-50 transition"
                 >
                   Cancel
                 </button>
                 <button
-                  onClick={handleUpdateEvent}
+                  type="submit"
                   className="flex-1 px-6 py-3 bg-[#3593A6] text-white rounded-xl font-semibold hover:bg-[#93CAD5] transition"
                 >
                   Save Changes
                 </button>
               </div>
-            </div>
+            </form>
           </div>
         </div>
       )}
