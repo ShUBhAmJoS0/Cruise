@@ -96,7 +96,6 @@ export const updateEvent = async (req, res) => {
       profileImagePath = req.files.profileImage[0].path.replace(/\\/g, '/');
     }
 
-
     if (req.files?.images && req.files.images.length > 0) {
       const newImagePaths = req.files.images.map(file => file.path.replace(/\\/g, '/'));
       imagePaths = [...imagePaths, ...newImagePaths];

@@ -13,7 +13,7 @@ import ProtectedRoute from "./context/privateRoute";import PublicRoute from "./c
 import AdminRoute from "./context/adminRoute";
 import { Layout } from "./component/NavBarLayout";
 import { AddMerch } from "./pages/ArtistAddMerch";
-import { ArtistDashboard } from "./pages/ArtistDashboard";
+import ArtistAnalytics from "./pages/ArtistDashboard";
 import ArtistProfile from "./pages/artistProfileDisplay";
 import ArtistEditProfile from "./pages/ArtistEditProfile";
 import FindArtists from "./pages/FindArtists";
@@ -59,7 +59,7 @@ function AppRoutes() {
         {/* artist */}
         <Route path="/artist/Request" element={<ProtectedRoute allowedRoles={["Artist"]}><ArtistEventRequestPage /></ProtectedRoute>} />
         <Route path="/artist/Addmerch" element={<ProtectedRoute allowedRoles={["Artist"]}><AddMerch /></ProtectedRoute>} />
-        <Route path="/artist/Profile" element={<ProtectedRoute allowedRoles={["Artist"]}><ArtistDashboard /></ProtectedRoute>} />
+        <Route path="/artist/Profile" element={<ProtectedRoute allowedRoles={["Artist"]}><ArtistAnalytics/></ProtectedRoute>} />
         <Route path="/artist/EditProfile" element={<ProtectedRoute allowedRoles={["Artist"]}><ArtistEditProfile></ArtistEditProfile></ProtectedRoute>} />
         <Route path="/artist/viewevent" element={<ProtectedRoute allowedRoles={["Artist"]}><ArtistViewEvents></ArtistViewEvents></ProtectedRoute>}/>
         <Route path="/artist/viewmerch" element={<ProtectedRoute allowedRoles={["Artist"]}><ViewMerchandiseTable/></ProtectedRoute>}/>

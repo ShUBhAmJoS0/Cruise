@@ -81,9 +81,11 @@ export const deleteProduct = async (req, res) => {
     const { id } = req.params;
     const product = await Product.findByPk(id);
     if (!product) return res.status(404).json({ message: "Product not found" });
+    if(product.visible==="Active"){
+await product.update({ visible: "inActive" });
+res.status(200).send({message:"Product deleted sucessfully"})
+    }
 
-    await product.destroy();
-    res.status(200).send({ data:product,message: "Product deleted successfully" });
   } catch (error) {
     console.error(error);
     res.status(500).send({ message: "Failed to delete product", error });
@@ -91,14 +93,16 @@ export const deleteProduct = async (req, res) => {
 };
 export const getAllProduct = async(req,res)=>{
 try {
+  console.log("api hitting for get merch by artist ")
      const userId = req.user.id; 
  console.log(userId)
- const artistspecificitem = await Product.findAll({where:{createdBy:userId}})
+ const artistspecificitem = await Product.findAll({where:{createdBy:userId,visible:"Active"}})
 
  if(!artistspecificitem){
     return res.status(404).send({message:"no added items for this artist"})
  }
- return res.status(200).send({data:artistspecificitem,message:"fetched product sucessfully"})
+
+ return res.status(200).send({data:artistspecificitem, message:"fetched product sucessfully"})
 } catch (error) {
     res.status(500).send({message:error.message})
 }
@@ -119,11 +123,12 @@ export const getproductBycreator = async(req,res)=>{
   try{
 const artistId=req.params.id;
 console.log(artistId)
-const artistmerch = await Product.findAll({where:{createdBy:artistId}})
+const artistmerch = await Product.findAll({where:{createdBy:artistId,visible:"Active" }})
  if(!artistmerch){
     return res.status(404).send({message:"no  merch from this artist"})
  }
- return res.status(200).send({data:artistmerch,message:"fetched all products from this artist sucessfully"})
+
+    return res.status(200).send({data:artistmerch,message:"successfully fetched merch from artist"})
   }
   catch(e){
     console.log(e)
@@ -154,7 +159,8 @@ export const getAllMerch = async (req, res) => {
     }
 
     const allmerch = await Product.findAll({
-      where: whereClause,
+      where:  { ...whereClause,
+  visible: "Active"},
       order,
       include:[
         {
@@ -168,7 +174,7 @@ export const getAllMerch = async (req, res) => {
       return res.status(200).json({ data:[],message: "No merch found" });
     }
 
-    return res.status(200).send({data:allmerch,message:"fetched sucessfuly"});
+
   } catch (e) {
     console.error(e);
     return res.status(500).json({ message: e.message });

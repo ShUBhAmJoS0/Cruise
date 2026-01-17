@@ -42,7 +42,7 @@ function ArtistEventRequestPage() {
   const [editCoverImage, setEditCoverImage] = useState(null);
   const [editCoverPreview, setEditCoverPreview] = useState(null);
   const [editGalleryImages, setEditGalleryImages] = useState([]);
-
+const [removedGalleryImages, setRemovedGalleryImages] = useState([]);
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -129,11 +129,11 @@ function ArtistEventRequestPage() {
 
   const handleEditClick = async (event) => {
     try {
+
       const res = await api.get(`/event/${event.id}`);
       const eventData = res.data;
       console.log(eventData)
       setEditingEvent(eventData);
-      
 
       const parsedPrices = typeof eventData.prices === 'string' 
         ? JSON.parse(eventData.prices) 
@@ -142,7 +142,6 @@ function ArtistEventRequestPage() {
         ? JSON.parse(eventData.Quantity)
         : eventData.Quantity;
       
-
       const categoryMap = {
         "Family": "family",
         "Art": "art",
@@ -164,11 +163,13 @@ function ArtistEventRequestPage() {
       
       setEditCoverPreview(eventData.profileImage ? `http://localhost:5000/${eventData.profileImage}` : null);
       setIsEditModalOpen(true);
+      setEditGalleryImages(eventData.images || [])
     } catch (error) {
       console.error("Failed to fetch event details:", error);
       alert("Failed to load event details");
     }
   };
+
 
   const handleEditCoverChange = (e) => {
     const file = e.target.files[0];
@@ -180,12 +181,23 @@ function ArtistEventRequestPage() {
 
   const handleEditGalleryChange = (e) => {
     const files = Array.from(e.target.files);
-    setEditGalleryImages(prev => [...prev, ...files]);
+
+    const filesWithPreviews = files.map(file => ({
+      file: file,
+      preview: URL.createObjectURL(file),
+      name: file.name
+    }));
+    setEditGalleryImages(prev => [...prev, ...filesWithPreviews]);
   };
 
-  const removeEditGalleryImage = (index) => {
-    setEditGalleryImages(editGalleryImages.filter((_, i) => i !== index));
-  };
+const removeEditGalleryImage = (index) => {
+  const img = editGalleryImages[index];
+  if (img?.preview) {
+    URL.revokeObjectURL(img.preview);
+  }
+
+  setEditGalleryImages(prev => prev.filter((_, i) => i !== index));
+};
 
   const handleUpdateEvent = async () => {
     try {
@@ -203,10 +215,12 @@ function ArtistEventRequestPage() {
       if (editCoverImage) {
         formData.append('profileImage', editCoverImage);
       }
-      
-      editGalleryImages.forEach((file) => {
-        formData.append('images', file);
-      });
+      console.log(editGalleryImages)
+    editGalleryImages.forEach((img) => {
+      if (img?.file) {
+        formData.append("images", img.file);
+      }
+    });
 
       const res = await api.put(`/artist/request/${editingEvent.id}`, formData, {
         headers: {
@@ -218,7 +232,7 @@ function ArtistEventRequestPage() {
       setIsEditModalOpen(false);
       await LoadRequestedEvents();
       
-      // Reset edit states
+
       setEditingEvent(null);
       setEditCoverImage(null);
       setEditCoverPreview(null);
@@ -228,6 +242,7 @@ function ArtistEventRequestPage() {
       alert(error.response?.data?.message || "Failed to update event");
     }
   };
+
 
   const handleDeleteEvent = async (eventId) => {
     if (!window.confirm("Are you sure you want to delete this event?")) {
@@ -287,7 +302,7 @@ function ArtistEventRequestPage() {
         </div>
       </div>
 
- 
+
       <div className="mb-8">
         <div className="flex items-center gap-4 mb-2">
           <div className="bg-[#3593A6] p-3 rounded-xl">
@@ -625,8 +640,9 @@ function ArtistEventRequestPage() {
 
       {/* Edit Modal */}
       {isEditModalOpen && (
-        <div className="fixed inset-0 bg-black/60 bg-opacity-10 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-3xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+            {/* Modal Header */}
             <div className="sticky top-0 bg-white border-b border-gray-200 p-6 flex items-center justify-between rounded-t-3xl">
               <h2 className="text-2xl font-bold text-gray-800">Edit Event</h2>
               <button
@@ -637,7 +653,7 @@ function ArtistEventRequestPage() {
               </button>
             </div>
 
-
+            {/* Modal Body */}
             <div className="p-6">
               {/* Event Details */}
               <div className="mb-6">
@@ -795,8 +811,12 @@ function ArtistEventRequestPage() {
 
               {/* Gallery Images */}
               <div className="mb-6">
-                <h3 className="text-lg font-bold text-gray-800 mb-4">Add Gallery Images</h3>
+
+           
+                
+                {/* Add New Images */}
                 <div className="space-y-3">
+                  <p className="text-sm font-semibold text-gray-600">Add New Images to Gallery</p>
                   <label
                     htmlFor="edit-gallery-upload"
                     className="bg-[#3593A6] text-white px-4 py-2 rounded-xl font-semibold hover:bg-[#93CAD5] transition cursor-pointer inline-block"
@@ -811,19 +831,39 @@ function ArtistEventRequestPage() {
                     id="edit-gallery-upload"
                     className="hidden"
                   />
+                  
+                  {/* New Images to Upload */}
                   {editGalleryImages.length > 0 && (
-                    <div className="grid grid-cols-2 gap-2">
-                      {editGalleryImages.map((file, index) => (
-                        <div key={index} className="flex items-center justify-between bg-gray-100 p-2 rounded-lg">
-                          <span className="text-sm truncate">{file.name}</span>
-                          <button
-                            onClick={() => removeEditGalleryImage(index)}
-                            className="text-red-600 hover:bg-red-50 p-1 rounded"
-                          >
-                            <X className="w-4 h-4" />
-                          </button>
-                        </div>
-                      ))}
+                    <div>
+                      <p className="text-sm font-semibold text-gray-700 mb-2 mt-4">New Images added ({editGalleryImages.length})</p>
+                      <div className="grid grid-cols-2 gap-2">
+                        {editGalleryImages.map((file, index) => (
+                          <div key={index} className="flex items-center justify-between bg-green-50 border-2 border-green-200 p-3 rounded-lg">
+                            <div className="flex items-center gap-2">
+                      
+                    
+                            </div>
+                       <div className="w-full h-28 rounded-lg overflow-hidden border-2 border-gray-200 flex">
+                            <img 
+                              src={
+        file.preview
+          ? file.preview
+          : `http://localhost:5000/${file}`
+      }
+                              alt={`Gallery ${index + 1}`}
+                              className="w-full h-full object-cover"
+                              
+                            />
+                            <button
+                              onClick={() => removeEditGalleryImage(index)}
+                              className="text-red-600 hover:bg-red-100 p-1 rounded transition"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>

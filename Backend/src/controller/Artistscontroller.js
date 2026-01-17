@@ -1,6 +1,8 @@
 
+import Booking from "../model/Booking.js";
 import Event from "../model/Event.js"
 import Follow from "../model/follow.js"
+import OrderItem from "../model/OrderItems.js";
 import Review from "../model/review.js"
 import User from "../model/User.js"
 
@@ -285,3 +287,69 @@ export const getFollowersCount = async (req, res) => {
 };
 
 
+export const getArtistAnalytics = async (req, res) => {
+  try {
+    const artistId = req.user.id;
+
+
+    const totalReviews = await Review.count({
+      where: { artistId }
+    });
+
+    const totalMerchSold = await OrderItem.sum('quantity', {
+      where: { artistId }
+    });
+    const totalEvents = await Event.count({
+      where: { createdBy: artistId }
+    });
+
+    const totalBookings = await Booking.count({
+      include: [{
+        model: Event,
+        where: { createdBy: artistId }
+      }]
+    });
+    const events = await Event.findAll({
+      where: { createdBy: artistId },
+      attributes: ['date', 'id']
+    });
+
+    const eventsByDate = events.reduce((acc, e) => {
+      const date = e.date.toISOString().split('T')[0];
+      acc[date] = (acc[date] || 0) + 1;
+      return acc;
+    }, {});
+
+    const merchRevenue = await OrderItem.findAll({
+      where: { artistId },
+      attributes: ['createdAt', 'totalPrice']
+    });
+
+    const bookingRevenue = await Booking.findAll({
+      include: [{ model: Event, where: { createdBy: artistId } }],
+      attributes: ['createdAt', 'totalPrice']
+    });
+
+    const revenueByMonth = {};
+
+    [...merchRevenue.map(r => ({ date: r.createdAt, total: r.totalPrice })), 
+     ...bookingRevenue.map(b => ({ date: b.createdAt, total: b.totalPrice }))]
+      .forEach(r => {
+        const month = r.date.toISOString().slice(0, 7); 
+        revenueByMonth[month] = (revenueByMonth[month] || 0) + Number(r.total);
+      });
+
+    res.json({
+      totalReviews,
+      totalMerchSold,
+      totalEvents,
+      totalBookings,
+      eventsByDate,
+      revenueByMonth
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: err.message });
+  }
+};
