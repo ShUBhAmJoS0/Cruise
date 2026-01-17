@@ -2,10 +2,12 @@ import React, { useState, useEffect } from "react";
 import PostCard from "./PostCard";
 import api from "../api/axios";
 
-function CreatePostModal({ onClose, onSubmit }) {
-  const [content, setContent] = useState("");
+function CreatePostModal({ onClose, onSubmit, editPost = null }) {
+  const [content, setContent] = useState(editPost?.content || "");
   const [image, setImage] = useState(null);
-  const [imagePreview, setImagePreview] = useState(null);
+  const [imagePreview, setImagePreview] = useState(
+    editPost?.image ? `http://localhost:5000${editPost.image}` : null
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleImageChange = (e) => {
@@ -39,7 +41,9 @@ function CreatePostModal({ onClose, onSubmit }) {
       <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b">
-          <h2 className="text-2xl font-bold text-gray-800">Create Post</h2>
+          <h2 className="text-2xl font-bold text-gray-800">
+            {editPost ? "Edit Post" : "Create Post"}
+          </h2>
           <button
             onClick={onClose}
             className="p-2 hover:bg-gray-100 rounded-full transition-colors"
@@ -106,10 +110,10 @@ function CreatePostModal({ onClose, onSubmit }) {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
-                  Posting...
+                  {editPost ? "Updating..." : "Posting..."}
                 </>
               ) : (
-                'Post'
+                editPost ? "Update" : "Post"
               )}
             </button>
           </div>
@@ -122,18 +126,38 @@ function CreatePostModal({ onClose, onSubmit }) {
 export default function Community() {
   const [posts, setPosts] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [editingPost, setEditingPost] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const currentUserId = 1;
+  const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
+    loadCurrentUser();
     loadPosts();
   }, []);
 
+  // ========================================
+  // LOAD CURRENT USER from backend
+  // ========================================
+  const loadCurrentUser = async () => {
+    try {
+      const res = await api.get("/api/community/auth/me");
+      setCurrentUser(res.data);
+      console.log("Current user loaded:", res.data); // Debug log
+    } catch (err) {
+      console.error("LOAD USER ERROR:", err);
+      // If user is not authenticated, you might want to redirect to login
+    }
+  };
+
+  // ========================================
+  // LOAD ALL POSTS
+  // ========================================
   const loadPosts = async () => {
     setIsLoading(true);
     try {
       const res = await api.get("/api/community");
       setPosts(res.data || []);
+      console.log("Posts loaded:", res.data); // Debug log
     } catch (err) {
       console.error("LOAD POSTS ERROR:", err);
     } finally {
@@ -141,11 +165,13 @@ export default function Community() {
     }
   };
 
+  // ========================================
+  // CREATE NEW POST
+  // ========================================
   const handleCreatePost = async (content, image) => {
     try {
       const formData = new FormData();
       formData.append("content", content);
-      formData.append("userId", currentUserId);
       if (image) formData.append("image", image);
 
       await api.post("/api/community", formData, {
@@ -156,25 +182,66 @@ export default function Community() {
       setShowModal(false);
     } catch (err) {
       console.error("CREATE POST ERROR:", err);
+      alert("Failed to create post. Please try again.");
     }
   };
 
+  // ========================================
+  // EDIT EXISTING POST
+  // ========================================
+  const handleEditPost = async (content, image) => {
+    if (!editingPost) return;
+    
+    try {
+      const formData = new FormData();
+      formData.append("content", content);
+      if (image) formData.append("image", image);
+
+      await api.put(`/api/community/${editingPost.id}`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      await loadPosts();
+      setShowModal(false);
+      setEditingPost(null);
+    } catch (err) {
+      console.error("EDIT POST ERROR:", err);
+      alert("Failed to edit post. Please try again.");
+    }
+  };
+
+  // ========================================
+  // DELETE POST
+  // ========================================
+  const handleDeletePost = async (postId) => {
+    if (!window.confirm("Are you sure you want to delete this post?")) return;
+    
+    try {
+      await api.delete(`/api/community/${postId}`);
+      setPosts(prevPosts => prevPosts.filter(post => post.id !== postId));
+    } catch (err) {
+      console.error("DELETE POST ERROR:", err);
+      alert("Failed to delete post. Please try again.");
+    }
+  };
+
+  // ========================================
+  // TOGGLE LIKE
+  // ========================================
   const handleLike = async (postId) => {
     try {
-      await api.post(`/api/community/${postId}/like`, {
-        userId: currentUserId,
-      });
+      await api.post(`/api/community/${postId}/like`);
 
       // Update state locally without reloading
       setPosts(prevPosts =>
         prevPosts.map(post => {
           if (post.id === postId) {
-            const hasLiked = post.Likes?.some(like => like.userId === currentUserId);
+            const hasLiked = post.Likes?.some(like => like.userId === currentUser?.id);
             return {
               ...post,
               Likes: hasLiked
-                ? post.Likes.filter(like => like.userId !== currentUserId)
-                : [...(post.Likes || []), { userId: currentUserId }]
+                ? post.Likes.filter(like => like.userId !== currentUser?.id)
+                : [...(post.Likes || []), { userId: currentUser?.id }]
             };
           }
           return post;
@@ -185,11 +252,13 @@ export default function Community() {
     }
   };
 
+  // ========================================
+  // ADD COMMENT
+  // ========================================
   const handleComment = async (postId, content) => {
     try {
       const response = await api.post(`/api/community/${postId}/comment`, {
         content,
-        userId: currentUserId,
       });
 
       // Update state locally without reloading
@@ -199,8 +268,11 @@ export default function Community() {
             const newComment = {
               id: response.data?.id || Date.now(),
               content,
-              userId: currentUserId,
-              User: { name: "You" }
+              userId: currentUser?.id,
+              User: { 
+                name: currentUser?.name || "You",
+                profileImage: currentUser?.profileImage 
+              }
             };
             return {
               ...post,
@@ -215,22 +287,23 @@ export default function Community() {
     }
   };
 
+  // ========================================
+  // TOGGLE REPOST
+  // ========================================
   const handleRepost = async (postId) => {
     try {
-      await api.post(`/api/community/${postId}/repost`, {
-        userId: currentUserId,
-      });
+      await api.post(`/api/community/${postId}/repost`);
 
       // Update state locally without reloading
       setPosts(prevPosts =>
         prevPosts.map(post => {
           if (post.id === postId) {
-            const hasReposted = post.Repost?.some(repost => repost.userId === currentUserId);
+            const hasReposted = post.Repost?.some(repost => repost.userId === currentUser?.id);
             return {
               ...post,
               Repost: hasReposted
-                ? post.Repost.filter(repost => repost.userId !== currentUserId)
-                : [...(post.Repost || []), { userId: currentUserId }]
+                ? post.Repost.filter(repost => repost.userId !== currentUser?.id)
+                : [...(post.Repost || []), { userId: currentUser?.id }]
             };
           }
           return post;
@@ -241,6 +314,22 @@ export default function Community() {
     }
   };
 
+  // ========================================
+  // OPEN EDIT MODAL
+  // ========================================
+  const openEditModal = (post) => {
+    setEditingPost(post);
+    setShowModal(true);
+  };
+
+  // ========================================
+  // CLOSE MODAL
+  // ========================================
+  const closeModal = () => {
+    setShowModal(false);
+    setEditingPost(null);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
       <div className="max-w-2xl mx-auto px-4 py-8">
@@ -248,6 +337,13 @@ export default function Community() {
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-gray-800 mb-2">Community</h1>
           <p className="text-gray-600">Share your thoughts and connect with others</p>
+          
+          {/* Debug: Show current user info */}
+          {currentUser && (
+            <p className="text-sm text-gray-500 mt-2">
+              Logged in as: {currentUser.name} (ID: {currentUser.id})
+            </p>
+          )}
         </div>
 
         {/* Create Post Button */}
@@ -260,10 +356,12 @@ export default function Community() {
           </button>
         </div>
 
+        {/* Modal for Create/Edit Post */}
         {showModal && (
           <CreatePostModal
-            onClose={() => setShowModal(false)}
-            onSubmit={handleCreatePost}
+            onClose={closeModal}
+            onSubmit={editingPost ? handleEditPost : handleCreatePost}
+            editPost={editingPost}
           />
         )}
 
@@ -280,10 +378,12 @@ export default function Community() {
             <PostCard
               key={post.id}
               post={post}
-              userId={currentUserId}
+              currentUser={currentUser}
               onLike={() => handleLike(post.id)}
               onComment={(content) => handleComment(post.id, content)}
               onRepost={() => handleRepost(post.id)}
+              onEdit={() => openEditModal(post)}
+              onDelete={() => handleDeletePost(post.id)}
             />
           ))
         ) : (

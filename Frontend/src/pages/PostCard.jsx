@@ -1,12 +1,16 @@
 import React, { useState } from "react";
 
-export default function PostCard({ post, userId, onLike, onComment, onRepost }) {
+export default function PostCard({ post, currentUser, onLike, onComment, onRepost, onEdit, onDelete }) {
   const [commentText, setCommentText] = useState("");
   const [showComments, setShowComments] = useState(false);
   const [isLiking, setIsLiking] = useState(false);
   const [isCommenting, setIsCommenting] = useState(false);
+  const [showMenu, setShowMenu] = useState(false); // NEW: State for dropdown menu
 
-  const hasLiked = post.Likes?.some((like) => like.userId === userId) || false;
+  const hasLiked = post.Likes?.some((like) => like.userId === currentUser?.id) || false;
+  
+  // NEW: Check if current user owns this post
+  const isOwnPost = post.userId === currentUser?.id;
 
   const handleSubmitComment = async () => {
     if (!commentText.trim()) return;
@@ -33,23 +37,79 @@ export default function PostCard({ post, userId, onLike, onComment, onRepost }) 
     <div className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-shadow mb-6 overflow-hidden">
       {/* User Info */}
       <div className="p-6 pb-4">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white font-bold text-lg">
-            {post.User?.name?.[0]?.toUpperCase() || "U"}
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white font-bold text-lg">
+              {post.User?.name?.[0]?.toUpperCase() || "U"}
+            </div>
+            <div>
+              <h3 className="font-semibold text-gray-800">
+                {post.User?.name || "Anonymous User"}
+              </h3>
+              <p className="text-sm text-gray-500">
+                {new Date(post.createdAt).toLocaleDateString('en-US', {
+                  month: 'short',
+                  day: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit'
+                })}
+              </p>
+            </div>
           </div>
-          <div>
-            <h3 className="font-semibold text-gray-800">
-              {post.User?.name || "Anonymous User"}
-            </h3>
-            <p className="text-sm text-gray-500">
-              {new Date(post.createdAt).toLocaleDateString('en-US', {
-                month: 'short',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-              })}
-            </p>
-          </div>
+
+          {/* ========================================
+              NEW: Three-dot menu for own posts ONLY
+              ======================================== */}
+          {isOwnPost && (
+            <div className="relative">
+              <button
+                onClick={() => setShowMenu(!showMenu)}
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              >
+                <svg className="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+                </svg>
+              </button>
+
+              {showMenu && (
+                <>
+                  {/* Overlay to close menu when clicking outside */}
+                  <div 
+                    className="fixed inset-0 z-10" 
+                    onClick={() => setShowMenu(false)}
+                  />
+                  
+                  {/* Dropdown menu */}
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-20">
+                    <button
+                      onClick={() => {
+                        onEdit();
+                        setShowMenu(false);
+                      }}
+                      className="w-full text-left px-4 py-2 hover:bg-gray-50 flex items-center gap-2 text-gray-700"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                      </svg>
+                      Edit Post
+                    </button>
+                    <button
+                      onClick={() => {
+                        onDelete();
+                        setShowMenu(false);
+                      }}
+                      className="w-full text-left px-4 py-2 hover:bg-red-50 flex items-center gap-2 text-red-600"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                      Delete Post
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Post Content */}
