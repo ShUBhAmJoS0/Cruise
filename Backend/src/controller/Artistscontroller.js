@@ -5,15 +5,51 @@ import Review from "../model/review.js"
 import User from "../model/User.js"
 
 export const getallArtists = async(req,res)=>{
-    console.log("getallarist apu hit")
+    console.log("getallartist api hit");
     try {
-        const artists = await User.findAll({where:{userType:"Artist"}})
-        console.log(artists)
-        res.status(200).send({data:artists,message:"sucessfully fetched all artists"})
+        const currentUserId = req.user.id;
+    
+        const artists = await User.findAll({
+            where: { userType: "Artist" },
+            attributes: ['id', 'name', 'email', 'profileImage', 'bio', 'coverImage']
+        });
+
+        const userFollows = await Follow.findAll({
+            where: { followerId: currentUserId },
+            attributes: ['followingId']
+        });
+
+        const followingIds = new Set(userFollows.map(follow => follow.followingId));
+        const artistsWithFollowStatus = await Promise.all(
+            artists.map(async (artist) => {
+                const followersCount = await Follow.count({
+                    where: { followingId: artist.id }
+                });
+
+                return {
+                    id: artist.id,
+                    name: artist.name,
+                    email: artist.email,
+                    profileImage: artist.profileImage,
+                    bio: artist.bio,
+                    coverImage: artist.coverImage,
+                    followersCount,
+                    isFollowing: followingIds.has(artist.id) // Check if user follows this artist
+                };
+            })
+        );
+
+        console.log(artistsWithFollowStatus);
+        res.status(200).send({
+            data: artistsWithFollowStatus,
+            message: "Successfully fetched all artists"
+        });
     } catch (error) {
-        res.status(500).send({message:error.message})
+        console.error("Get all artists error:", error);
+        res.status(500).send({ message: error.message });
     }
-}
+};
+
 export const getArtistbyid = async(req,res)=>{
     console.log("get by artist hit")
     try {
@@ -112,16 +148,11 @@ export const getReviewsByArtist = async (req, res) => {
   }
 };
 export const followUser = async (req, res) => {
+  console.log("follow user api hitting")
   try {
-    const followerId = req.user.id; // Assuming you have auth middleware that adds user to req
-    const followingId = req.params.id; // Artist/user ID to follow
+    const followerId = req.user.id; 
+    const followingId = req.params.id; 
 
-    // Prevent self-following
-    if (followerId === parseInt(followingId)) {
-      return res.status(400).json({ message: "You cannot follow yourself" });
-    }
-
-    // Check if already following
     const existingFollow = await Follow.findOne({
       where: { followerId, followingId }
     });
@@ -130,7 +161,6 @@ export const followUser = async (req, res) => {
       return res.status(400).json({ message: "Already following this user" });
     }
 
-    // Create follow relationship
     await Follow.create({ followerId, followingId });
 
     res.status(200).json({ message: "Successfully followed user" });
@@ -142,6 +172,7 @@ export const followUser = async (req, res) => {
 
 // Unfollow an artist/user
 export const unfollowUser = async (req, res) => {
+    console.log("unfollow user api hitting")
   try {
     const followerId = req.user.id;
     const followingId = req.params.id;
@@ -163,8 +194,8 @@ export const unfollowUser = async (req, res) => {
   }
 };
 
-// Get all followers of a user
 export const getFollowers = async (req, res) => {
+    console.log("gget followers api hitting")
   try {
     const userId = req.params.id;
 
@@ -173,8 +204,8 @@ export const getFollowers = async (req, res) => {
       include: [
         {
           model: User,
-          as: "follower", // You'll need to set up this association
-          attributes: ["id", "username", "email", "profilePicture"] // Adjust based on your User model
+          as: "follower",
+          attributes: ["id", "name", "email", "profileImage"]
         }
       ]
     });
@@ -191,8 +222,9 @@ export const getFollowers = async (req, res) => {
   }
 };
 
-// Get all users that a user is following
+
 export const getFollowing = async (req, res) => {
+    console.log("follow user api hitting")
   try {
     const userId = req.params.id;
 
@@ -201,8 +233,8 @@ export const getFollowing = async (req, res) => {
       include: [
         {
           model: User,
-          as: "following", // You'll need to set up this association
-          attributes: ["id", "username", "email", "profilePicture"]
+          as: "following", 
+          attributes: ["id", "name", "email", "profileImage"]
         }
       ]
     });
@@ -219,7 +251,7 @@ export const getFollowing = async (req, res) => {
   }
 };
 
-// Check if current user is following a specific user
+
 export const checkFollowStatus = async (req, res) => {
   try {
     const followerId = req.user.id;
@@ -236,7 +268,7 @@ export const checkFollowStatus = async (req, res) => {
   }
 };
 
-// Get followers count
+
 export const getFollowersCount = async (req, res) => {
   try {
     const userId = req.params.id;
@@ -252,18 +284,4 @@ export const getFollowersCount = async (req, res) => {
   }
 };
 
-// Get following count
-export const getFollowingCount = async (req, res) => {
-  try {
-    const userId = req.params.id;
 
-    const count = await Follow.count({
-      where: { followerId: userId }
-    });
-
-    res.status(200).json({ followingCount: count });
-  } catch (error) {
-    console.error("Get following count error:", error);
-    res.status(500).json({ message: "Server error", error: error.message });
-  }
-};

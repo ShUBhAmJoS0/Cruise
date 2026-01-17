@@ -32,7 +32,6 @@ app.use('/uploads', express.static('uploads'));
 app.use(authToken)
 app.use("/auth",authRoutes)
 app.use("/api/community", communityRoutes);
-//asignig routes
 app.use("/api/events", eventFilters);
 app.use("/event",eventRoutes)
 app.use("/api/booking",bookingRoutes)

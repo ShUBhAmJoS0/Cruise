@@ -8,19 +8,7 @@ import Booking from "./Booking.js";
 import Event from "./Event.js";
 
 
-User.hasMany(Follow, {
-  foreignKey: "followerId",
-  as: "Following"
-});
 
-
-User.hasMany(Follow, {
-  foreignKey: "followingId",
-  as: "Followers"
-});
-
-Follow.belongsTo(User, { foreignKey: "followerId", as: "Follower" });
-Follow.belongsTo(User, { foreignKey: "followingId", as: "FollowingUser" });
 Product.belongsTo(User, { foreignKey: "createdBy" });
 Product.hasMany(OrderItem, {
   foreignKey: "productId",

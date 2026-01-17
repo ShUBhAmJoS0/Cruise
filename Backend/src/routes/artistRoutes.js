@@ -36,10 +36,9 @@ router.put("/updateProfile",upload.fields([
     router.get("/allmerch/:id",AttendeeOnly,getproductBycreator)
     router.get("/allreview/:id",AttendeeOnly,getReviewsByArtist)
     router.post("/allreview",AttendeeOnly,createReview)
-    router.post("/follow",AttendeeOnly,followUser)
-     router.post("/unfollow",AttendeeOnly,unfollowUser)
-     router.get("/followers",AttendeeOnly,getFollowers)
-     router.get("/followings",AttendeeOnly,getFollowing)
+    router.post("/follow/:id",AttendeeOnly,followUser)
+     router.post("/unfollow/:id",AttendeeOnly,unfollowUser)
+     router.get("/followers/:id",AttendeeOnly,getFollowers)
 
 export default router
 
