@@ -137,10 +137,24 @@ export const GetEvent = async (req, res) => {
     }
     res.status(200).json(event);
   } catch (e) {
-    console.error(e);
+    console.log(e.message);
     res.status(500).json({ message: "Failed to fetch event" });
   }
 };
+export const deleteEvent = async(req,res)=>{
+  console.log("delete api for event hit ")
+  try{
+    const eventid = req.params.id
+    const event = await Event.findByPk(eventid)
+    if(event.visible==="Active"){
+      event.update({visible:"inActive"})
+      return res.status(200).send({message:"event deleted sucessfully"})
+    }
+  }
+  catch(e){
+    res.status(500).send({message:e.message})
+  }
+}
 
 export const filterEvent = async (req, res) => {
   try {
@@ -157,7 +171,7 @@ export const GetrequestedEvent = async(req,res)=>{
   try{
      const userId = req.user.id; 
      console.log(userId)
-    const requestedEvents = await Event.findAll({where:{createdBy:userId}});
+    const requestedEvents = await Event.findAll({where:{createdBy:userId,visible:"Active"}});
  
 if(!requestedEvents){
   return res.status(404).send({message:"no events found for this user"})

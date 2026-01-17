@@ -278,10 +278,9 @@ function ArtistEventRequestPage() {
     if (!window.confirm("Are you sure you want to delete this event?")) {
       return;
     }
-    
     try {
-      await api.delete(`/artist/request/${eventId}`);
-      alert("Event deleted successfully");
+     const res= await api.delete(`/artist/request/${eventId}`);
+      alert(res.data.message);
       await LoadRequestedEvents();
     } catch (error) {
       console.error("Failed to delete event:", error);
