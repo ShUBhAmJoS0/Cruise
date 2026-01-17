@@ -4,7 +4,7 @@ import upload from "../Config/multer.js";
 import { artistOnly } from "../middleware/Artistonly.js";
 import { addProduct, deleteProduct, editProduct, getAllProduct, getproductbuyers, getproductBycreator} from "../controller/ProductController.js";
 import { updateUser } from "../controller/authController.js";
-import { createReview, getallArtists, getArtistbyid, getArtistgigs, getpendingArtistgigs, getReviewsByArtist } from "../controller/Artistscontroller.js";
+import { createReview, followUser, getallArtists, getArtistbyid, getArtistgigs, getFollowers, getFollowing, getpendingArtistgigs, getReviewsByArtist, unfollowUser } from "../controller/Artistscontroller.js";
 import { AttendeeOnly } from "../middleware/Attendeonly.js";
 
 
@@ -36,6 +36,10 @@ router.put("/updateProfile",upload.fields([
     router.get("/allmerch/:id",AttendeeOnly,getproductBycreator)
     router.get("/allreview/:id",AttendeeOnly,getReviewsByArtist)
     router.post("/allreview",AttendeeOnly,createReview)
+    router.post("/follow",AttendeeOnly,followUser)
+     router.post("/unfollow",AttendeeOnly,unfollowUser)
+     router.get("/followers",AttendeeOnly,getFollowers)
+     router.get("/followings",AttendeeOnly,getFollowing)
 
 export default router
 

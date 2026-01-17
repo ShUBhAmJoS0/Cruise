@@ -111,3 +111,159 @@ export const getReviewsByArtist = async (req, res) => {
     res.status(500).json({ message: "Failed to fetch reviews" });
   }
 };
+export const followUser = async (req, res) => {
+  try {
+    const followerId = req.user.id; // Assuming you have auth middleware that adds user to req
+    const followingId = req.params.id; // Artist/user ID to follow
+
+    // Prevent self-following
+    if (followerId === parseInt(followingId)) {
+      return res.status(400).json({ message: "You cannot follow yourself" });
+    }
+
+    // Check if already following
+    const existingFollow = await Follow.findOne({
+      where: { followerId, followingId }
+    });
+
+    if (existingFollow) {
+      return res.status(400).json({ message: "Already following this user" });
+    }
+
+    // Create follow relationship
+    await Follow.create({ followerId, followingId });
+
+    res.status(200).json({ message: "Successfully followed user" });
+  } catch (error) {
+    console.error("Follow error:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+// Unfollow an artist/user
+export const unfollowUser = async (req, res) => {
+  try {
+    const followerId = req.user.id;
+    const followingId = req.params.id;
+
+    const follow = await Follow.findOne({
+      where: { followerId, followingId }
+    });
+
+    if (!follow) {
+      return res.status(404).json({ message: "Follow relationship not found" });
+    }
+
+    await follow.destroy();
+
+    res.status(200).json({ message: "Successfully unfollowed user" });
+  } catch (error) {
+    console.error("Unfollow error:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+// Get all followers of a user
+export const getFollowers = async (req, res) => {
+  try {
+    const userId = req.params.id;
+
+    const followers = await Follow.findAll({
+      where: { followingId: userId },
+      include: [
+        {
+          model: User,
+          as: "follower", // You'll need to set up this association
+          attributes: ["id", "username", "email", "profilePicture"] // Adjust based on your User model
+        }
+      ]
+    });
+
+    const followersList = followers.map(follow => follow.follower);
+
+    res.status(200).json({
+      count: followersList.length,
+      followers: followersList
+    });
+  } catch (error) {
+    console.error("Get followers error:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+// Get all users that a user is following
+export const getFollowing = async (req, res) => {
+  try {
+    const userId = req.params.id;
+
+    const following = await Follow.findAll({
+      where: { followerId: userId },
+      include: [
+        {
+          model: User,
+          as: "following", // You'll need to set up this association
+          attributes: ["id", "username", "email", "profilePicture"]
+        }
+      ]
+    });
+
+    const followingList = following.map(follow => follow.following);
+
+    res.status(200).json({
+      count: followingList.length,
+      following: followingList
+    });
+  } catch (error) {
+    console.error("Get following error:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+// Check if current user is following a specific user
+export const checkFollowStatus = async (req, res) => {
+  try {
+    const followerId = req.user.id;
+    const followingId = req.params.id;
+
+    const isFollowing = await Follow.findOne({
+      where: { followerId, followingId }
+    });
+
+    res.status(200).json({ isFollowing: !!isFollowing });
+  } catch (error) {
+    console.error("Check follow status error:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+// Get followers count
+export const getFollowersCount = async (req, res) => {
+  try {
+    const userId = req.params.id;
+
+    const count = await Follow.count({
+      where: { followingId: userId }
+    });
+
+    res.status(200).json({ followersCount: count });
+  } catch (error) {
+    console.error("Get followers count error:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+// Get following count
+export const getFollowingCount = async (req, res) => {
+  try {
+    const userId = req.params.id;
+
+    const count = await Follow.count({
+      where: { followerId: userId }
+    });
+
+    res.status(200).json({ followingCount: count });
+  } catch (error) {
+    console.error("Get following count error:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};

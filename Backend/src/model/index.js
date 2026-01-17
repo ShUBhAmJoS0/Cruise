@@ -36,10 +36,28 @@ User.hasMany(Booking, { foreignKey: "createdBy" });
 Booking.belongsTo(User, { foreignKey: "createdBy" });
 Event.hasMany(Booking, { foreignKey: "EventId" });
 Booking.belongsTo(Event, { foreignKey: "EventId" });
+Follow.belongsTo(User, {
+    foreignKey: 'followerId',
+    as: 'follower'
+  });
+  Follow.belongsTo(User, {
+    foreignKey: 'followingId',
+    as: 'following'
+  });
+  User.hasMany(Follow, {
+    foreignKey: 'followerId',
+    as: 'following'
+  });
+  User.hasMany(Follow, {
+    foreignKey: 'followingId',
+    as: 'followers'
+  });
+;
 export {
   User,
   Product,
   Order,
   OrderItem,
-  CartItem
+  CartItem,
+  Follow
 };

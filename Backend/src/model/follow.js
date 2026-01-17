@@ -10,14 +10,24 @@ const Follow = sequelize.define("Follow", {
 
   followerId: {
     type: DataTypes.INTEGER,
-    allowNull: false
+    allowNull: false,
+    references: {
+      model: 'Users',
+      key: 'id'
+    },
+    unique:true
   },
 
   followingId: {
     type: DataTypes.INTEGER,
-    allowNull: false
+    allowNull: false,
+    references: {
+      model: 'Users',
+      key: 'id'
+    },
+    unique:true
   }
-
-}, );
+},
+);
 
 export default Follow;
