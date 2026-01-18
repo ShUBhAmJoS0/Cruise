@@ -12,6 +12,8 @@ const ArtistProfile = () => {
   const [activeTab, setActiveTab] = useState("about");
   const[merch,setMerch]= useState([]);
   const [ reviews,setReviews]=useState([]);
+  const [reviewComment, setReviewComment] = useState("");
+  const [submittingReview, setSubmittingReview] = useState(false);
 
   const navigate = useNavigate();
   useEffect(() => {
@@ -51,7 +53,7 @@ setMerch(res.data.data);
 
   const fetchReviews = async()=>{
     try {
-      const res=await api.get("/artist/allreviews")
+      const res=await api.get(`/api/reviews/artist/${artistId}`)
       console.log(res.data.data,"fetched sucessfully all reviews")
       setReviews(res.data.data);
     } catch (error) {
@@ -143,6 +145,34 @@ if (activeTab === "reviews") {
     } catch (err) {
       console.error("Failed to add to cart:", err);
       alert("Failed to add to cart.");
+    }
+  };
+
+  const handleSubmitReview = async (e) => {
+    e.preventDefault();
+    
+    if (!reviewComment.trim()) {
+      alert("Please write a review");
+      return;
+    }
+
+    setSubmittingReview(true);
+    try {
+      await api.post("/api/reviews", {
+        artistId: artistId,
+        comment: reviewComment,
+      });
+      
+      setReviewComment("");
+      alert("Review posted successfully!");
+      
+      // Refresh reviews
+      fetchReviews();
+    } catch (err) {
+      console.error("Failed to post review:", err);
+      alert("Failed to post review.");
+    } finally {
+      setSubmittingReview(false);
     }
   };
 
@@ -341,20 +371,24 @@ if (activeTab === "reviews") {
       </h2>
 
       {/* Review Form */}
-      <form className="border rounded-lg p-4 mb-8">
+      <form className="border rounded-lg p-4 mb-8" onSubmit={handleSubmitReview}>
         <h3 className="font-semibold mb-3">Leave a Review</h3>
 
         <textarea
           placeholder="Write your review here..."
           className="w-full border rounded-lg p-3 resize-none focus:outline-none focus:ring-2 focus:ring-[#3593A6]"
           rows={4}
+          value={reviewComment}
+          onChange={(e) => setReviewComment(e.target.value)}
+          disabled={submittingReview}
         />
 
         <button
           type="submit"
-          className="mt-4 bg-[#3593A6] text-white px-6 py-2 rounded-lg hover:bg-[#226471] transition"
+          disabled={submittingReview}
+          className="mt-4 bg-[#3593A6] text-white px-6 py-2 rounded-lg hover:bg-[#226471] transition disabled:bg-gray-400"
         >
-          Submit Review
+          {submittingReview ? "Posting..." : "Submit Review"}
         </button>
       </form>
 
@@ -371,7 +405,7 @@ if (activeTab === "reviews") {
               className="border rounded-lg p-4 hover:shadow-md transition"
             >
               <div className="flex items-center justify-between mb-2">
-                <h4 className="font-semibold">{review.userName}</h4>
+                <h4 className="font-semibold">{review.reviewer?.name || "Anonymous"}</h4>
                 <span className="text-gray-400 text-xs">
                   {new Date(review.createdAt).toLocaleDateString()}
                 </span>

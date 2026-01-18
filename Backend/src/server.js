@@ -11,7 +11,8 @@ import artistRoutes from "./routes/artistRoutes.js";
 import authToken from "./middleware/firebaseAuth.js";
 import orderRoutes from "./routes/orderRoutes.js";
 import cartRoutes from "./routes/cartRoutes.js";
-import communityRoutes from "./routes/communityRoutes.js"
+import communityRoutes from "./routes/communityRoutes.js";
+import reviewRoutes from "./routes/reviewRoutes.js";
 import orderHistoryRoutes from "./routes/orderHistoryRoutes.js";
 
 import "./model/index.js"
@@ -39,6 +40,7 @@ app.use("/api/booking",bookingRoutes)
 app.use("/artist",artistRoutes);
 app.use("/merch", orderRoutes);
 app.use("/api/cart",cartRoutes)
+app.use("/api/reviews", reviewRoutes)
 
 
 app.use("/api/orderhistory", orderHistoryRoutes);

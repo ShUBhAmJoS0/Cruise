@@ -6,6 +6,7 @@ import User from "./User.js";
 import Follow from "./follow.js";
 import Booking from "./Booking.js";
 import Event from "./Event.js";
+import Review from "./review.js";
 
 
 User.hasMany(Follow, {
@@ -21,6 +22,9 @@ User.hasMany(Follow, {
 
 Follow.belongsTo(User, { foreignKey: "followerId", as: "Follower" });
 Follow.belongsTo(User, { foreignKey: "followingId", as: "FollowingUser" });
+
+User.hasMany(Review, { foreignKey: "userId", as: "reviews" });
+User.hasMany(Review, { foreignKey: "artistId", as: "artistReviews" });
 Product.belongsTo(User, { foreignKey: "createdBy" });
 Product.hasMany(OrderItem, {
   foreignKey: "productId",
