@@ -58,7 +58,7 @@ const Booking = sequelize.define(
     },
     EventId:{
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
       references: {
         model: Event,
         key: "id",

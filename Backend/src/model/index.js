@@ -6,6 +6,7 @@ import User from "./User.js";
 import Follow from "./follow.js";
 import Booking from "./Booking.js";
 import Event from "./Event.js";
+import Review from "./review.js";
 
 
 

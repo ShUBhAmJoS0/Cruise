@@ -2,7 +2,6 @@ import { DataTypes } from "sequelize";
 import sequelize from "../Database/db.js";
 import User from "./User.js";
 
-
 const Review = sequelize.define(
   "review",
   {
@@ -11,23 +10,33 @@ const Review = sequelize.define(
       autoIncrement: true,
       primaryKey: true,
     },
-
     comment: {
       type: DataTypes.TEXT,
       allowNull: false,
     },
-
     userId: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      references: {
+        model: "users",
+        key: "id"
+      }
     },
-
     artistId: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      references: {
+        model: "users",
+        key: "id"
+      }
     },
   },
-
+  {
+    timestamps: true
+  }
 );
-  Review.belongsTo(User, { foreignKey: "id" });
+
+Review.belongsTo(User, { foreignKey: "userId", as: "reviewer" });
+Review.belongsTo(User, { foreignKey: "artistId", as: "artist" });
+
 export default Review;

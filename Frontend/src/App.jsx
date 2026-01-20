@@ -29,6 +29,7 @@ import { ViewMerchandiseTable } from "./pages/viewmerchartist";
 import MyBookings from "./pages/MyBookings";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminLogin from "./pages/admin/AdminLogin";
+import UserEditProfile from "./pages/UserEditProfile";
 
 function AppRoutes() {
   const location = useLocation();
@@ -59,6 +60,7 @@ function AppRoutes() {
 <Route path="/community" element={<ProtectedRoute allowedRoles={["Attendee"]}><Community></Community></ProtectedRoute>} />
 <Route path="/mybookings" element={<ProtectedRoute allowedRoles={["Attendee"]}><MyBookings /></ProtectedRoute>} />
  <Route path="/orderhistory" element={<ProtectedRoute allowedRoles={["Attendee"]}><OrderHistory></OrderHistory></ProtectedRoute>} />
+<Route path="/usereditprofile" element={<ProtectedRoute allowedRoles={["Attendee"]}><UserEditProfile/></ProtectedRoute>} />
         {/* artist */}
         <Route path="/artist/Request" element={<ProtectedRoute allowedRoles={["Artist"]}><ArtistEventRequestPage /></ProtectedRoute>} />
         <Route path="/artist/Addmerch" element={<ProtectedRoute allowedRoles={["Artist"]}><AddMerch /></ProtectedRoute>} />
