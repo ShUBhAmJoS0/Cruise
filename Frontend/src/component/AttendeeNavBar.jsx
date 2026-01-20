@@ -3,7 +3,7 @@
 
 import { Link, useLocation } from "react-router-dom";
 
-export function AttendeeNavBar({ logout, user }) {
+export function AttendeeNavBar({ logout, user, dbuser }) {
   const location = useLocation();
   const primaryColor = "#3593A6";
 
@@ -50,14 +50,14 @@ export function AttendeeNavBar({ logout, user }) {
         <div className="flex items-center gap-4 w-full md:w-auto">
     
 
-          <div className="h-10 rounded-full flex mr-2 border-2 border-white shadow-md shrink-0">
+          <div className="w-10 h-10 rounded-full flex mr-2 border-2 border-white shadow-md shrink-0 overflow-hidden">
             <img
-              src="/images/defaultprofilepic.png"
+              src={dbuser?.profileImage ? `http://localhost:5000/${dbuser.profileImage}` : "/images/defaultprofilepic.png"}
               alt="Profile"
               className="w-full h-full object-cover"
             />
           </div>
-          <h3 className="text-black w-[200px]">{user?.displayName}</h3>
+          <h3 className="text-black w-[200px]">{dbuser?.name || user?.displayName}</h3>
           <button onClick={logout}>Logout</button>
         </div>
       </div>

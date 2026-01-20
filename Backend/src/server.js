@@ -4,6 +4,7 @@ import dotenv from "dotenv"
 dotenv.config();
 import sequelize from "./Database/db.js";
 import authRoutes from "./routes/authRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
 import eventRoutes from "./routes/EventRoutes.js";
 import bookingRoutes from "./routes/bookingRoutes.js";
 import eventFilters from './routes/eventFiltersRoutes.js';
@@ -32,6 +33,7 @@ app.use('/uploads', express.static('uploads'));
 
 app.use(authToken)
 app.use("/auth",authRoutes)
+app.use("/user",userRoutes)
 app.use("/api/community", communityRoutes);
 //asignig routes
 app.use("/api/events", eventFilters);

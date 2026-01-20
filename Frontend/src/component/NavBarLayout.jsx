@@ -16,7 +16,7 @@ const renderNavbar =()=>{
             case "Artist":
                 return <ArtistNavbar user={user} logout={logout}  dbuser={dbuser}/>;
                 case "Attendee":
-                    return <AttendeeNavBar user={user} logout={logout}/>
+                    return <AttendeeNavBar user={user} logout={logout} dbuser={dbuser}/>
                     default:
                         return null
     }
