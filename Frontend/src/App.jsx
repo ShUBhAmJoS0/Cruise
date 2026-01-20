@@ -9,7 +9,8 @@ import Bookingpage from "./pages/BookingPage";
 import ExploreEvents from "./pages/ExploreEvents";
 import Merchandise from "./pages/Merchandise";
 import ArtistEventRequestPage from "./pages/ArtistEventrequestpage"
-import ProtectedRoute from "./context/privateRoute";import PublicRoute from "./context/publicRoute";
+import ProtectedRoute from "./context/privateRoute";
+import PublicRoute from "./context/publicRoute";
 import AdminRoute from "./context/adminRoute";
 import { Layout } from "./component/NavBarLayout";
 import { AddMerch } from "./pages/ArtistAddMerch";
@@ -22,6 +23,7 @@ import CartPage from "./pages/AddtoCart";
 import CheckoutPage from "./pages/Checkoutpage";
 import ReceiptPage from "./pages/Receptpage";
 import Community from "./pages/Community";
+import OrderHistory from './pages/OrderHistory';
 import ArtistViewEvents from "./pages/Vieweventartist";
 import { ViewMerchandiseTable } from "./pages/viewmerchartist";
 import MyBookings from "./pages/MyBookings";
@@ -56,6 +58,7 @@ function AppRoutes() {
 <Route path="/receipt" element={<ProtectedRoute allowedRoles={["Attendee"]}><ReceiptPage /></ProtectedRoute>} />
 <Route path="/community" element={<ProtectedRoute allowedRoles={["Attendee"]}><Community></Community></ProtectedRoute>} />
 <Route path="/mybookings" element={<ProtectedRoute allowedRoles={["Attendee"]}><MyBookings /></ProtectedRoute>} />
+ <Route path="/orderhistory" element={<ProtectedRoute allowedRoles={["Attendee"]}><OrderHistory></OrderHistory></ProtectedRoute>} />
         {/* artist */}
         <Route path="/artist/Request" element={<ProtectedRoute allowedRoles={["Artist"]}><ArtistEventRequestPage /></ProtectedRoute>} />
         <Route path="/artist/Addmerch" element={<ProtectedRoute allowedRoles={["Artist"]}><AddMerch /></ProtectedRoute>} />

@@ -61,7 +61,7 @@ export const getOrderById = async (req, res) => {
     const { orderId } = req.params;
 
     const order = await OrderHistory.findOne({
-      where: { id: orderId },
+      where: { orderId },
       include: [
         {
           model: OrderHistoryItem,
@@ -173,7 +173,7 @@ export const updateOrderStatus = async (req, res) => {
     const { orderId } = req.params;
     const { status, trackingNumber } = req.body;
 
-    const order = await OrderHistory.findOne({ where: { id: orderId } });
+    const order = await OrderHistory.findOne({ where: { orderId } });
 
     if (!order) {
       return res.status(404).json({
@@ -215,7 +215,7 @@ export const cancelOrder = async (req, res) => {
   try {
     const { orderId } = req.params;
 
-    const order = await OrderHistory.findOne({ where: { id: orderId } });
+    const order = await OrderHistory.findOne({ where: { orderId } });
 
     if (!order) {
       return res.status(404).json({
