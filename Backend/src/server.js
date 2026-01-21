@@ -13,6 +13,7 @@ import orderRoutes from "./routes/orderRoutes.js";
 import cartRoutes from "./routes/cartRoutes.js";
 import communityRoutes from "./routes/communityRoutes.js"
 import orderHistoryRoutes from "./routes/orderHistoryRoutes.js";
+import communityGuidelinesRoutes from "./routes/communityGuidelinesRoutes.js";
 
 import "./model/index.js"
 const app=express();
@@ -28,6 +29,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static('uploads'));
 
+app.use("/api/communityguidelines", communityGuidelinesRoutes);
+
 
 app.use(authToken)
 app.use("/auth",authRoutes)
@@ -39,7 +42,6 @@ app.use("/api/booking",bookingRoutes)
 app.use("/artist",artistRoutes);
 app.use("/merch", orderRoutes);
 app.use("/api/cart",cartRoutes)
-
 
 app.use("/api/orderhistory", orderHistoryRoutes);
 

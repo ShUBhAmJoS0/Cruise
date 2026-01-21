@@ -1,5 +1,3 @@
-// backend/src/model/Event.js
-
 import { DataTypes } from "sequelize";
 import sequelize from "../Database/db.js";
 import User from "./User.js";

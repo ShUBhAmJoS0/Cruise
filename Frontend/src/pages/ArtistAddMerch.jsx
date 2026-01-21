@@ -30,7 +30,7 @@ function AddMerch() {
       formData.append("sku", data.sku || "");
       if (selectedImage) formData.append("image", selectedImage);
 
-      const res = await api.post("/artist/allmerch/details", formData, {
+      const res = await api.post("/artist/addmerch", formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       alert(res.data.message);
