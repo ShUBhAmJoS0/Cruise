@@ -6,8 +6,8 @@ function EventRequests({ onNavigate, onLogout }) {
   const [loading, setLoading] = useState(true);
 
   const totalRequests = requests.length;
-  const pendingCount = requests.filter(r => r.status === "Pending Review").length;
-  const approvedThisMonth = requests.filter(r => r.status === "Approved").length;
+  const pendingCount = requests.filter(r => r.status?.toLowerCase() === "pending review" || r.status?.toLowerCase() === "pending").length;
+  const approvedThisMonth = requests.filter(r => r.status?.toLowerCase() === "approved").length;
 
   useEffect(() => {
     fetchRequests();
@@ -16,20 +16,20 @@ function EventRequests({ onNavigate, onLogout }) {
   const fetchRequests = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/artist-requests', {
+      const response = await fetch('/api/admin/event-requests', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
         }
       });
-      
+
       if (!response.ok) {
         throw new Error('Failed to fetch requests');
       }
-      
+
       const data = await response.json();
-      setRequests(data);
+      setRequests(data.data || data);
     } catch (error) {
       console.error('Error fetching requests:', error);
     } finally {
@@ -43,18 +43,18 @@ function EventRequests({ onNavigate, onLogout }) {
     }
 
     try {
-      const response = await fetch(`/api/artist-requests/${id}/accept`, {
+      const response = await fetch(`/api/admin/event-requests/${id}/approve`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
         }
       });
-      
+
       if (!response.ok) {
         throw new Error('Failed to accept request');
       }
-      
+
       setRequests(requests.filter(req => req.id !== id));
       alert('Event hosting request accepted successfully!');
     } catch (error) {
@@ -69,18 +69,18 @@ function EventRequests({ onNavigate, onLogout }) {
     }
 
     try {
-      const response = await fetch(`/api/artist-requests/${id}/decline`, {
+      const response = await fetch(`/api/admin/event-requests/${id}/reject`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
         }
       });
-      
+
       if (!response.ok) {
         throw new Error('Failed to decline request');
       }
-      
+
       setRequests(requests.filter(req => req.id !== id));
       alert('Event hosting request declined.');
     } catch (error) {
@@ -104,9 +104,15 @@ function EventRequests({ onNavigate, onLogout }) {
     return "bg-gray-100 text-gray-800 border-gray-200";
   };
 
-  const filteredRequests = activeFilter === 'all' 
-    ? requests 
-    : requests.filter(r => r.status.toLowerCase() === activeFilter);
+  const filteredRequests = activeFilter === 'all'
+    ? requests
+    : requests.filter(r => {
+      const status = r.status?.toLowerCase();
+      if (activeFilter === 'pending review') {
+        return status === 'pending review' || status === 'pending';
+      }
+      return status === activeFilter;
+    });
 
   return (
     <div className="flex h-screen w-full overflow-hidden bg-[#f6f7f8]">
@@ -117,7 +123,7 @@ function EventRequests({ onNavigate, onLogout }) {
               <h1 className="text-[#3593A6] text-xl font-bold leading-normal tracking-tight">Cruise Admin</h1>
               <p className="text-[#617589] text-xs font-medium uppercase tracking-wider mt-1">Event Requests</p>
             </div>
-            
+
             <nav className="flex flex-col gap-2">
               <button onClick={() => onNavigate && onNavigate('dashboard')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#617589] hover:bg-[#f0f2f4] transition-colors group cursor-pointer">
                 <svg className="w-6 h-6 group-hover:text-[#3593A6] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -125,15 +131,15 @@ function EventRequests({ onNavigate, onLogout }) {
                 </svg>
                 <span className="text-sm font-medium">Dashboard</span>
               </button>
-              
+
               <button className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-[#3593A6]/10 text-[#3593A6]">
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
                 <span className="text-sm font-medium">Event Requests</span>
               </button>
-              
-              <button 
+
+              <button
                 onClick={() => onNavigate && onNavigate('user-problems')}
                 className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#617589] hover:bg-[#f0f2f4] transition-colors group w-full text-left"
               >
@@ -142,7 +148,7 @@ function EventRequests({ onNavigate, onLogout }) {
                 </svg>
                 <span className="text-sm font-medium">User Problems</span>
               </button>
-              
+
               <button className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#617589] hover:bg-[#f0f2f4] transition-colors group w-full text-left">
                 <svg className="w-6 h-6 group-hover:text-[#3593A6] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
@@ -152,9 +158,9 @@ function EventRequests({ onNavigate, onLogout }) {
               </button>
             </nav>
           </div>
-          
+
           <div className="flex flex-col gap-1 border-t border-[#e5e7eb] pt-4">
-            <button 
+            <button
               onClick={handleLogout}
               className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#617589] hover:bg-red-50 hover:text-red-600 transition-colors w-full text-left"
             >
@@ -209,7 +215,7 @@ function EventRequests({ onNavigate, onLogout }) {
               <div className="flex flex-col gap-1 rounded-xl p-6 border border-[#e5e7eb] bg-white shadow-sm relative overflow-hidden group">
                 <div className="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                   <svg className="w-16 h-16 text-[#3593A6]" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+                    <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
                   </svg>
                 </div>
                 <p className="text-[#617589] text-sm font-medium uppercase tracking-wider">Total Requests</p>
@@ -221,7 +227,7 @@ function EventRequests({ onNavigate, onLogout }) {
               <div className="flex flex-col gap-1 rounded-xl p-6 border border-l-4 border-[#e5e7eb] border-l-yellow-500 bg-white shadow-sm relative overflow-hidden group">
                 <div className="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                   <svg className="w-16 h-16 text-yellow-500" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
                 <p className="text-[#617589] text-sm font-medium uppercase tracking-wider">Pending Review</p>
@@ -236,7 +242,7 @@ function EventRequests({ onNavigate, onLogout }) {
               <div className="flex flex-col gap-1 rounded-xl p-6 border border-[#e5e7eb] bg-white shadow-sm relative overflow-hidden group">
                 <div className="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                   <svg className="w-16 h-16 text-green-500" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
                 <p className="text-[#617589] text-sm font-medium uppercase tracking-wider">Approved</p>
@@ -247,46 +253,41 @@ function EventRequests({ onNavigate, onLogout }) {
             </div>
 
             <div className="flex overflow-x-auto pb-2 gap-2">
-              <button 
+              <button
                 onClick={() => setActiveFilter('all')}
-                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
-                  activeFilter === 'all' 
-                    ? 'bg-[#111418] text-white' 
+                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${activeFilter === 'all'
+                    ? 'bg-[#111418] text-white'
                     : 'bg-white border border-gray-300 text-[#111418] hover:bg-gray-50 hover:border-gray-400'
-                }`}
+                  }`}
               >
                 All Status
               </button>
-              <button 
+              <button
                 onClick={() => setActiveFilter('pending review')}
-                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
-                  activeFilter === 'pending review' 
-                    ? 'bg-[#111418] text-white' 
+                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${activeFilter === 'pending review'
+                    ? 'bg-[#111418] text-white'
                     : 'bg-white border border-gray-300 text-[#111418] hover:bg-gray-50 hover:border-gray-400'
-                }`}
+                  }`}
               >
                 Pending
-                <span className={`text-xs px-1.5 py-0.5 rounded-full ${
-                  activeFilter === 'pending review' ? 'bg-white/20' : 'bg-gray-200'
-                }`}>{pendingCount}</span>
+                <span className={`text-xs px-1.5 py-0.5 rounded-full ${activeFilter === 'pending review' ? 'bg-white/20' : 'bg-gray-200'
+                  }`}>{pendingCount}</span>
               </button>
-              <button 
+              <button
                 onClick={() => setActiveFilter('approved')}
-                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
-                  activeFilter === 'approved' 
-                    ? 'bg-[#111418] text-white' 
+                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${activeFilter === 'approved'
+                    ? 'bg-[#111418] text-white'
                     : 'bg-white border border-gray-300 text-[#111418] hover:bg-gray-50 hover:border-gray-400'
-                }`}
+                  }`}
               >
                 Approved
               </button>
-              <button 
+              <button
                 onClick={() => setActiveFilter('declined')}
-                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
-                  activeFilter === 'declined' 
-                    ? 'bg-[#111418] text-white' 
+                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${activeFilter === 'declined'
+                    ? 'bg-[#111418] text-white'
                     : 'bg-white border border-gray-300 text-[#111418] hover:bg-gray-50 hover:border-gray-400'
-                }`}
+                  }`}
               >
                 Declined
               </button>
@@ -315,9 +316,9 @@ function EventRequests({ onNavigate, onLogout }) {
                     <div className="p-6 flex flex-col sm:flex-row gap-6">
                       <div className="w-full sm:w-72 shrink-0">
                         <div className="relative group cursor-pointer overflow-hidden rounded-xl aspect-[4/3] w-full">
-                          <div 
+                          <div
                             className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-125"
-                            style={{backgroundImage: `url(${event.eventImage || event.image || 'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=400&h=300&fit=crop'})`}}
+                            style={{ backgroundImage: `url(${event.eventImage || event.image || 'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=400&h=300&fit=crop'})` }}
                           ></div>
                           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors duration-300 flex items-center justify-center">
                             <svg className="w-10 h-10 text-white opacity-0 group-hover:opacity-100 transition-all duration-300 drop-shadow-lg group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -335,9 +336,9 @@ function EventRequests({ onNavigate, onLogout }) {
                                 {event.eventTitle || event.title || 'Untitled Event'}
                               </h3>
                               <div className="flex items-center gap-2 mt-1">
-                                <div 
+                                <div
                                   className="w-5 h-5 rounded-full bg-cover bg-center"
-                                  style={{backgroundImage: `url(${event.artistImage || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop'})`}}
+                                  style={{ backgroundImage: `url(${event.artistImage || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop'})` }}
                                 ></div>
                                 <p className="text-sm text-[#617589]">
                                   Submitted by <span className="font-medium text-[#111418]">{event.artistName || event.name || 'Unknown Artist'}</span> • {event.submittedTime || event.createdAt || 'Recently'}
@@ -390,7 +391,7 @@ function EventRequests({ onNavigate, onLogout }) {
                           </div>
 
                           <div className="flex gap-3 w-full sm:w-auto">
-                            <button 
+                            <button
                               onClick={() => handleDecline(event.id)}
                               className="flex-1 sm:flex-none px-4 py-2.5 rounded-lg border-2 border-red-500 bg-white text-red-600 hover:bg-red-50 hover:border-red-600 font-medium text-sm transition-all duration-200 flex items-center justify-center gap-2 hover:shadow-md"
                             >
@@ -399,7 +400,7 @@ function EventRequests({ onNavigate, onLogout }) {
                               </svg>
                               Decline
                             </button>
-                            <button 
+                            <button
                               onClick={() => handleAccept(event.id)}
                               className="flex-1 sm:flex-none px-6 py-2.5 rounded-lg bg-[#3593A6] hover:bg-[#2d7a8a] text-white font-medium text-sm shadow-md transition-all duration-200 flex items-center justify-center gap-2 hover:shadow-lg hover:scale-105"
                             >

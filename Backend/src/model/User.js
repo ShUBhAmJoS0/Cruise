@@ -17,16 +17,16 @@ const User = sequelize.define("User", {
     unique: true,
     validate: { isEmail: true }
   },
-firebase_uid:{
+  firebase_uid: {
     type: DataTypes.STRING(100),
     unique: true,
     allowNull: true,
-},
+  },
   userType: {
-      type: DataTypes.ENUM("Attendee", "Artist"),
-      defaultValue: "Attendee",
-      allowNull: false,
-    },
+    type: DataTypes.ENUM("Attendee", "Artist", "Admin"),
+    defaultValue: "Attendee",
+    allowNull: false,
+  },
   createdAt: {
     type: DataTypes.DATE,
     field: "created_at",
@@ -37,11 +37,11 @@ firebase_uid:{
     field: "updated_at",
     defaultValue: DataTypes.NOW
   },
-    profileImage: { type: DataTypes.STRING, allowNull: true , defaultValue:'uploads/events/defaultprofilepic.png'},
+  profileImage: { type: DataTypes.STRING, allowNull: true, defaultValue: 'uploads/events/defaultprofilepic.png' },
   coverImage: { type: DataTypes.STRING, allowNull: true },
   bio: { type: DataTypes.TEXT, allowNull: true },
-  social:{type:DataTypes.STRING, allowNull:true},
-  about:{type:DataTypes.STRING(1000),allowNull:true},
+  social: { type: DataTypes.STRING, allowNull: true },
+  about: { type: DataTypes.STRING(1000), allowNull: true },
   followersCount: {
     type: DataTypes.VIRTUAL(DataTypes.INTEGER),
     defaultValue: 0
@@ -52,11 +52,11 @@ firebase_uid:{
     defaultValue: 0
   }
 
-}, 
-{
-  tableName: "users",
-  timestamps: true,
-  underscored: true
-}
+},
+  {
+    tableName: "users",
+    timestamps: true,
+    underscored: true
+  }
 );
- export default User;
+export default User;

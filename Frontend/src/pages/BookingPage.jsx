@@ -3,26 +3,26 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import api from "../api/axios";
-import { auth } from "../firbase";
+import { auth } from "../firebase";
 
 
 async function fetchEvent(eventId) {
-    const id = parseInt(eventId, 10);
+  const id = parseInt(eventId, 10);
   if (Number.isNaN(id)) {
     throw new Error(`Invalid event id: ${eventId}`);
   }
   console.log("Fetching event ID:", id)
 
-  const res = await api.get(`/event/${id}`); 
-   console.log(res.data)
+  const res = await api.get(`/event/${id}`);
+  console.log(res.data)
   return res.data;
- 
+
 }
 //Sliding images function
-function ImageSlider({ images}) {
-    const[currentIndex,setCurrentIndex] = useState(0);
+function ImageSlider({ images }) {
+  const [currentIndex, setCurrentIndex] = useState(0);
 
-    if(!images || images.length==0) {return null};
+  if (!images || images.length == 0) { return null };
 
 
 
@@ -45,17 +45,17 @@ function ImageSlider({ images}) {
 
   return (
     <div className="relative w-full px-6 py-4">
-    <div className="flex overflow-hidden space-x-2 h-32 md:h-60">
-      {visibleImages.map((img, i) => (
-        <div key={i} className="flex-1 rounded-md overflow-hidden">
-          <img
-             src= {`http://localhost:5000/${img}`} 
-            alt={`event-${i}`}
-            className="w-full h-full object-cover"
-          />
-        </div>
-      ))}
-    </div>
+      <div className="flex overflow-hidden space-x-2 h-32 md:h-60">
+        {visibleImages.map((img, i) => (
+          <div key={i} className="flex-1 rounded-md overflow-hidden">
+            <img
+              src={`http://localhost:5000/${img}`}
+              alt={`event-${i}`}
+              className="w-full h-full object-cover"
+            />
+          </div>
+        ))}
+      </div>
 
       {/* Prev/Next buttons */}
       <button
@@ -79,14 +79,14 @@ function ImageSlider({ images}) {
 
 async function createBooking(data) {
   const token = await auth.currentUser.getIdToken();
-  const res = await api.post("/api/booking", data,{
-      headers: { Authorization: `Bearer ${token}` }
-    });   
+  const res = await api.post("/api/booking", data, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
   return res.data;
 }
 
 
-const TicketButton = ({ label, desc,des, active, onClick }) => {
+const TicketButton = ({ label, desc, des, active, onClick }) => {
   return (
     <button
       type="button"
@@ -102,7 +102,7 @@ const TicketButton = ({ label, desc,des, active, onClick }) => {
 };
 
 export default function BookingPage() {
-  const { id : eventId } = useParams(); // expects route like /booking/:id
+  const { id: eventId } = useParams(); // expects route like /booking/:id
 
   // Event + form state
   const [event, setEvent] = useState(null);
@@ -142,7 +142,7 @@ export default function BookingPage() {
   }
 
   const ticketPrices = event.prices || {};
-  const price =ticketPrices[ticketType]||0;
+  const price = ticketPrices[ticketType] || 0;
   const subtotal = price * quantity;
   const tax = Math.round(subtotal * 0.05);
   const total = subtotal + tax;
@@ -169,7 +169,7 @@ export default function BookingPage() {
         email,
         card_number: cardNumber,
       });
-      alert ("Booking Confirmed!");
+      alert("Booking Confirmed!");
     } finally {
       setLoading(false);
     }
@@ -218,29 +218,29 @@ export default function BookingPage() {
             <p className="text-xs text-gray-500 mb-2">Select Ticket Type</p>
 
             <div className="flex gap-3 mb-3  rounded-md">
-                 <TicketButton
-                    label="VIP"
-                    desc="Front row seating "
-                    des={ticketPrices["VIP"]}
-                    active={ticketType === "VIP"}
-                    onClick={() => setTicketType("VIP")}
-                  />
-                  <TicketButton
-                    label="Standard"
-                    desc="General admission"
-                    des={ticketPrices["Standard"]}
-                    active={ticketType === "Standard"}
-                    onClick={() => setTicketType("Standard")}
-                  />
-                  <TicketButton
-                    label="Student"
-                    desc="Student ID required"
-                    des={ticketPrices["Student"]}
-                    active={ticketType === "Student"}
-                    onClick={() => setTicketType("Student")}
-                  />
-           
-              
+              <TicketButton
+                label="VIP"
+                desc="Front row seating "
+                des={ticketPrices["VIP"]}
+                active={ticketType === "VIP"}
+                onClick={() => setTicketType("VIP")}
+              />
+              <TicketButton
+                label="Standard"
+                desc="General admission"
+                des={ticketPrices["Standard"]}
+                active={ticketType === "Standard"}
+                onClick={() => setTicketType("Standard")}
+              />
+              <TicketButton
+                label="Student"
+                desc="Student ID required"
+                des={ticketPrices["Student"]}
+                active={ticketType === "Student"}
+                onClick={() => setTicketType("Student")}
+              />
+
+
             </div>
 
             <div className="flex items-center gap-3">
@@ -268,7 +268,7 @@ export default function BookingPage() {
                 type="text"
                 className="w-full border border-gray-500 rounded-md px-3 py-2 md:py-5 text-sm"
                 value={name}
-            
+
                 onChange={(e) => setName(e.target.value)}
                 required
               />
@@ -333,7 +333,7 @@ export default function BookingPage() {
               type="submit"
               className="w-full bg-[#3593A6] text-white py-2 md:py-6 rounded-md text-sm font-semibold hover:bg-[#93CAD5] hover:text-black disabled:opacity-60"
             >
-Book
+              Book
             </button>
 
             <button
@@ -356,6 +356,6 @@ Book
 
         </form>
       </div>
- </div>
-);
+    </div>
+  );
 }

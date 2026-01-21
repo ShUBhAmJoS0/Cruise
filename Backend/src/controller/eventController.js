@@ -1,12 +1,13 @@
 // backend/src/controller/eventController.js
 
 import Event from "../model/Event.js";
+import Notification from "../model/Notification.js";
 import sequelize from "../Database/db.js";
 import { buildEventFilters } from "../utils/eventFilters.js";
 
 export const DisplayAll = async (req, res) => {
   try {
-    const events = await Event.findAll({where:{status:"pending"}});
+    const events = await Event.findAll({ where: { status: "Approved" } });
     res.json(events);
   } catch (e) {
     console.error(e);
@@ -26,14 +27,14 @@ export const AddEvent = async (req, res) => {
     const quantity = JSON.parse(body.Quantity || '{}');
 
 
-    if (!body.title || !body.description || !body.location || !body.date || 
-        !body.time || !body.category || !prices || !quantity) {
+    if (!body.title || !body.description || !body.location || !body.date ||
+      !body.time || !body.category || !prices || !quantity) {
       return res.status(400).json({ message: "All required fields must be filled" });
     }
 
 
     const profileImagePath = req.files?.profileImage?.[0]?.path.replace(/\\/g, '/') || null;
-    const imagePaths = req.files?.images?.map(file => file.path.replace(/\\/g, '/'))|| [];
+    const imagePaths = req.files?.images?.map(file => file.path.replace(/\\/g, '/')) || [];
 
     const event = await Event.create({
       title: body.title,
@@ -50,6 +51,13 @@ export const AddEvent = async (req, res) => {
       createdBy: uid
     });
 
+    // Create notification for admin
+    await Notification.create({
+      message: `New Event Request Pending Approval: ${body.title}`,
+      type: "EventRequest",
+      link: "/admin/event-requests"
+    });
+
     res.status(200).json({ message: "Event created successfully", event });
   } catch (e) {
     console.log(e);
@@ -60,15 +68,15 @@ export const AddEvent = async (req, res) => {
 export const GetEvent = async (req, res) => {
   try {
     const event = await Event.findByPk(req.params.id);
-    console.log("event found",event)
+    console.log("event found", event)
     if (!event) {
       return res.status(404).json({ message: "Event not found" });
     }
     res.status(200).json(event);
   } catch (e) {
     console.error(e);
-    res.status(500).json({ message: "Failed to fetch event" });
-  }
+    res.status(500).json({ message: "Failed to fetch event" });
+  }
 };
 export const filterEvent = async (req, res) => {
   try {
@@ -81,22 +89,22 @@ export const filterEvent = async (req, res) => {
   }
 };
 
-export const GetrequestedEvent = async(req,res)=>{
-  try{
-     const userId = req.user.id; 
-     console.log(userId)
-    const requestedEvents = await Event.findAll({where:{createdBy:userId}});
- 
-if(!requestedEvents){
-  return res.status(404).send({message:"no events found for this user"})
-}
-res.status(200).send({
-  data:requestedEvents,
-  message:"retrieved requested events sucessfully"
-})
+export const GetrequestedEvent = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    console.log(userId)
+    const requestedEvents = await Event.findAll({ where: { createdBy: userId } });
+
+    if (!requestedEvents) {
+      return res.status(404).send({ message: "no events found for this user" })
+    }
+    res.status(200).send({
+      data: requestedEvents,
+      message: "retrieved requested events sucessfully"
+    })
   }
-  catch(e){
-    res.status(500).send({message:e.message})
+  catch (e) {
+    res.status(500).send({ message: e.message })
   }
 }
 

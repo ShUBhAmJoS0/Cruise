@@ -12,11 +12,31 @@ function AdminDashboard({ onLogout }) {
     totalRevenue: 0,
     bookingsThisMonth: 0
   });
+  const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchDashboardStats();
+    fetchNotifications();
   }, []);
+
+  const fetchNotifications = async () => {
+    try {
+      const response = await fetch('/api/admin/notifications', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
+        }
+      });
+      if (response.ok) {
+        const result = await response.json();
+        setNotifications(result.data || []);
+      }
+    } catch (error) {
+      console.error('Error fetching notifications:', error);
+    }
+  };
 
   const fetchDashboardStats = async () => {
     try {
@@ -28,24 +48,17 @@ function AdminDashboard({ onLogout }) {
           'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
         }
       });
-      
+
       if (!response.ok) {
         throw new Error('Failed to fetch dashboard stats');
       }
-      
+
       const data = await response.json();
       setDashboardStats(data);
     } catch (error) {
       console.error('Error fetching dashboard stats:', error);
-      // Set default values if API fails
-      setDashboardStats({
-        totalUsers: 1250,
-        artistsLoggedIn: 45,
-        upcomingEvents: 12,
-        totalEvents: 89,
-        totalRevenue: 125000,
-        bookingsThisMonth: 340
-      });
+      // Set default values if API fails - you can remove this after backend is working
+
     } finally {
       setLoading(false);
     }
@@ -81,7 +94,7 @@ function AdminDashboard({ onLogout }) {
               <h1 className="text-[#3593A6] text-xl font-bold leading-normal tracking-tight">Cruise Admin</h1>
               <p className="text-[#617589] text-xs font-medium uppercase tracking-wider mt-1">Dashboard</p>
             </div>
-            
+
             <nav className="flex flex-col gap-2">
               <button onClick={() => handleNavigate('dashboard')} className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors group w-full text-left ${currentPage === 'dashboard' ? 'bg-[#3593A6]/10 text-[#3593A6]' : 'text-[#617589] hover:bg-[#f0f2f4]'}`}>
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -89,21 +102,21 @@ function AdminDashboard({ onLogout }) {
                 </svg>
                 <span className="text-sm font-medium">Dashboard</span>
               </button>
-              
+
               <button onClick={() => handleNavigate('event-requests')} className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors group w-full text-left ${currentPage === 'event-requests' ? 'bg-[#3593A6]/10 text-[#3593A6]' : 'text-[#617589] hover:bg-[#f0f2f4]'}`}>
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
                 <span className="text-sm font-medium">Event Requests</span>
               </button>
-              
+
               <button onClick={() => handleNavigate('user-problems')} className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors group w-full text-left ${currentPage === 'user-problems' ? 'bg-[#3593A6]/10 text-[#3593A6]' : 'text-[#617589] hover:bg-[#f0f2f4]'}`}>
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" />
                 </svg>
                 <span className="text-sm font-medium">User Problems</span>
               </button>
-              
+
               <button className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#617589] hover:bg-[#f0f2f4] transition-colors group w-full text-left">
                 <svg className="w-6 h-6 group-hover:text-[#3593A6] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
@@ -113,9 +126,9 @@ function AdminDashboard({ onLogout }) {
               </button>
             </nav>
           </div>
-          
+
           <div className="flex flex-col gap-1 border-t border-[#e5e7eb] pt-4">
-            <button 
+            <button
               onClick={handleLogout}
               className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#617589] hover:bg-red-50 hover:text-red-600 transition-colors w-full text-left"
             >
@@ -159,7 +172,7 @@ function AdminDashboard({ onLogout }) {
                   </div>
                   <div className="h-14 w-14 rounded-full bg-[#3593A6]/10 flex items-center justify-center">
                     <svg className="w-7 h-7 text-[#3593A6]" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                      <path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                     </svg>
                   </div>
                 </div>
@@ -175,7 +188,7 @@ function AdminDashboard({ onLogout }) {
                   </div>
                   <div className="h-14 w-14 rounded-full bg-blue-100 flex items-center justify-center">
                     <svg className="w-7 h-7 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                      <path d="M13 10V3L4 14h7v7l9-11h-7z" />
                     </svg>
                   </div>
                 </div>
@@ -191,7 +204,7 @@ function AdminDashboard({ onLogout }) {
                   </div>
                   <div className="h-14 w-14 rounded-full bg-green-100 flex items-center justify-center">
                     <svg className="w-7 h-7 text-green-600" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                      <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                   </div>
                 </div>
@@ -207,7 +220,7 @@ function AdminDashboard({ onLogout }) {
                   </div>
                   <div className="h-14 w-14 rounded-full bg-purple-100 flex items-center justify-center">
                     <svg className="w-7 h-7 text-purple-600" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                      <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
                   </div>
                 </div>
@@ -223,7 +236,7 @@ function AdminDashboard({ onLogout }) {
                   </div>
                   <div className="h-14 w-14 rounded-full bg-yellow-100 flex items-center justify-center">
                     <svg className="w-7 h-7 text-yellow-600" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                      <path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                   </div>
                 </div>
@@ -239,7 +252,7 @@ function AdminDashboard({ onLogout }) {
                   </div>
                   <div className="h-14 w-14 rounded-full bg-red-100 flex items-center justify-center">
                     <svg className="w-7 h-7 text-red-600" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M16 4v12H8V4h8m2-2H6c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
+                      <path d="M16 4v12H8V4h8m2-2H6c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
                     </svg>
                   </div>
                 </div>

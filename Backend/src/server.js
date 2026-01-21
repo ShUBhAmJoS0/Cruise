@@ -12,6 +12,9 @@ import authToken from "./middleware/firebaseAuth.js";
 import orderRoutes from "./routes/orderRoutes.js";
 import cartRoutes from "./routes/cartRoutes.js";
 import communityRoutes from "./routes/communityRoutes.js"
+import adminRoutes from "./routes/adminRoutes.js";
+// Import models for associations
+import "./model/index.js";
 
 const app=express();
 
@@ -34,6 +37,7 @@ app.use("/api/booking",bookingRoutes)
 app.use("/artist",artistRoutes);
 app.use("/merch", orderRoutes);
 app.use("/api/cart",cartRoutes)
+app.use("/api/admin", adminRoutes)
 
 
 
