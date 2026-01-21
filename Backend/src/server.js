@@ -16,7 +16,7 @@ import adminRoutes from "./routes/adminRoutes.js";
 // Import models for associations
 import "./model/index.js";
 
-const app=express();
+const app = express();
 
 app.use(
   cors({
@@ -30,29 +30,31 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static('uploads'));
 app.use("/api/events", eventFilters);
 app.use("/api/community", communityRoutes);
+// Admin routes BEFORE auth middleware (uses separate admin auth)
+app.use("/api/admin", adminRoutes);
+// Firebase auth middleware for other routes
 app.use(authToken)
-app.use("/auth",authRoutes)
-app.use("/event",eventRoutes)
-app.use("/api/booking",bookingRoutes)
-app.use("/artist",artistRoutes);
+app.use("/auth", authRoutes)
+app.use("/event", eventRoutes)
+app.use("/api/booking", bookingRoutes)
+app.use("/artist", artistRoutes);
 app.use("/merch", orderRoutes);
-app.use("/api/cart",cartRoutes)
-app.use("/api/admin", adminRoutes)
+app.use("/api/cart", cartRoutes)
 
 
 
 
-const port =  5000;
-(async()=>{
-    try{
-        await sequelize.authenticate();
-        console.log("database connected");
-        await sequelize.sync({alter: true});
-        console.log("Models synced");
+const port = 5000;
+(async () => {
+  try {
+    await sequelize.authenticate();
+    console.log("database connected");
+    await sequelize.sync({ alter: true });
+    console.log("Models synced");
 
-        app.listen(port,()=>console.log(`server running on port ${port}`))
-    }catch(err){
-        console.error("Unable to start server:",err);
-    }
+    app.listen(port, () => console.log(`server running on port ${port}`))
+  } catch (err) {
+    console.error("Unable to start server:", err);
+  }
 })
-(); 
+  (); 

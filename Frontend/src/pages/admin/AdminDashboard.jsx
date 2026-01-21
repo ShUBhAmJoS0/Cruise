@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import EventRequests from './EventRequests';
 import UserProblems from './UserProblems';
+import NotificationDropdown from '../../components/NotificationDropdown';
 
 function AdminDashboard({ onLogout }) {
   const [currentPage, setCurrentPage] = useState('dashboard');
@@ -10,38 +11,19 @@ function AdminDashboard({ onLogout }) {
     upcomingEvents: 0,
     totalEvents: 0,
     totalRevenue: 0,
-    bookingsThisMonth: 0
+    bookingsThisMonth: 0,
+    pendingEventRequests: 0
   });
-  const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchDashboardStats();
-    fetchNotifications();
   }, []);
-
-  const fetchNotifications = async () => {
-    try {
-      const response = await fetch('/api/admin/notifications', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
-        }
-      });
-      if (response.ok) {
-        const result = await response.json();
-        setNotifications(result.data || []);
-      }
-    } catch (error) {
-      console.error('Error fetching notifications:', error);
-    }
-  };
 
   const fetchDashboardStats = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/admin/dashboard-stats', {
+      const response = await fetch('http://localhost:5000/api/admin/dashboard-stats', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -149,12 +131,7 @@ function AdminDashboard({ onLogout }) {
             <h2 className="text-lg font-semibold text-[#111418]">Dashboard Overview</h2>
           </div>
           <div className="flex items-center gap-4">
-            <button className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 relative text-gray-500 transition-colors">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0018 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-              </svg>
-              <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
-            </button>
+            <NotificationDropdown onNavigate={handleNavigate} />
           </div>
         </header>
 
@@ -257,6 +234,30 @@ function AdminDashboard({ onLogout }) {
                   </div>
                 </div>
                 <p className="text-xs text-[#617589]">This month</p>
+              </div>
+
+              {/* Pending Event Requests Card */}
+              <div
+                onClick={() => handleNavigate('event-requests')}
+                className="bg-white rounded-2xl p-6 border border-[#e5e7eb] shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer hover:border-[#3593A6]/50 group"
+              >
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <p className="text-[#617589] text-sm font-medium uppercase tracking-wider">Pending Requests</p>
+                    <p className="text-[#111418] text-3xl font-bold leading-tight mt-2">{loading ? '-' : dashboardStats.pendingEventRequests}</p>
+                  </div>
+                  <div className="h-14 w-14 rounded-full bg-orange-100 flex items-center justify-center group-hover:bg-orange-200 transition-colors">
+                    <svg className="w-7 h-7 text-orange-600" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <p className="text-xs text-[#617589]">Awaiting approval</p>
+                  {dashboardStats.pendingEventRequests > 0 && (
+                    <span className="text-xs font-medium text-[#3593A6] group-hover:underline">View all →</span>
+                  )}
+                </div>
               </div>
             </div>
 

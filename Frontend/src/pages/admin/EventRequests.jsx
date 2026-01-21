@@ -16,7 +16,7 @@ function EventRequests({ onNavigate, onLogout }) {
   const fetchRequests = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/admin/event-requests', {
+      const response = await fetch('http://localhost:5000/api/admin/event-requests', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -43,7 +43,7 @@ function EventRequests({ onNavigate, onLogout }) {
     }
 
     try {
-      const response = await fetch(`/api/admin/event-requests/${id}/approve`, {
+      const response = await fetch(`http://localhost:5000/api/admin/event-requests/${id}/approve`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -69,7 +69,7 @@ function EventRequests({ onNavigate, onLogout }) {
     }
 
     try {
-      const response = await fetch(`/api/admin/event-requests/${id}/reject`, {
+      const response = await fetch(`http://localhost:5000/api/admin/event-requests/${id}/reject`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -256,8 +256,8 @@ function EventRequests({ onNavigate, onLogout }) {
               <button
                 onClick={() => setActiveFilter('all')}
                 className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${activeFilter === 'all'
-                    ? 'bg-[#111418] text-white'
-                    : 'bg-white border border-gray-300 text-[#111418] hover:bg-gray-50 hover:border-gray-400'
+                  ? 'bg-[#111418] text-white'
+                  : 'bg-white border border-gray-300 text-[#111418] hover:bg-gray-50 hover:border-gray-400'
                   }`}
               >
                 All Status
@@ -265,8 +265,8 @@ function EventRequests({ onNavigate, onLogout }) {
               <button
                 onClick={() => setActiveFilter('pending review')}
                 className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${activeFilter === 'pending review'
-                    ? 'bg-[#111418] text-white'
-                    : 'bg-white border border-gray-300 text-[#111418] hover:bg-gray-50 hover:border-gray-400'
+                  ? 'bg-[#111418] text-white'
+                  : 'bg-white border border-gray-300 text-[#111418] hover:bg-gray-50 hover:border-gray-400'
                   }`}
               >
                 Pending
@@ -276,8 +276,8 @@ function EventRequests({ onNavigate, onLogout }) {
               <button
                 onClick={() => setActiveFilter('approved')}
                 className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${activeFilter === 'approved'
-                    ? 'bg-[#111418] text-white'
-                    : 'bg-white border border-gray-300 text-[#111418] hover:bg-gray-50 hover:border-gray-400'
+                  ? 'bg-[#111418] text-white'
+                  : 'bg-white border border-gray-300 text-[#111418] hover:bg-gray-50 hover:border-gray-400'
                   }`}
               >
                 Approved
@@ -285,8 +285,8 @@ function EventRequests({ onNavigate, onLogout }) {
               <button
                 onClick={() => setActiveFilter('declined')}
                 className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${activeFilter === 'declined'
-                    ? 'bg-[#111418] text-white'
-                    : 'bg-white border border-gray-300 text-[#111418] hover:bg-gray-50 hover:border-gray-400'
+                  ? 'bg-[#111418] text-white'
+                  : 'bg-white border border-gray-300 text-[#111418] hover:bg-gray-50 hover:border-gray-400'
                   }`}
               >
                 Declined
@@ -318,7 +318,7 @@ function EventRequests({ onNavigate, onLogout }) {
                         <div className="relative group cursor-pointer overflow-hidden rounded-xl aspect-[4/3] w-full">
                           <div
                             className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-125"
-                            style={{ backgroundImage: `url(${event.eventImage || event.image || 'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=400&h=300&fit=crop'})` }}
+                            style={{ backgroundImage: `url(${event.profileImage ? `/${event.profileImage}` : event.images?.[0] ? `/${event.images[0]}` : 'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=400&h=300&fit=crop'})` }}
                           ></div>
                           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors duration-300 flex items-center justify-center">
                             <svg className="w-10 h-10 text-white opacity-0 group-hover:opacity-100 transition-all duration-300 drop-shadow-lg group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -333,15 +333,15 @@ function EventRequests({ onNavigate, onLogout }) {
                           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 sm:gap-0 mb-3">
                             <div>
                               <h3 className="text-xl font-bold text-[#111418] hover:text-[#3593A6] transition-colors cursor-pointer">
-                                {event.eventTitle || event.title || 'Untitled Event'}
+                                {event.title || 'Untitled Event'}
                               </h3>
                               <div className="flex items-center gap-2 mt-1">
                                 <div
-                                  className="w-5 h-5 rounded-full bg-cover bg-center"
-                                  style={{ backgroundImage: `url(${event.artistImage || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop'})` }}
+                                  className="w-5 h-5 rounded-full bg-cover bg-center border border-gray-200"
+                                  style={{ backgroundImage: `url(${event.artist?.profileImage ? `/${event.artist.profileImage}` : 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop'})` }}
                                 ></div>
                                 <p className="text-sm text-[#617589]">
-                                  Submitted by <span className="font-medium text-[#111418]">{event.artistName || event.name || 'Unknown Artist'}</span> • {event.submittedTime || event.createdAt || 'Recently'}
+                                  Submitted by <span className="font-medium text-[#111418]">{event.artist?.name || 'Unknown Artist'}</span> • {new Date(event.createdAt).toLocaleDateString()}
                                 </p>
                               </div>
                             </div>

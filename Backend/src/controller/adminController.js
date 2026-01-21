@@ -78,7 +78,7 @@ export const getDashboardStats = async (req, res) => {
 
 export const getPendingEventRequests = async (req, res) => {
   try {
-    console.log("Fetching pending event requests...");
+    console.log("=== Fetching pending event requests ===");
     const pendingEvents = await Event.findAll({
       where: { status: "pending" },
       include: [
@@ -91,12 +91,17 @@ export const getPendingEventRequests = async (req, res) => {
       order: [['createdAt', 'DESC']]
     });
 
-    console.log(`Found ${pendingEvents.length} pending events.`);
-    res.status(200).json({
+    console.log(`Found ${pendingEvents.length} pending events`);
+    console.log("Events data:", JSON.stringify(pendingEvents, null, 2));
+
+    const response = {
       data: pendingEvents,
       count: pendingEvents.length,
       message: "Pending event requests retrieved successfully"
-    });
+    };
+
+    console.log("Sending response:", JSON.stringify(response, null, 2));
+    res.status(200).json(response);
   } catch (error) {
     console.error('Error fetching pending requests:', error);
     res.status(500).json({
