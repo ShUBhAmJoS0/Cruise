@@ -3,7 +3,7 @@
 import express from 'express';
 import {
   getDashboardStats,
-  getPendingEventRequests,
+  getAllEventRequests,
   approveEventRequest,
   rejectEventRequest,
   getUserAnalytics,
@@ -23,7 +23,7 @@ router.get('/notifications', getNotifications);
 router.put('/notifications/:id/read', markNotificationAsRead);
 
 // Event requests management
-router.get('/event-requests', getPendingEventRequests);
+router.get('/event-requests', getAllEventRequests);
 router.post('/event-requests/:eventId/approve', approveEventRequest);
 router.post('/event-requests/:eventId/reject', rejectEventRequest);
 
