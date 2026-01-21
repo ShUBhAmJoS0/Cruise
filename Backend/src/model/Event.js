@@ -36,6 +36,11 @@ const Event = sequelize.define(
       type:DataTypes.STRING,
       allowNull:false,
       defaultValue:"pending"
+    },
+    visible:{
+      type:DataTypes.STRING,
+      allowNull:false,
+      defaultValue:"Active"
     }
   },
 {

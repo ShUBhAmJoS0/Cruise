@@ -40,6 +40,11 @@ export const Product= sequelize.define("product",{
     productImage:{
         type:DataTypes.STRING,
         allowNull:false
+    },
+visible:{
+      type:DataTypes.STRING,
+      allowNull:false,
+      defaultValue:"Active"
     }
 
 }

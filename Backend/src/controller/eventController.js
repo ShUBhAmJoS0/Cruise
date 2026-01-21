@@ -58,6 +58,75 @@ export const AddEvent = async (req, res) => {
     res.status(500).json({ message: `Failed to add: ${e.message}` });
   }
 };
+export const updateEvent = async (req, res) => {
+  console.log("update event api hit");
+  try {
+    const eventId = req.params.id; 
+    const body = req.body;
+    const uid = req.user.id;
+    
+    console.log("Event ID:", eventId);
+    console.log("User ID:", uid);
+    console.log("Request body:", body);
+    console.log("Files:", req.files);
+
+    const existingEvent = await Event.findOne({ where: { id: eventId } });
+    
+    if (!existingEvent) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+
+    if (existingEvent.createdBy !== uid) {
+      return res.status(403).json({ message: "Unauthorized to update this event" });
+    }
+
+    const prices = body.prices ? JSON.parse(body.prices) : existingEvent.prices;
+    const quantity = body.Quantity ? JSON.parse(body.Quantity) : existingEvent.Quantity;
+
+
+    if (!body.title || !body.description || !body.location || !body.date || 
+        !body.time || !body.category) {
+      return res.status(400).json({ message: "All required fields must be filled" });
+    }
+  let finalImages=[];
+    let profileImagePath = existingEvent.profileImage; 
+       const existingImages = JSON.parse(req.body.existingImages);
+
+    if (req.files?.images && req.files.images.length > 0) {
+      const newImages = req.files?.images.map(file => file.path.replace(/\\/g, '/'));
+      finalImages = [...existingImages, ...newImages];
+    }
+
+    await Event.update(
+      {
+        title: body.title,
+        description: body.description,
+        location: body.location,
+        date: body.date,
+        time: body.time,
+        category: body.category,
+        images: finalImages,
+        profileImage: profileImagePath,
+        prices: prices,
+        Quantity: quantity,
+      },
+      {
+        where: { id: eventId }
+      }
+    );
+    const updatedEvent = await Event.findOne({ where: { id: eventId } });
+
+    res.status(200).json({ 
+      message: "Event updated successfully", 
+      event: updatedEvent 
+    });
+    
+  } catch (e) {
+    console.error("Update event error:", e);
+    res.status(500).json({ message: `Failed to update: ${e.message}` });
+  }
+};
 
 export const GetEvent = async (req, res) => {
   try {
@@ -68,10 +137,25 @@ export const GetEvent = async (req, res) => {
     }
     res.status(200).json(event);
   } catch (e) {
-    console.error(e);
+    console.log(e.message);
     res.status(500).json({ message: "Failed to fetch event" });
-  }
+  }
 };
+export const deleteEvent = async(req,res)=>{
+  console.log("delete api for event hit ")
+  try{
+    const eventid = req.params.id
+    const event = await Event.findByPk(eventid)
+    if(event.visible==="Active"){
+      event.update({visible:"inActive"})
+      return res.status(200).send({message:"event deleted sucessfully"})
+    }
+  }
+  catch(e){
+    res.status(500).send({message:e.message})
+  }
+}
+
 export const filterEvent = async (req, res) => {
   try {
     const whereClause = buildEventFilters(req.query);
@@ -87,7 +171,7 @@ export const GetrequestedEvent = async(req,res)=>{
   try{
      const userId = req.user.id; 
      console.log(userId)
-    const requestedEvents = await Event.findAll({where:{createdBy:userId}});
+    const requestedEvents = await Event.findAll({where:{createdBy:userId,visible:"Active"}});
  
 if(!requestedEvents){
   return res.status(404).send({message:"no events found for this user"})

@@ -309,7 +309,8 @@ function AddMerch() {
         </div>
 
         <div className="flex gap-6 overflow-x-auto pb-4">
-          {getItems.map(item => (
+          {getItems.filter(item => item.visible === "Active") .map(item =>(
+           
             <div key={item.productId} className="min-w-[200px] flex-shrink-0 bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-lg border border-gray-100 overflow-hidden group hover:shadow-2xl transform hover:scale-105 transition">
               <div className="relative h-48 overflow-hidden">
                 <img src={`http://localhost:5000/${item.productImage}`} alt={item.productName} className="w-full h-full object-cover group-hover:scale-110 transition duration-300" />

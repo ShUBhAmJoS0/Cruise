@@ -6,21 +6,10 @@ import User from "./User.js";
 import Follow from "./follow.js";
 import Booking from "./Booking.js";
 import Event from "./Event.js";
+import Review from "./review.js";
 
 
-User.hasMany(Follow, {
-  foreignKey: "followerId",
-  as: "Following"
-});
 
-
-User.hasMany(Follow, {
-  foreignKey: "followingId",
-  as: "Followers"
-});
-
-Follow.belongsTo(User, { foreignKey: "followerId", as: "Follower" });
-Follow.belongsTo(User, { foreignKey: "followingId", as: "FollowingUser" });
 Product.belongsTo(User, { foreignKey: "createdBy" });
 Product.hasMany(OrderItem, {
   foreignKey: "productId",
@@ -36,10 +25,28 @@ User.hasMany(Booking, { foreignKey: "createdBy" });
 Booking.belongsTo(User, { foreignKey: "createdBy" });
 Event.hasMany(Booking, { foreignKey: "EventId" });
 Booking.belongsTo(Event, { foreignKey: "EventId" });
+Follow.belongsTo(User, {
+    foreignKey: 'followerId',
+    as: 'follower'
+  });
+  Follow.belongsTo(User, {
+    foreignKey: 'followingId',
+    as: 'following'
+  });
+  User.hasMany(Follow, {
+    foreignKey: 'followerId',
+    as: 'following'
+  });
+  User.hasMany(Follow, {
+    foreignKey: 'followingId',
+    as: 'followers'
+  });
+;
 export {
   User,
   Product,
   Order,
   OrderItem,
-  CartItem
+  CartItem,
+  Follow
 };

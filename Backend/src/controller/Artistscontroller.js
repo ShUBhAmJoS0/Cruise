@@ -1,19 +1,57 @@
 
+import Booking from "../model/Booking.js";
 import Event from "../model/Event.js"
 import Follow from "../model/follow.js"
+import OrderItem from "../model/OrderItems.js";
 import Review from "../model/review.js"
 import User from "../model/User.js"
 
 export const getallArtists = async(req,res)=>{
-    console.log("getallarist apu hit")
+    console.log("getallartist api hit");
     try {
-        const artists = await User.findAll({where:{userType:"Artist"}})
-        console.log(artists)
-        res.status(200).send({data:artists,message:"sucessfully fetched all artists"})
+        const currentUserId = req.user.id;
+    
+        const artists = await User.findAll({
+            where: { userType: "Artist" },
+            attributes: ['id', 'name', 'email', 'profileImage', 'bio', 'coverImage']
+        });
+
+        const userFollows = await Follow.findAll({
+            where: { followerId: currentUserId },
+            attributes: ['followingId']
+        });
+
+        const followingIds = new Set(userFollows.map(follow => follow.followingId));
+        const artistsWithFollowStatus = await Promise.all(
+            artists.map(async (artist) => {
+                const followersCount = await Follow.count({
+                    where: { followingId: artist.id }
+                });
+
+                return {
+                    id: artist.id,
+                    name: artist.name,
+                    email: artist.email,
+                    profileImage: artist.profileImage,
+                    bio: artist.bio,
+                    coverImage: artist.coverImage,
+                    followersCount,
+                    isFollowing: followingIds.has(artist.id) // Check if user follows this artist
+                };
+            })
+        );
+
+        console.log(artistsWithFollowStatus);
+        res.status(200).send({
+            data: artistsWithFollowStatus,
+            message: "Successfully fetched all artists"
+        });
     } catch (error) {
-        res.status(500).send({message:error.message})
+        console.error("Get all artists error:", error);
+        res.status(500).send({ message: error.message });
     }
-}
+};
+
 export const getArtistbyid = async(req,res)=>{
     console.log("get by artist hit")
     try {
@@ -109,5 +147,209 @@ export const getReviewsByArtist = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Failed to fetch reviews" });
+  }
+};
+export const followUser = async (req, res) => {
+  console.log("follow user api hitting")
+  try {
+    const followerId = req.user.id; 
+    const followingId = req.params.id; 
+
+    const existingFollow = await Follow.findOne({
+      where: { followerId, followingId }
+    });
+
+    if (existingFollow) {
+      return res.status(400).json({ message: "Already following this user" });
+    }
+
+    await Follow.create({ followerId, followingId });
+
+    res.status(200).json({ message: "Successfully followed user" });
+  } catch (error) {
+    console.error("Follow error:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+// Unfollow an artist/user
+export const unfollowUser = async (req, res) => {
+    console.log("unfollow user api hitting")
+  try {
+    const followerId = req.user.id;
+    const followingId = req.params.id;
+
+    const follow = await Follow.findOne({
+      where: { followerId, followingId }
+    });
+
+    if (!follow) {
+      return res.status(404).json({ message: "Follow relationship not found" });
+    }
+
+    await follow.destroy();
+
+    res.status(200).json({ message: "Successfully unfollowed user" });
+  } catch (error) {
+    console.error("Unfollow error:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+export const getFollowers = async (req, res) => {
+    console.log("gget followers api hitting")
+  try {
+    const userId = req.params.id;
+
+    const followers = await Follow.findAll({
+      where: { followingId: userId },
+      include: [
+        {
+          model: User,
+          as: "follower",
+          attributes: ["id", "name", "email", "profileImage"]
+        }
+      ]
+    });
+
+    const followersList = followers.map(follow => follow.follower);
+
+    res.status(200).json({
+      count: followersList.length,
+      followers: followersList
+    });
+  } catch (error) {
+    console.error("Get followers error:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+
+export const getFollowing = async (req, res) => {
+    console.log("follow user api hitting")
+  try {
+    const userId = req.params.id;
+
+    const following = await Follow.findAll({
+      where: { followerId: userId },
+      include: [
+        {
+          model: User,
+          as: "following", 
+          attributes: ["id", "name", "email", "profileImage"]
+        }
+      ]
+    });
+
+    const followingList = following.map(follow => follow.following);
+
+    res.status(200).json({
+      count: followingList.length,
+      following: followingList
+    });
+  } catch (error) {
+    console.error("Get following error:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+
+export const checkFollowStatus = async (req, res) => {
+  try {
+    const followerId = req.user.id;
+    const followingId = req.params.id;
+
+    const isFollowing = await Follow.findOne({
+      where: { followerId, followingId }
+    });
+
+    res.status(200).json({ isFollowing: !!isFollowing });
+  } catch (error) {
+    console.error("Check follow status error:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+
+export const getFollowersCount = async (req, res) => {
+  try {
+    const userId = req.params.id;
+
+    const count = await Follow.count({
+      where: { followingId: userId }
+    });
+
+    res.status(200).json({ followersCount: count });
+  } catch (error) {
+    console.error("Get followers count error:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+
+export const getArtistAnalytics = async (req, res) => {
+  try {
+    const artistId = req.user.id;
+
+
+    const totalReviews = await Review.count({
+      where: { artistId }
+    });
+
+    const totalMerchSold = await OrderItem.sum('quantity', {
+      where: { artistId }
+    });
+    const totalEvents = await Event.count({
+      where: { createdBy: artistId }
+    });
+
+    const totalBookings = await Booking.count({
+      include: [{
+        model: Event,
+        where: { createdBy: artistId }
+      }]
+    });
+    const events = await Event.findAll({
+      where: { createdBy: artistId },
+      attributes: ['date', 'id']
+    });
+
+    const eventsByDate = events.reduce((acc, e) => {
+      const date = e.date.toISOString().split('T')[0];
+      acc[date] = (acc[date] || 0) + 1;
+      return acc;
+    }, {});
+
+    const merchRevenue = await OrderItem.findAll({
+      where: { artistId },
+      attributes: ['createdAt', 'totalPrice']
+    });
+
+    const bookingRevenue = await Booking.findAll({
+      include: [{ model: Event, where: { createdBy: artistId } }],
+      attributes: ['createdAt', 'totalPrice']
+    });
+
+    const revenueByMonth = {};
+
+    [...merchRevenue.map(r => ({ date: r.createdAt, total: r.totalPrice })), 
+     ...bookingRevenue.map(b => ({ date: b.createdAt, total: b.totalPrice }))]
+      .forEach(r => {
+        const month = r.date.toISOString().slice(0, 7); 
+        revenueByMonth[month] = (revenueByMonth[month] || 0) + Number(r.total);
+      });
+
+    res.json({
+      totalReviews,
+      totalMerchSold,
+      totalEvents,
+      totalBookings,
+      eventsByDate,
+      revenueByMonth
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: err.message });
   }
 };

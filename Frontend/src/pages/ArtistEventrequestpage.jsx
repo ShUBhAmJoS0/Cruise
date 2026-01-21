@@ -1,29 +1,71 @@
 import { useEffect, useState } from "react";
 import api from "../api/axios";
-import {Users2,Trophy,Music, Brush,MapPin,CheckCircle2} from "lucide-react"
+import { Users2, Trophy, Music, Brush, MapPin, CheckCircle2, X } from "lucide-react";
+import { Controller, useForm } from "react-hook-form";
+
 
 function ArtistEventRequestPage() {
-  const [EventTitle, setEventTitle] = useState("");
-  const [EventLocation, setEventLocation] = useState("");
-  const [Category, setCategory] = useState("");
-  const [EventDate, setEventDate] = useState("");
-  const [EventTime, setEventTime] = useState("");
-  const [Price, setPrice] = useState({
-    Standard: "",
-    Student: "",
-    VIP: ""
-  });
-  const [Quantity, setQuantity] = useState({
-    Standard: "",
-    Student: "",
-    VIP: ""
-  });
-  const [selected, setSelected] = useState("");
-  const [eventDes, setEventDes] = useState("");
   const [requestEvent, setRequestEvent] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null);
   const [selectedImages, setSelectedImages] = useState([]);
   const [imagePreviewUrl, setImagePreviewUrl] = useState(null);
+  
+
+  const { register, handleSubmit, reset, setValue, watch, control } = useForm({
+    defaultValues: {
+      EventTitle: "",
+      EventLocation: "",
+      Category: "",
+      EventDate: "",
+      EventTime: "",
+      Price: {
+        Standard: "",
+        Student: "",
+        VIP: ""
+      },
+      Quantity: {
+        Standard: "",
+        Student: "",
+        VIP: ""
+      },
+      selected: "",
+      eventDes: ""
+    }
+  });
+
+  const selectedCategory = watch("selected");
+  
+  // Edit Modal States
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingEvent, setEditingEvent] = useState(null);
+  const [editCoverImage, setEditCoverImage] = useState(null);
+  const [editCoverPreview, setEditCoverPreview] = useState(null);
+  const [editGalleryImages, setEditGalleryImages] = useState([]);
+  const [existingGalleryImages, setExistingGalleryImages] = useState([]);
+
+  // Edit Event Form
+  const { 
+    register: registerEdit, 
+    handleSubmit: handleSubmitEdit, 
+    reset: resetEdit, 
+    setValue: setValueEdit,
+    watch: watchEdit,
+    control: controlEdit
+  } = useForm({
+    defaultValues: {
+      title: "",
+      location: "",
+      date: "",
+      time: "",
+      category: "",
+      description: "",
+      prices: { Standard: "", Student: "", VIP: "" },
+      quantity: { Standard: "", Student: "", VIP: "" },
+      selectedCategory: ""
+    }
+  });
+
+  const editSelectedCategory = watchEdit("selectedCategory");
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -58,18 +100,18 @@ function ArtistEventRequestPage() {
     LoadRequestedEvents();
   }, []);
 
-  const RequestEvent = async () => {
+  const onSubmit = async (data) => {
     try {
       const formData = new FormData();
       
-      formData.append('title', EventTitle);
-      formData.append('date', EventDate);
-      formData.append('time', EventTime);
-      formData.append('location', EventLocation);
-      formData.append('category', Category);
-      formData.append('description', eventDes);
-      formData.append('prices', JSON.stringify(Price));
-      formData.append('Quantity', JSON.stringify(Quantity));
+      formData.append('title', data.EventTitle);
+      formData.append('date', data.EventDate);
+      formData.append('time', data.EventTime);
+      formData.append('location', data.EventLocation);
+      formData.append('category', data.Category);
+      formData.append('description', data.eventDes);
+      formData.append('prices', JSON.stringify(data.Price));
+      formData.append('Quantity', JSON.stringify(data.Quantity));
       
       if (selectedImage) {
         formData.append('profileImage', selectedImage);
@@ -88,15 +130,7 @@ function ArtistEventRequestPage() {
    
       await LoadRequestedEvents();
   
-      setEventTitle("");
-      setEventLocation("");
-      setEventDate("");
-      setEventTime("");
-      setCategory("");
-      setEventDes("");
-      setPrice({ Standard: "", Student: "", VIP: "" });
-      setQuantity({ Standard: "", Student: "", VIP: "" });
-      setSelected("");
+      reset();
       setSelectedImage(null);
       setSelectedImages([]);
       setImagePreviewUrl(null);
@@ -108,9 +142,156 @@ function ArtistEventRequestPage() {
     }
   };
 
+  const handleEditClick = async (event) => {
+    try {
+      const res = await api.get(`/event/${event.id}`);
+      const eventData = res.data;
+      console.log(eventData);
+      setEditingEvent(eventData);
+
+      const parsedPrices = typeof eventData.prices === 'string' 
+        ? JSON.parse(eventData.prices) 
+        : eventData.prices;
+      const parsedQuantities = typeof eventData.Quantity === 'string'
+        ? JSON.parse(eventData.Quantity)
+        : eventData.Quantity;
+      
+      const categoryMap = {
+        "Family": "family",
+        "Art": "art",
+        "Sports": "sports",
+        "Music": "music"
+      };
+      
+      resetEdit({
+        title: eventData.title,
+        location: eventData.location,
+        date: eventData.date?.split('T')[0] || "",
+        time: eventData.time,
+        category: eventData.category,
+        description: eventData.description,
+        prices: parsedPrices,
+        quantity: parsedQuantities,
+        selectedCategory: categoryMap[eventData.category] || ""
+      });
+      
+      setEditCoverPreview(eventData.profileImage ? `http://localhost:5000/${eventData.profileImage}` : null);
+      setEditCoverImage(null);
+      
+      // Separate existing images from new ones
+      setExistingGalleryImages(eventData.images || []);
+      setEditGalleryImages([]);
+      
+      setIsEditModalOpen(true);
+    } catch (error) {
+      console.error("Failed to fetch event details:", error);
+      alert("Failed to load event details");
+    }
+  };
+
+  const handleEditCoverChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setEditCoverImage(file);
+      setEditCoverPreview(URL.createObjectURL(file));
+    }
+  };
+
+  const handleEditGalleryChange = (e) => {
+    const files = Array.from(e.target.files);
+    const filesWithPreviews = files.map(file => ({
+      file: file,
+      preview: URL.createObjectURL(file),
+      name: file.name,
+      isNew: true
+    }));
+    setEditGalleryImages(prev => [...prev, ...filesWithPreviews]);
+  };
+
+  const removeExistingGalleryImage = (index) => {
+    setExistingGalleryImages(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const removeEditGalleryImage = (index) => {
+    const img = editGalleryImages[index];
+    if (img?.preview) {
+      URL.revokeObjectURL(img.preview);
+    }
+    setEditGalleryImages(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const onEditSubmit = async (data) => {
+    try {
+      const formData = new FormData();
+      
+      formData.append('title', data.title);
+      formData.append('date', data.date);
+      formData.append('time', data.time);
+      formData.append('location', data.location);
+      formData.append('category', data.category);
+      formData.append('description', data.description);
+      formData.append('prices', JSON.stringify(data.prices));
+      formData.append('Quantity', JSON.stringify(data.quantity));
+      
+      // Add cover image if changed
+      if (editCoverImage) {
+        formData.append('profileImage', editCoverImage);
+      }
+      
+      // Add existing images that weren't removed
+      formData.append('existingImages', JSON.stringify(existingGalleryImages));
+      
+      // Add new gallery images
+      editGalleryImages.forEach((img) => {
+        if (img?.file) {
+          formData.append("images", img.file);
+        }
+      });
+
+      console.log("Sending update with:", {
+        existingImages: existingGalleryImages,
+        newImages: editGalleryImages.length
+      });
+
+      const res = await api.put(`/artist/request/${editingEvent.id}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      
+      alert(res.data.message || "Event updated successfully");
+      setIsEditModalOpen(false);
+      await LoadRequestedEvents();
+      
+      setEditingEvent(null);
+      setEditCoverImage(null);
+      setEditCoverPreview(null);
+      setEditGalleryImages([]);
+      setExistingGalleryImages([]);
+    } catch (error) {
+      console.error("Failed to update event:", error);
+      alert(error.response?.data?.message || "Failed to update event");
+    }
+  };
+
+  const handleDeleteEvent = async (eventId) => {
+    if (!window.confirm("Are you sure you want to delete this event?")) {
+      return;
+    }
+    try {
+     const res= await api.delete(`/artist/request/${eventId}`);
+      alert(res.data.message);
+      await LoadRequestedEvents();
+    } catch (error) {
+      console.error("Failed to delete event:", error);
+      alert(error.response?.data?.message || "Failed to delete event");
+    }
+  };
+
   return (
     <div className="ml-[20%] bg-[#F5F5F5] flex flex-col p-2 md:p-10 overflow-y-auto min-h-screen">
-       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div className="bg-gradient-to-br from-[#93CAD5] to-[#3593A6] p-6 rounded-2xl shadow-lg text-white transform hover:scale-105 transition">
           <div className="flex items-center justify-between">
             <div>
@@ -118,7 +299,7 @@ function ArtistEventRequestPage() {
               <p className="text-3xl font-bold">{requestEvent.length}</p>
             </div>
             <div className="bg-white/20 p-4 rounded-xl">
-           <MapPin className="w-8 h-8"></MapPin>
+              <MapPin className="w-8 h-8" />
             </div>
           </div>
         </div>
@@ -127,10 +308,10 @@ function ArtistEventRequestPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm opacity-90 mb-1">Completed</p>
-              <p className="text-3xl font-bold">{requestEvent.filter(item => item.status== "completed").length}</p>
+              <p className="text-3xl font-bold">{requestEvent.filter(item => item.status === "completed").length}</p>
             </div>
             <div className="bg-white/20 p-4 rounded-xl">
-            <CheckCircle2 className="w-8 h-8"></CheckCircle2>
+              <CheckCircle2 className="w-8 h-8" />
             </div>
           </div>
         </div>
@@ -139,7 +320,7 @@ function ArtistEventRequestPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm opacity-90 mb-1">Pending</p>
-              <p className="text-3xl font-bold">{requestEvent.filter(item => item.status==="pending").length}</p>
+              <p className="text-3xl font-bold">{requestEvent.filter(item => item.status === "pending").length}</p>
             </div>
             <div className="bg-white/20 p-4 rounded-xl">
               <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -148,8 +329,8 @@ function ArtistEventRequestPage() {
             </div>
           </div>
         </div>
-
       </div>
+
       <div className="mb-8">
         <div className="flex items-center gap-4 mb-2">
           <div className="bg-[#3593A6] p-3 rounded-xl">
@@ -157,14 +338,12 @@ function ArtistEventRequestPage() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
           </div>
-          <h2 className="font-bold  text-gray-800 text-3xl ">Add New Event</h2>
+          <h2 className="font-bold text-gray-800 text-3xl">Add New Event</h2>
         </div>
         <p className="text-gray-600 ml-16">Create and manage your event requests</p>
       </div>
 
-      {/* Main Form Card */}
-      <div className="w-full bg-white rounded-3xl shadow-xl p-8 mb-10 border border-gray-100">
-        {/* Basic Information Section */}
+      <form onSubmit={handleSubmit(onSubmit)} className="w-full bg-white rounded-3xl shadow-xl p-8 mb-10 border border-gray-100">
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-1 h-8 bg-[#3593A6] rounded-full"></div>
@@ -178,8 +357,7 @@ function ArtistEventRequestPage() {
                 type="text"
                 className="h-[55px] border-2 border-gray-200 rounded-xl p-4 focus:border-[#93CAD5] focus:outline-none transition"
                 placeholder="Enter event title"
-                value={EventTitle}
-                onChange={e => setEventTitle(e.target.value)}
+                {...register("EventTitle")}
               />
             </div>
             
@@ -189,8 +367,7 @@ function ArtistEventRequestPage() {
                 type="text"
                 className="h-[55px] border-2 border-gray-200 rounded-xl p-4 focus:border-[#93CAD5] focus:outline-none transition"
                 placeholder="Enter event location"
-                value={EventLocation}
-                onChange={e => setEventLocation(e.target.value)}
+                {...register("EventLocation")}
               />
             </div>
             
@@ -199,8 +376,7 @@ function ArtistEventRequestPage() {
               <input
                 type="date"
                 className="h-[55px] border-2 border-gray-200 rounded-xl p-4 focus:border-[#93CAD5] focus:outline-none transition"
-                value={EventDate}
-                onChange={e => setEventDate(e.target.value)}
+                {...register("EventDate")}
               />
             </div>
             
@@ -209,8 +385,7 @@ function ArtistEventRequestPage() {
               <input
                 type="time"
                 className="h-[55px] border-2 border-gray-200 rounded-xl p-4 focus:border-[#93CAD5] focus:outline-none transition"
-                value={EventTime}
-                onChange={e => setEventTime(e.target.value)}
+                {...register("EventTime")}
               />
             </div>
           </div>
@@ -220,48 +395,51 @@ function ArtistEventRequestPage() {
             <textarea
               className="min-h-[100px] border-2 border-gray-200 rounded-xl p-4 focus:border-[#93CAD5] focus:outline-none transition resize-none"
               placeholder="Describe the event in detail..."
-              value={eventDes}
-              onChange={e => setEventDes(e.target.value)}
               rows="4"
+              {...register("eventDes")}
             />
           </div>
         </div>
 
-        {/* Category Selection */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-1 h-8 bg-[#3593A6] rounded-full"></div>
             <h3 className="text-xl font-bold text-gray-800">Event Category</h3>
           </div>
           
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {[
-              { id: "family", label: "Family", icon: <Users2 className="text-[#5ba3b0]"/> },
-              { id: "art", label: "Art", icon: <Brush className="text-[#5ba3b0]"/> },
-              { id: "sports", label: "Sports", icon: <Trophy className="text-[#5ba3b0]"/> },
-              { id: "music", label: "Music", icon: <Music className="text-[#5ba3b0]"/> }
-            ].map(cat => (
-              <button
-                key={cat.id}
-                type="button"
-                className={`h-24 border-2 rounded-2xl flex flex-col items-center justify-center gap-2 transition-all transform hover:scale-105 ${
-                  selected === cat.id 
-                    ? "border-[#3593A6] bg-[#93CAD5]/20 shadow-lg" 
-                    : "border-gray-200 hover:border-[#93CAD5]"
-                }`}
-                onClick={() => {
-                  setSelected(cat.id);
-                  setCategory(cat.label);
-                }}
-              >
-                <span className="text-3xl">{cat.icon}</span>
-                <span className="font-semibold text-gray-700">{cat.label}</span>
-              </button>
-            ))}
-          </div>
+          <Controller
+            name="selected"
+            control={control}
+            render={({ field }) => (
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {[
+                  { id: "family", label: "Family", icon: <Users2 className="text-[#5ba3b0]"/> },
+                  { id: "art", label: "Art", icon: <Brush className="text-[#5ba3b0]"/> },
+                  { id: "sports", label: "Sports", icon: <Trophy className="text-[#5ba3b0]"/> },
+                  { id: "music", label: "Music", icon: <Music className="text-[#5ba3b0]"/> }
+                ].map(cat => (
+                  <button
+                    key={cat.id}
+                    type="button"
+                    className={`h-24 border-2 rounded-2xl flex flex-col items-center justify-center gap-2 transition-all transform hover:scale-105 ${
+                      selectedCategory === cat.id 
+                        ? "border-[#3593A6] bg-[#93CAD5]/20 shadow-lg" 
+                        : "border-gray-200 hover:border-[#93CAD5]"
+                    }`}
+                    onClick={() => {
+                      field.onChange(cat.id);
+                      setValue("Category", cat.label);
+                    }}
+                  >
+                    <span className="text-3xl">{cat.icon}</span>
+                    <span className="font-semibold text-gray-700">{cat.label}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          />
         </div>
 
-        {/* Ticket Pricing */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-1 h-8 bg-[#3593A6] rounded-full"></div>
@@ -283,10 +461,9 @@ function ArtistEventRequestPage() {
                       <input
                         type="number"
                         min="0"
-                        value={Price[type]}
-                        onChange={(e) => setPrice({ ...Price, [type]: e.target.value })}
                         className="h-11 border-2 border-gray-200 rounded-lg px-3 text-center focus:border-[#93CAD5] focus:outline-none transition"
                         placeholder="0.00"
+                        {...register(`Price.${type}`)}
                       />
                     </div>
                     
@@ -295,10 +472,9 @@ function ArtistEventRequestPage() {
                       <input
                         type="number"
                         min="0"
-                        value={Quantity[type]}
-                        onChange={(e) => setQuantity({ ...Quantity, [type]: e.target.value })}
                         className="h-11 border-2 border-gray-200 rounded-lg px-3 text-center focus:border-[#93CAD5] focus:outline-none transition"
                         placeholder="0"
+                        {...register(`Quantity.${type}`)}
                       />
                     </div>
                   </div>
@@ -308,7 +484,6 @@ function ArtistEventRequestPage() {
           </div>
         </div>
 
-        {/* Cover Image Upload */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-1 h-8 bg-[#3593A6] rounded-full"></div>
@@ -361,7 +536,6 @@ function ArtistEventRequestPage() {
           </div>
         </div>
 
-        {/* Multiple Images Upload */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-1 h-8 bg-[#3593A6] rounded-full"></div>
@@ -417,17 +591,14 @@ function ArtistEventRequestPage() {
           </div>
         </div>
 
-        {/* Submit Button */}
         <button
-          type="button"
-          className="w-full border-2 border-[#3593A6] text-[#3593A6] py-5 rounded-2xl text-lg font-bold hover:bg-[#93CAD5] hover:text-white  transition hover:shadow-xl transform hover:scale-[1.02]"
-          onClick={RequestEvent}
+          type="submit"
+          className="w-full border-2 border-[#3593A6] text-[#3593A6] py-5 rounded-2xl text-lg font-bold hover:bg-[#93CAD5] hover:text-white transition hover:shadow-xl transform hover:scale-[1.02]"
         >
           Submit Event Request
         </button>
-      </div>
+      </form>
 
-      {/* Requested Events List */}
       <div className="w-full bg-white rounded-3xl shadow-xl p-8 border border-gray-100">
         <div className="flex items-center gap-4 mb-6">
           <div className="bg-[#3593A6] p-3 rounded-xl">
@@ -471,8 +642,15 @@ function ArtistEventRequestPage() {
                   }`}>
                     {events.status.toUpperCase()}
                   </span>
-                  
                   <button
+                    onClick={() => handleEditClick(events)}
+                    type="button"
+                    className="px-5 py-2 text-white bg-green-400 rounded-xl font-semibold hover:bg-green-500 transition"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDeleteEvent(events.id)}
                     type="button"
                     className="px-5 py-2 text-white bg-red-500 rounded-xl font-semibold hover:bg-red-600 transition"
                   >
@@ -484,6 +662,266 @@ function ArtistEventRequestPage() {
           )}
         </div>
       </div>
+
+      {/* Edit Modal */}
+      {isEditModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-3xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-white border-b border-gray-200 p-6 flex items-center justify-between rounded-t-3xl">
+              <h2 className="text-2xl font-bold text-gray-800">Edit Event</h2>
+              <button
+                onClick={() => setIsEditModalOpen(false)}
+                className="text-gray-400 hover:text-gray-600 p-2 hover:bg-gray-100 rounded-full transition"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSubmitEdit(onEditSubmit)} className="p-6">
+              {/* Event Details */}
+              <div className="mb-6">
+                <h3 className="text-lg font-bold text-gray-800 mb-4">Event Details</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-semibold text-gray-700 mb-2 block">Event Name</label>
+                    <input
+                      type="text"
+                      className="w-full h-12 border-2 border-gray-200 rounded-xl p-3 focus:border-[#93CAD5] focus:outline-none"
+                      {...registerEdit("title")}
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-semibold text-gray-700 mb-2 block">Location</label>
+                    <input
+                      type="text"
+                      className="w-full h-12 border-2 border-gray-200 rounded-xl p-3 focus:border-[#93CAD5] focus:outline-none"
+                      {...registerEdit("location")}
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-semibold text-gray-700 mb-2 block">Date</label>
+                    <input
+                      type="date"
+                      className="w-full h-12 border-2 border-gray-200 rounded-xl p-3 focus:border-[#93CAD5] focus:outline-none"
+                      {...registerEdit("date")}
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-semibold text-gray-700 mb-2 block">Time</label>
+                    <input
+                      type="time"
+                      className="w-full h-12 border-2 border-gray-200 rounded-xl p-3 focus:border-[#93CAD5] focus:outline-none"
+                      {...registerEdit("time")}
+                    />
+                  </div>
+                </div>
+                <div className="mt-4">
+                  <label className="text-sm font-semibold text-gray-700 mb-2 block">Description</label>
+                  <textarea
+                    className="w-full border-2 border-gray-200 rounded-xl p-3 focus:border-[#93CAD5] focus:outline-none resize-none"
+                    rows="4"
+                    {...registerEdit("description")}
+                  />
+                </div>
+              </div>
+
+              {/* Category */}
+              <div className="mb-6">
+                <h3 className="text-lg font-bold text-gray-800 mb-4">Category</h3>
+                <Controller
+                  name="selectedCategory"
+                  control={controlEdit}
+                  render={({ field }) => (
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                      {[
+                        { id: "family", label: "Family", icon: <Users2 className="text-[#5ba3b0]"/> },
+                        { id: "art", label: "Art", icon: <Brush className="text-[#5ba3b0]"/> },
+                        { id: "sports", label: "Sports", icon: <Trophy className="text-[#5ba3b0]"/> },
+                        { id: "music", label: "Music", icon: <Music className="text-[#5ba3b0]"/> }
+                      ].map(cat => (
+                        <button
+                          key={cat.id}
+                          type="button"
+                          className={`h-20 border-2 rounded-xl flex flex-col items-center justify-center gap-1 transition ${
+                            editSelectedCategory === cat.id 
+                              ? "border-[#3593A6] bg-[#93CAD5]/20" 
+                              : "border-gray-200 hover:border-[#93CAD5]"
+                          }`}
+                          onClick={() => {
+                            field.onChange(cat.id);
+                            setValueEdit("category", cat.label);
+                          }}
+                        >
+                          {cat.icon}
+                          <span className="font-semibold text-sm">{cat.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                />
+              </div>
+
+              {/* Pricing */}
+              <div className="mb-6">
+                <h3 className="text-lg font-bold text-gray-800 mb-4">Ticket Pricing</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {["Standard", "Student", "VIP"].map((type) => (
+                    <div key={type} className="border-2 border-gray-200 rounded-xl p-4">
+                      <h4 className="font-bold text-gray-800 mb-3">{type}</h4>
+                      <div className="space-y-2">
+                        <div>
+                          <label className="text-xs font-semibold text-gray-600">Price ($)</label>
+                          <input
+                            type="number"
+                            min="0"
+                            className="w-full h-10 border-2 border-gray-200 rounded-lg px-2 text-center focus:border-[#93CAD5] focus:outline-none"
+                            {...registerEdit(`prices.${type}`)}
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs font-semibold text-gray-600">Quantity</label>
+                          <input
+                            type="number"
+                            min="0"
+                            className="w-full h-10 border-2 border-gray-200 rounded-lg px-2 text-center focus:border-[#93CAD5] focus:outline-none"
+                            {...registerEdit(`quantity.${type}`)}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Cover Image */}
+              <div className="mb-6">
+                <h3 className="text-lg font-bold text-gray-800 mb-4">Cover Image</h3>
+                <div className="flex items-center gap-4">
+                  <div className="w-32 h-32 rounded-xl overflow-hidden bg-gray-100 border-2 border-gray-200">
+                    {editCoverPreview ? (
+                      <img src={editCoverPreview} alt="Cover" className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-gray-400">
+                        No image
+                      </div>
+                    )}
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="edit-cover-upload"
+                      className="bg-[#3593A6] text-white px-4 py-2 rounded-xl font-semibold hover:bg-[#93CAD5] transition cursor-pointer inline-block"
+                    >
+                      Change Image
+                    </label>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleEditCoverChange}
+                      id="edit-cover-upload"
+                      className="hidden"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Gallery Images */}
+              <div className="mb-6">
+                <h3 className="text-lg font-bold text-gray-800 mb-4">Event Gallery</h3>
+                
+                {/* Existing Images */}
+                {existingGalleryImages.length > 0 && (
+                  <div className="mb-4">
+                    <p className="text-sm font-semibold text-gray-700 mb-2">Current Images ({existingGalleryImages.length})</p>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                      {existingGalleryImages.map((img, index) => (
+                        <div key={index} className="relative group">
+                          <div className="w-full h-28 rounded-lg overflow-hidden border-2 border-gray-200">
+                            <img 
+                              src={`http://localhost:5000/${img}`}
+                              alt={`Gallery ${index + 1}`}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => removeExistingGalleryImage(index)}
+                            className="absolute top-2 right-2 bg-red-500 text-white p-1.5 rounded-lg hover:bg-red-600 transition opacity-0 group-hover:opacity-100"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
+                {/* Add New Images */}
+                <div className="space-y-3">
+                  <p className="text-sm font-semibold text-gray-600">Add New Images to Gallery</p>
+                  <label
+                    htmlFor="edit-gallery-upload"
+                    className="bg-[#3593A6] text-white px-4 py-2 rounded-xl font-semibold hover:bg-[#93CAD5] transition cursor-pointer inline-block"
+                  >
+                    + Add Images
+                  </label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={handleEditGalleryChange}
+                    id="edit-gallery-upload"
+                    className="hidden"
+                  />
+                  
+                  {/* New Images Preview */}
+                  {editGalleryImages.length > 0 && (
+                    <div>
+                      <p className="text-sm font-semibold text-gray-700 mb-2 mt-4">New Images ({editGalleryImages.length})</p>
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                        {editGalleryImages.map((img, index) => (
+                          <div key={index} className="relative group">
+                            <div className="w-full h-28 rounded-lg overflow-hidden border-2 border-green-300 bg-green-50">
+                              <img 
+                                src={img.preview}
+                                alt={`New ${index + 1}`}
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => removeEditGalleryImage(index)}
+                              className="absolute top-2 right-2 bg-red-500 text-white p-1.5 rounded-lg hover:bg-red-600 transition opacity-0 group-hover:opacity-100"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-3 pt-4 border-t">
+                <button
+                  type="button"
+                  onClick={() => setIsEditModalOpen(false)}
+                  className="flex-1 px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-xl font-semibold hover:bg-gray-50 transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 px-6 py-3 bg-[#3593A6] text-white rounded-xl font-semibold hover:bg-[#93CAD5] transition"
+                >
+                  Save Changes
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

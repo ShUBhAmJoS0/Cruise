@@ -14,7 +14,7 @@ import PublicRoute from "./context/publicRoute";
 import AdminRoute from "./context/adminRoute";
 import { Layout } from "./component/NavBarLayout";
 import { AddMerch } from "./pages/ArtistAddMerch";
-import { ArtistDashboard } from "./pages/ArtistDashboard";
+import ArtistAnalytics from "./pages/ArtistDashboard";
 import ArtistProfile from "./pages/artistProfileDisplay";
 import ArtistEditProfile from "./pages/ArtistEditProfile";
 import FindArtists from "./pages/FindArtists";
@@ -29,7 +29,11 @@ import { ViewMerchandiseTable } from "./pages/viewmerchartist";
 import MyBookings from "./pages/MyBookings";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminLogin from "./pages/admin/AdminLogin";
+<<<<<<< HEAD
 import CommunityGuidelines from "./pages/CommunityGuidelines";
+=======
+import UserEditProfile from "./pages/UserEditProfile";
+>>>>>>> 5499a98ed976bf048ec8dff31561be3be88d89e0
 
 function AppRoutes() {
   const location = useLocation();
@@ -56,6 +60,7 @@ function AppRoutes() {
         <Route path="/searchartists" element={<ProtectedRoute allowedRoles={["Attendee"]}><FindArtists></FindArtists></ProtectedRoute>}/>
         <Route path="/about" element={<ProtectedRoute allowedRoles={["Attendee"]}><About /></ProtectedRoute>} />
         <Route path="/cart" element={<ProtectedRoute allowedRoles={["Attendee"]}><CartPage /></ProtectedRoute>} />
+<<<<<<< HEAD
         <Route path="/checkout" element={<ProtectedRoute allowedRoles={["Attendee"]}><CheckoutPage /></ProtectedRoute>} />
         <Route path="/receipt" element={<ProtectedRoute allowedRoles={["Attendee"]}><ReceiptPage /></ProtectedRoute>} />
         <Route path="/community" element={<ProtectedRoute allowedRoles={["Attendee"]}><Community></Community></ProtectedRoute>} />
@@ -64,9 +69,18 @@ function AppRoutes() {
 
           
          {/* artist */}
+=======
+<Route path="/checkout" element={<ProtectedRoute allowedRoles={["Attendee"]}><CheckoutPage /></ProtectedRoute>} />
+<Route path="/receipt" element={<ProtectedRoute allowedRoles={["Attendee"]}><ReceiptPage /></ProtectedRoute>} />
+<Route path="/community" element={<ProtectedRoute allowedRoles={["Attendee"]}><Community></Community></ProtectedRoute>} />
+<Route path="/mybookings" element={<ProtectedRoute allowedRoles={["Attendee"]}><MyBookings /></ProtectedRoute>} />
+ <Route path="/orderhistory" element={<ProtectedRoute allowedRoles={["Attendee"]}><OrderHistory></OrderHistory></ProtectedRoute>} />
+<Route path="/usereditprofile" element={<ProtectedRoute allowedRoles={["Attendee"]}><UserEditProfile/></ProtectedRoute>} />
+        {/* artist */}
+>>>>>>> 5499a98ed976bf048ec8dff31561be3be88d89e0
         <Route path="/artist/Request" element={<ProtectedRoute allowedRoles={["Artist"]}><ArtistEventRequestPage /></ProtectedRoute>} />
         <Route path="/artist/Addmerch" element={<ProtectedRoute allowedRoles={["Artist"]}><AddMerch /></ProtectedRoute>} />
-        <Route path="/artist/Profile" element={<ProtectedRoute allowedRoles={["Artist"]}><ArtistDashboard /></ProtectedRoute>} />
+        <Route path="/artist/Profile" element={<ProtectedRoute allowedRoles={["Artist"]}><ArtistAnalytics/></ProtectedRoute>} />
         <Route path="/artist/EditProfile" element={<ProtectedRoute allowedRoles={["Artist"]}><ArtistEditProfile></ArtistEditProfile></ProtectedRoute>} />
         <Route path="/artist/viewevent" element={<ProtectedRoute allowedRoles={["Artist"]}><ArtistViewEvents></ArtistViewEvents></ProtectedRoute>}/>
         <Route path="/artist/viewmerch" element={<ProtectedRoute allowedRoles={["Artist"]}><ViewMerchandiseTable/></ProtectedRoute>}/>
