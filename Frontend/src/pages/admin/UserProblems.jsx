@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import Footer from '../../components/Footer';
 
 function UserProblems({ onNavigate, onLogout }) {
   const [problems, setProblems] = useState([]);
@@ -23,11 +24,11 @@ function UserProblems({ onNavigate, onLogout }) {
           'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
         }
       });
-      
+
       if (!response.ok) {
         throw new Error('Failed to fetch problems');
       }
-      
+
       const data = await response.json();
       setProblems(data);
     } catch (error) {
@@ -51,12 +52,12 @@ function UserProblems({ onNavigate, onLogout }) {
           'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
         }
       });
-      
+
       if (!response.ok) {
         throw new Error('Failed to resolve problem');
       }
-      
-      setProblems(problems.map(p => p.id === id ? {...p, status: 'Resolved'} : p));
+
+      setProblems(problems.map(p => p.id === id ? { ...p, status: 'Resolved' } : p));
       alert('Problem marked as resolved!');
     } catch (error) {
       console.error('Error resolving problem:', error);
@@ -77,11 +78,11 @@ function UserProblems({ onNavigate, onLogout }) {
           'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
         }
       });
-      
+
       if (!response.ok) {
         throw new Error('Failed to delete problem');
       }
-      
+
       setProblems(problems.filter(p => p.id !== id));
       alert('Problem report deleted.');
     } catch (error) {
@@ -112,8 +113,8 @@ function UserProblems({ onNavigate, onLogout }) {
     return "bg-gray-100 text-gray-800 border-gray-200";
   };
 
-  const filteredProblems = activeFilter === 'all' 
-    ? problems 
+  const filteredProblems = activeFilter === 'all'
+    ? problems
     : problems.filter(p => p.status.toLowerCase() === activeFilter);
 
   return (
@@ -125,7 +126,7 @@ function UserProblems({ onNavigate, onLogout }) {
               <h1 className="text-[#3593A6] text-xl font-bold leading-normal tracking-tight">Cruise Admin</h1>
               <p className="text-[#617589] text-xs font-medium uppercase tracking-wider mt-1">User Problems</p>
             </div>
-            
+
             <nav className="flex flex-col gap-2">
               <button onClick={() => onNavigate && onNavigate('dashboard')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#617589] hover:bg-[#f0f2f4] transition-colors group cursor-pointer">
                 <svg className="w-6 h-6 group-hover:text-[#3593A6] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -133,8 +134,8 @@ function UserProblems({ onNavigate, onLogout }) {
                 </svg>
                 <span className="text-sm font-medium">Dashboard</span>
               </button>
-              
-              <button 
+
+              <button
                 onClick={() => onNavigate && onNavigate('event-requests')}
                 className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#617589] hover:bg-[#f0f2f4] transition-colors group w-full text-left"
               >
@@ -143,14 +144,14 @@ function UserProblems({ onNavigate, onLogout }) {
                 </svg>
                 <span className="text-sm font-medium">Event Requests</span>
               </button>
-              
+
               <button className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-[#3593A6]/10 text-[#3593A6]">
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" />
                 </svg>
                 <span className="text-sm font-medium">User Problems</span>
               </button>
-              
+
               <button className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#617589] hover:bg-[#f0f2f4] transition-colors group w-full text-left">
                 <svg className="w-6 h-6 group-hover:text-[#3593A6] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
@@ -160,9 +161,9 @@ function UserProblems({ onNavigate, onLogout }) {
               </button>
             </nav>
           </div>
-          
+
           <div className="flex flex-col gap-1 border-t border-[#e5e7eb] pt-4">
-            <button 
+            <button
               onClick={handleLogout}
               className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#617589] hover:bg-red-50 hover:text-red-600 transition-colors w-full text-left"
             >
@@ -211,7 +212,7 @@ function UserProblems({ onNavigate, onLogout }) {
               <div className="flex flex-col gap-1 rounded-xl p-6 border border-[#e5e7eb] bg-white shadow-sm relative overflow-hidden group">
                 <div className="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                   <svg className="w-16 h-16 text-[#3593A6]" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M3 5a2 2 0 012-2h3.28a1 1 0 00.948-.684l1.498-4.493a1 1 0 011.502-.684l1.498 4.493a1 1 0 00.948.684H19a2 2 0 012 2v2a2 2 0 01-2 2H5a2 2 0 01-2-2V5zM3 15a2 2 0 012-2h3.28a1 1 0 00.948-.684l1.498-4.493a1 1 0 011.502-.684l1.498 4.493a1 1 0 00.948.684H19a2 2 0 012 2v2a2 2 0 01-2 2H5a2 2 0 01-2-2v-2z"/>
+                    <path d="M3 5a2 2 0 012-2h3.28a1 1 0 00.948-.684l1.498-4.493a1 1 0 011.502-.684l1.498 4.493a1 1 0 00.948.684H19a2 2 0 012 2v2a2 2 0 01-2 2H5a2 2 0 01-2-2V5zM3 15a2 2 0 012-2h3.28a1 1 0 00.948-.684l1.498-4.493a1 1 0 011.502-.684l1.498 4.493a1 1 0 00.948.684H19a2 2 0 012 2v2a2 2 0 01-2 2H5a2 2 0 01-2-2v-2z" />
                   </svg>
                 </div>
                 <p className="text-[#617589] text-sm font-medium uppercase tracking-wider">Total Problems</p>
@@ -223,7 +224,7 @@ function UserProblems({ onNavigate, onLogout }) {
               <div className="flex flex-col gap-1 rounded-xl p-6 border border-l-4 border-[#e5e7eb] border-l-red-500 bg-white shadow-sm relative overflow-hidden group">
                 <div className="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                   <svg className="w-16 h-16 text-red-500" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
                   </svg>
                 </div>
                 <p className="text-[#617589] text-sm font-medium uppercase tracking-wider">Open Issues</p>
@@ -238,7 +239,7 @@ function UserProblems({ onNavigate, onLogout }) {
               <div className="flex flex-col gap-1 rounded-xl p-6 border border-[#e5e7eb] bg-white shadow-sm relative overflow-hidden group">
                 <div className="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                   <svg className="w-16 h-16 text-green-500" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
                 <p className="text-[#617589] text-sm font-medium uppercase tracking-wider">Resolved</p>
@@ -249,46 +250,41 @@ function UserProblems({ onNavigate, onLogout }) {
             </div>
 
             <div className="flex overflow-x-auto pb-2 gap-2">
-              <button 
+              <button
                 onClick={() => setActiveFilter('all')}
-                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
-                  activeFilter === 'all' 
-                    ? 'bg-[#111418] text-white' 
+                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${activeFilter === 'all'
+                    ? 'bg-[#111418] text-white'
                     : 'bg-white border border-gray-300 text-[#111418] hover:bg-gray-50 hover:border-gray-400'
-                }`}
+                  }`}
               >
                 All Status
               </button>
-              <button 
+              <button
                 onClick={() => setActiveFilter('open')}
-                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
-                  activeFilter === 'open' 
-                    ? 'bg-[#111418] text-white' 
+                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${activeFilter === 'open'
+                    ? 'bg-[#111418] text-white'
                     : 'bg-white border border-gray-300 text-[#111418] hover:bg-gray-50 hover:border-gray-400'
-                }`}
+                  }`}
               >
                 Open
-                <span className={`text-xs px-1.5 py-0.5 rounded-full ${
-                  activeFilter === 'open' ? 'bg-white/20' : 'bg-gray-200'
-                }`}>{openCount}</span>
+                <span className={`text-xs px-1.5 py-0.5 rounded-full ${activeFilter === 'open' ? 'bg-white/20' : 'bg-gray-200'
+                  }`}>{openCount}</span>
               </button>
-              <button 
+              <button
                 onClick={() => setActiveFilter('in progress')}
-                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
-                  activeFilter === 'in progress' 
-                    ? 'bg-[#111418] text-white' 
+                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${activeFilter === 'in progress'
+                    ? 'bg-[#111418] text-white'
                     : 'bg-white border border-gray-300 text-[#111418] hover:bg-gray-50 hover:border-gray-400'
-                }`}
+                  }`}
               >
                 In Progress
               </button>
-              <button 
+              <button
                 onClick={() => setActiveFilter('resolved')}
-                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
-                  activeFilter === 'resolved' 
-                    ? 'bg-[#111418] text-white' 
+                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${activeFilter === 'resolved'
+                    ? 'bg-[#111418] text-white'
                     : 'bg-white border border-gray-300 text-[#111418] hover:bg-gray-50 hover:border-gray-400'
-                }`}
+                  }`}
               >
                 Resolved
               </button>
@@ -330,11 +326,11 @@ function UserProblems({ onNavigate, onLogout }) {
                               </span>
                             </div>
                           </div>
-                          
+
                           <p className="text-sm text-[#617589] mb-3">
                             From <span className="font-medium text-[#111418]">{problem.reportedBy || 'Unknown User'}</span> • {problem.reportedDate || 'Recently'}
                           </p>
-                          
+
                           <p className="text-sm text-[#111418] leading-relaxed mb-4 text-justify">
                             {problem.description || 'No description provided.'}
                           </p>
@@ -358,9 +354,9 @@ function UserProblems({ onNavigate, onLogout }) {
                         </div>
                       </div>
                     </div>
-                    
+
                     <div className="flex flex-col gap-2 w-full sm:w-auto sm:shrink-0">
-                      <button 
+                      <button
                         onClick={() => handleResolve(problem.id)}
                         className="px-4 py-2.5 rounded-lg bg-green-600 hover:bg-green-700 text-white font-medium text-sm shadow-md transition-all duration-200 flex items-center justify-center gap-2 hover:shadow-lg"
                       >
@@ -369,7 +365,7 @@ function UserProblems({ onNavigate, onLogout }) {
                         </svg>
                         Mark Resolved
                       </button>
-                      <button 
+                      <button
                         onClick={() => handleDelete(problem.id)}
                         className="px-4 py-2.5 rounded-lg border-2 border-red-500 bg-white text-red-600 hover:bg-red-50 hover:border-red-600 font-medium text-sm transition-all duration-200 flex items-center justify-center gap-2"
                       >
@@ -384,6 +380,7 @@ function UserProblems({ onNavigate, onLogout }) {
               )}
             </div>
           </div>
+          <Footer />
         </div>
       </main>
     </div>

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import EventRequests from './EventRequests';
 import UserProblems from './UserProblems';
 import NotificationDropdown from '../../components/NotificationDropdown';
+import Footer from '../../components/Footer';
 
 function AdminDashboard({ onLogout }) {
   const [currentPage, setCurrentPage] = useState('dashboard');
@@ -280,6 +281,7 @@ function AdminDashboard({ onLogout }) {
               </div>
             </div>
           </div>
+          <Footer />
         </div>
       </main>
     </div>

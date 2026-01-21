@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import EventDetailsModal from '../../components/EventDetailsModal';
+import Footer from '../../components/Footer';
 
 function EventRequests({ onNavigate, onLogout }) {
   const [allRequests, setAllRequests] = useState([]);
@@ -388,6 +389,7 @@ function EventRequests({ onNavigate, onLogout }) {
               )}
             </div>
           </div>
+          <Footer />
         </div>
       </main>
 
