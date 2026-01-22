@@ -17,7 +17,7 @@ function UserProblems({ onNavigate, onLogout }) {
   const fetchProblems = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/user-problems', {
+      const response = await fetch('http://localhost:5000/api/user-problems', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -45,7 +45,7 @@ function UserProblems({ onNavigate, onLogout }) {
     }
 
     try {
-      const response = await fetch(`/api/user-problems/${id}/resolve`, {
+      const response = await fetch(`http://localhost:5000/api/user-problems/${id}/resolve`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -71,7 +71,7 @@ function UserProblems({ onNavigate, onLogout }) {
     }
 
     try {
-      const response = await fetch(`/api/user-problems/${id}`, {
+      const response = await fetch(`http://localhost:5000/api/user-problems/${id}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -253,8 +253,8 @@ function UserProblems({ onNavigate, onLogout }) {
               <button
                 onClick={() => setActiveFilter('all')}
                 className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${activeFilter === 'all'
-                    ? 'bg-[#111418] text-white'
-                    : 'bg-white border border-gray-300 text-[#111418] hover:bg-gray-50 hover:border-gray-400'
+                  ? 'bg-[#111418] text-white'
+                  : 'bg-white border border-gray-300 text-[#111418] hover:bg-gray-50 hover:border-gray-400'
                   }`}
               >
                 All Status
@@ -262,8 +262,8 @@ function UserProblems({ onNavigate, onLogout }) {
               <button
                 onClick={() => setActiveFilter('open')}
                 className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${activeFilter === 'open'
-                    ? 'bg-[#111418] text-white'
-                    : 'bg-white border border-gray-300 text-[#111418] hover:bg-gray-50 hover:border-gray-400'
+                  ? 'bg-[#111418] text-white'
+                  : 'bg-white border border-gray-300 text-[#111418] hover:bg-gray-50 hover:border-gray-400'
                   }`}
               >
                 Open
@@ -273,8 +273,8 @@ function UserProblems({ onNavigate, onLogout }) {
               <button
                 onClick={() => setActiveFilter('in progress')}
                 className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${activeFilter === 'in progress'
-                    ? 'bg-[#111418] text-white'
-                    : 'bg-white border border-gray-300 text-[#111418] hover:bg-gray-50 hover:border-gray-400'
+                  ? 'bg-[#111418] text-white'
+                  : 'bg-white border border-gray-300 text-[#111418] hover:bg-gray-50 hover:border-gray-400'
                   }`}
               >
                 In Progress
@@ -282,8 +282,8 @@ function UserProblems({ onNavigate, onLogout }) {
               <button
                 onClick={() => setActiveFilter('resolved')}
                 className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${activeFilter === 'resolved'
-                    ? 'bg-[#111418] text-white'
-                    : 'bg-white border border-gray-300 text-[#111418] hover:bg-gray-50 hover:border-gray-400'
+                  ? 'bg-[#111418] text-white'
+                  : 'bg-white border border-gray-300 text-[#111418] hover:bg-gray-50 hover:border-gray-400'
                   }`}
               >
                 Resolved

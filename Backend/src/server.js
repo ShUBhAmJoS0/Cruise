@@ -13,6 +13,7 @@ import orderRoutes from "./routes/orderRoutes.js";
 import cartRoutes from "./routes/cartRoutes.js";
 import communityRoutes from "./routes/communityRoutes.js"
 import adminRoutes from "./routes/adminRoutes.js";
+import userProblemRoutes from "./routes/userProblemRoutes.js";
 // Import models for associations
 import "./model/index.js";
 
@@ -30,6 +31,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static('uploads'));
 app.use("/api/events", eventFilters);
 app.use("/api/community", communityRoutes);
+app.use("/api/user-problems", userProblemRoutes);
 // Admin routes BEFORE auth middleware (uses separate admin auth)
 app.use("/api/admin", adminRoutes);
 // Firebase auth middleware for other routes
