@@ -130,8 +130,20 @@ useEffect(() => {
 
         if (eventData && eventData) {
           setUpcomingEvents(eventData);
-          setTrendingEvents(eventData);
-          console.log(eventData)
+          
+          // Filter events for today
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          
+          const todayEvents = eventData.filter(event => {
+            const eventDate = new Date(event.date);
+            eventDate.setHours(0, 0, 0, 0);
+            return eventDate.getTime() === today.getTime();
+          });
+          
+          setTrendingEvents(todayEvents);
+          console.log('All events:', eventData);
+          console.log('Today events:', todayEvents);
         }  else {
           throw new Error('Unexpected data format');
         }
@@ -191,7 +203,16 @@ const handleApplyFilters = async () => {
     if (Object.keys(filters).length === 0) {
       const response = await api.get('/event');
       setUpcomingEvents(response.data);
-      setTrendingEvents(response.data);
+      
+      // Filter trending events to show only today's events
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const todayEvents = response.data.filter(event => {
+        const eventDate = new Date(event.date);
+        eventDate.setHours(0, 0, 0, 0);
+        return eventDate.getTime() === today.getTime();
+      });
+      setTrendingEvents(todayEvents);
       return;
     }
 
@@ -199,7 +220,16 @@ const handleApplyFilters = async () => {
     const queryParams = new URLSearchParams(filters);
     const response = await api.get(`/api/events/filter?${queryParams}`);
     setUpcomingEvents(response.data);
-    setTrendingEvents(response.data);
+    
+    // Filter trending events to show only today's events
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const todayEvents = response.data.filter(event => {
+      const eventDate = new Date(event.date);
+      eventDate.setHours(0, 0, 0, 0);
+      return eventDate.getTime() === today.getTime();
+    });
+    setTrendingEvents(todayEvents);
   } catch (error) {
     console.error('Error applying filters:', error);
     setError('Failed to apply filters');
@@ -226,7 +256,16 @@ const handleClearAll = async (e) => {
     setLoading(true);
     const response = await api.get('/event');
     setUpcomingEvents(response.data);
-    setTrendingEvents(response.data);
+    
+    // Filter trending events to show only today's events
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const todayEvents = response.data.filter(event => {
+      const eventDate = new Date(event.date);
+      eventDate.setHours(0, 0, 0, 0);
+      return eventDate.getTime() === today.getTime();
+    });
+    setTrendingEvents(todayEvents);
   } catch (error) {
     console.error('Error fetching all events:', error);
     setError('Failed to clear filters');
