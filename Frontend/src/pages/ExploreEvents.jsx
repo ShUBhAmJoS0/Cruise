@@ -449,21 +449,20 @@ const handleClearAll = async (e) => {
         </aside>
 
         {/* Main Content */}
-        <div className="flex-1 ml-72 p-10 bg-cyan-50">
+        <div className="flex-1 ml-72 p-10 bg-gradient-to-b from-gray-50 to-gray-100">
           {/* Hero */}
           <div
-            className="text-white py-16 px-10 rounded-2xl text-center mb-10"
-            style={{ background: `linear-gradient(to right, ${primaryColor}, #66c7d6)` }}
+            className="text-white py-18 px-12 rounded-3xl text-center mb-12 shadow-lg"
+            style={{ background: `linear-gradient(135deg, ${primaryColor} 0%, #66c7d6 100%)` }}
           >
-            <h1 className="text-5xl font-bold mb-4">
-              Explore Live Events<br />Near You
-            </h1>
+            <h1 className="text-6xl font-bold mb-2">Explore Live Events Near You</h1>
+            <p className="text-lg opacity-90">Discover amazing experiences in your city</p>
           </div>
-      <div className="flex-1 md:flex-none mr-6 md:w-72 hidden sm:block">
+          <div className="mb-10">
             <input
               type="text"
-              placeholder="Search Events"
-              className="w-full py-2.5 px-5 border border-gray-300 rounded-full text-sm md:text-base focus:outline-none"
+              placeholder="Search events..."
+              className="w-full md:w-80 py-3 px-6 border-2 border-gray-300 rounded-full focus:outline-none focus:border-teal-500 shadow-sm"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -483,22 +482,18 @@ const handleClearAll = async (e) => {
           {!loading && !error && (
             <>
               {/* Upcoming Events */}
-              <h2 className="text-4xl font-bold my-8" style={{ color: primaryColor }}>
-                Upcoming Events
-              </h2>
-              <p className="text-gray-600 mb-8">
-                Showing {filteredUpcomingEvents.length} event{filteredUpcomingEvents.length !== 1 ? 's' : ''}
-              </p>
+              <h2 className="text-5xl font-bold mb-3" style={{ color: primaryColor }}>Upcoming Events</h2>
+              <p className="text-gray-500 mb-8">Showing {filteredUpcomingEvents.length} event{filteredUpcomingEvents.length !== 1 ? 's' : ''}</p>
               {filteredUpcomingEvents.length === 0 ? (
                 <p className="text-center text-gray-500 text-xl py-10">
                   No upcoming events available at the moment.
                 </p>
               ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-7 mb-16">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-7 mb-16 auto-rows-max">
                   {filteredUpcomingEvents.map((event, idx) => (
                     <div
                       key={event.id || idx}
-                      className="bg-white rounded-2xl overflow-hidden shadow-lg transition-all duration-400 hover:-translate-y-3 hover:shadow-2xl group cursor-pointer"
+                      className="bg-white rounded-2xl overflow-hidden shadow-lg transition-all duration-400 hover:shadow-2xl hover:bg-blue-50 group cursor-pointer h-fit border border-gray-200 hover:border-[#3593A6]"
                     >
                           <img
                         className="h-52 bg-cover bg-center transition-transform duration-400 group-hover:scale-105"
@@ -506,11 +501,11 @@ const handleClearAll = async (e) => {
                       />
                       <div className="p-5">
                         <h3 className="text-xl font-bold mb-2">{event.title}</h3>
-                        <p className="text-gray-600 text-sm mb-4">{event.date}</p>
+                        <p className="text-gray-600 text-sm mb-4">{new Date(event.date).toLocaleDateString()} • {event.time || 'Time TBA'}</p>
                         <div className="max-h-0 overflow-hidden group-hover:max-h-96 group-hover:py-5 transition-all duration-500 bg-gray-50 border-t border-gray-200">
                           <p className="mb-3">
                             <strong style={{ color: primaryColor }}>Price:</strong>{' '}
-                           {event.prices?.Regular === 0 ? 'Free Entry' : `Starts from $${event.prices?.Standard }`}
+                           {event.prices?.Standard === 0 ? 'Free Entry' : `Starts from $${event.prices?.Standard }`}
                           </p>
                           <p className="mb-3">
                             <strong style={{ color: primaryColor }}>Location:</strong> {event.location}
@@ -533,20 +528,19 @@ const handleClearAll = async (e) => {
               )}
 
               {/* Trending Events */}
-              <h2 className="text-4xl font-bold my-8" style={{ color: primaryColor }}>
-                Trending Events
-              </h2>
+              <h2 className="text-5xl font-bold mb-3" style={{ color: primaryColor }}>Trending Events</h2>
+              <p className="text-gray-500 mb-8">Today's hottest events - {filteredTrendingEvents.length} live</p>
               {filteredTrendingEvents.length === 0 ? (
                 <p className="text-center text-gray-500 text-xl py-10">
                   No trending events available at the moment.
                 </p>
               ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-7">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-7 auto-rows-max">
 
                   {filteredTrendingEvents.map((event, idx) => (
                     <div
                       key={event.id || idx}
-                      className="bg-white rounded-2xl overflow-hidden shadow-lg transition-all duration-400 hover:-translate-y-3 hover:shadow-2xl group cursor-pointer"
+                      className="bg-white rounded-2xl overflow-hidden shadow-lg transition-all duration-400 hover:shadow-2xl hover:bg-blue-50 group cursor-pointer h-fit border border-gray-200 hover:border-[#3593A6]"
                     >
                       <img
                         className="h-52 bg-cover bg-center transition-transform duration-400 group-hover:scale-105"
@@ -554,10 +548,10 @@ const handleClearAll = async (e) => {
                       />
                       <div className="p-5">
                         <h3 className="text-xl font-bold mb-2">{event.title}</h3>
-                        <p className="text-gray-600 text-sm mb-4">{event.date}</p>
+                        <p className="text-gray-600 text-sm mb-4">{new Date(event.date).toLocaleDateString()} • {event.time || 'Time TBA'}</p>
                         <div className="max-h-0 overflow-hidden group-hover:max-h-96 group-hover:py-5 transition-all duration-500 bg-gray-50 border-t border-gray-200">
                           <p className="mb-3">
-                            {event.prices?.Regular === 0 ? 'Free Entry' : `Starts from $${event.prices?.Standard}`}
+                            {event.prices?.Standard === 0 ? 'Free Entry' : `Starts from $${event.prices?.Standard}`}
                           </p>
                           <p className="mb-3">
                             <strong style={{ color: primaryColor }}>Location:</strong> {event.location}
