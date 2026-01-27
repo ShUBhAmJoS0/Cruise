@@ -1,13 +1,11 @@
 import { useAuth } from "../context/AuthContext";
 import { AdminNavbar } from "./AdminNavBar";
 import { ArtistNavbar } from "./ArtistNavBar";
-import { AttendeeNavBar } from "./Attendeenavbar";
+import { AttendeeNavBar } from "./AttendeeNavBar";
 import Footer from "../components/Footer";
 
-
 export function Layout({ children }) {
-    const { user, logout, role, loading, dbuser } = useAuth()
-    console.log(user)
+    const { user, logout, role, loading, dbuser } = useAuth();
     if (loading) return null;
     const renderNavbar = () => {
         switch (role) {
@@ -16,9 +14,9 @@ export function Layout({ children }) {
             case "Artist":
                 return <ArtistNavbar user={user} logout={logout} dbuser={dbuser} />;
             case "Attendee":
-                return <AttendeeNavBar user={user} logout={logout} />
+                return <AttendeeNavBar user={user} logout={logout} dbuser={dbuser} />;
             default:
-                return null
+                return null;
         }
     };
     return (
@@ -29,6 +27,5 @@ export function Layout({ children }) {
             </div>
             <Footer />
         </div>
-
-    )
+    );
 }

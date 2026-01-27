@@ -1,10 +1,10 @@
 import express from "express";
-import { AddEvent, GetrequestedEvent } from "../controller/eventController.js";
+import { AddEvent, deleteEvent, getEventbookings, GetrequestedEvent, updateEvent } from "../controller/eventController.js";
 import upload from "../Config/multer.js";
 import { artistOnly } from "../middleware/Artistonly.js";
-import { addProduct, deleteProduct, editProduct, getAllProduct, getproductBycreator} from "../controller/ProductController.js";
+import { addProduct, deleteProduct, editProduct, getAllProduct, getproductbuyers, getproductBycreator} from "../controller/ProductController.js";
 import { updateUser } from "../controller/authController.js";
-import { createReview, getallArtists, getArtistbyid, getArtistgigs, getpendingArtistgigs, getReviewsByArtist } from "../controller/Artistscontroller.js";
+import { createReview, followUser, getallArtists, getArtistAnalytics, getArtistbyid, getArtistgigs, getFollowers, getFollowing, getpendingArtistgigs, getReviewsByArtist, unfollowUser } from "../controller/Artistscontroller.js";
 import { AttendeeOnly } from "../middleware/Attendeonly.js";
 
 
@@ -15,6 +15,11 @@ router.post("/request",upload.fields([
   { name: 'profileImage', maxCount: 1 },
   { name: 'images', maxCount: 10 }
 ]), artistOnly,AddEvent);
+router.put("/request/:id",upload.fields([
+  { name: 'profileImage', maxCount: 1 },
+  { name: 'images', maxCount: 10 }
+]), artistOnly,updateEvent);
+router.delete("/request/:id",artistOnly,deleteEvent);
 
 router.post("/addmerch",upload.fields([
   { name: 'image', maxCount: 1 }]),artistOnly ,addProduct)
@@ -27,7 +32,8 @@ router.put("/addmerch/:id",upload.fields([
   
 router.put("/updateProfile",upload.fields([
   { name: 'profilePic', maxCount: 1 },{name:"coverPic",maxCount:1}]),artistOnly,updateUser)
-
+    router.get("/allmerch/details",artistOnly,getproductbuyers)
+    router.get("/allevents/details",artistOnly,getEventbookings)
   router.get("/all",AttendeeOnly,getallArtists)
   router.get("/profile/:id",AttendeeOnly,getArtistbyid)
   router.get("/gig/:id",AttendeeOnly,getpendingArtistgigs)
@@ -35,6 +41,10 @@ router.put("/updateProfile",upload.fields([
     router.get("/allmerch/:id",AttendeeOnly,getproductBycreator)
     router.get("/allreview/:id",AttendeeOnly,getReviewsByArtist)
     router.post("/allreview",AttendeeOnly,createReview)
+    router.post("/follow/:id",AttendeeOnly,followUser)
+     router.post("/unfollow/:id",AttendeeOnly,unfollowUser)
+     router.get("/followers/:id",AttendeeOnly,getFollowers)
+router.get("/analytics",artistOnly,getArtistAnalytics)
 export default router
 
 

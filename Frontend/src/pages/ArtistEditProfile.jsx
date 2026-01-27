@@ -1,55 +1,59 @@
 
-import React, { useState } from "react";
-import { useEffect } from "react";
-import api from "../api/axios";
+
+import  { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { Camera, X, User, Link as LinkIcon, FileText, Mail, Sparkles } from "lucide-react";
+import api from "../api/axios";
 import { useAuth } from "../context/AuthContext";
 
+
 function ArtistEditProfile() {
+
   const { setDbuser } = useAuth();
   const [profilePic, setProfilePic] = useState(null);
   const [preview, setPreview] = useState(null);
-  const[coverPic,setCoverPic] = useState(null)
-  const[coverpreview,setCoverpreview]=useState(null)
-const[info,setInfo] = useState({})
- const { register, handleSubmit, reset,formState: { errors }} = useForm();
+  const [coverPic, setCoverPic] = useState(null);
+  const [coverpreview, setCoverpreview] = useState(null);
+  const [info, setInfo] = useState({});
+  
+  const { register, handleSubmit, reset, formState: { errors } } = useForm();
+
   const handleImageChange = (e) => {
-    const file = e.target.files[0];
+    const file = e.target.files?.[0];
     if (file) {
-      setPreview(null)
+      setPreview(null);
       setProfilePic(file);
       setPreview(URL.createObjectURL(file));
     }
   };
-    const handleCoverChange = (e) => {
-    const file = e.target.files[0];
+
+  const handleCoverChange = (e) => {
+    const file = e.target.files?.[0];
     if (file) {
-      setCoverpreview(null)
+      setCoverpreview(null);
       setCoverPic(file);
       setCoverpreview(URL.createObjectURL(file));
     }
   };
 
-const getImageUrl = (pathOrBlob) => {
-  if (!pathOrBlob) return "/images/defaultprofilepic.png"; 
-  if (pathOrBlob.startsWith("http") || pathOrBlob.startsWith("blob:")) return pathOrBlob;
-  return `http://localhost:5000${pathOrBlob}`;
-};
-const onsubmit = async(data)=>{
-try{
-  const formData = new FormData();
-  formData.append("username",data.username)
-    formData.append("email", data.email);
-    formData.append("bio", data.bio);
-    formData.append("sociallink", data.sociallink);
- formData.append("profilePic", profilePic);
- formData.append("coverPic", coverPic);
-  formData.append("about", data.about);
- const response = await api.put("/artist/updateProfile", formData, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
-  
-  setDbuser(prev => ({
+  const getImageUrl = (pathOrBlob) => {
+    return `http://localhost:5000/${pathOrBlob}`;
+  };
+
+  const onsubmit = async (data) => {
+    try {
+      const formData = new FormData();
+      formData.append("username", data.username);
+      formData.append("email", data.email);
+      formData.append("bio", data.bio);
+      formData.append("sociallink", data.sociallink);
+      formData.append("about", data.about);
+      if (profilePic) formData.append("profilePic", profilePic);
+      if (coverPic) formData.append("coverPic", coverPic);
+      const response = await api.put("/artist/updateProfile", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+        setDbuser(prev => ({
     ...prev,
     name: data.username,
     email:data.email,
@@ -58,135 +62,202 @@ try{
   }));  
 alert(response.data.message)
 
-}
-catch(e){
-console.log(e.response.data.message)
-alert(e.response?.data?.message)
-}
-}
-  useEffect(()=>{
+    } catch (e) {
+      console.log(e?.response?.data?.message);
+      alert(e?.response?.data?.message || "Error updating profile");
+    }
+  };
 
-const getProfiledetail=async()=>{
-    try{
-    const getprofile = await api.get("/auth/getuser")
-    setInfo(getprofile.data.user)
-    console.log(getprofile.data.message)
-    console.log(getprofile.data.user)
-    reset({
+  useEffect(() => {
+    const getProfiledetail = async () => {
+      try {
+        const getprofile = await api.get("/auth/getuser");
+        setInfo(getprofile.data.user);
+        reset({
           username: getprofile.data.user.name || "",
           email: getprofile.data.user.email || "",
+          about:getprofile.data.user.about || "",
           bio: getprofile.data.user.bio || "",
           sociallink: getprofile.data.user.social || "",
-    }
-    
-    )
-    console.log(getprofile.data.user.profileImage)
-    setPreview(getprofile.data.user.profileImage)
-    setCoverpreview(getprofile.data.user.coverImage)
-    }
-    catch(e){
-        console.log(e)
-    }
-}
-getProfiledetail()
-},[])
+        });
+        console.log(getprofile.data.about)
+        setPreview(getprofile.data.user.profileImage);
+        setCoverpreview(getprofile.data.user.coverImage);
+      } catch (e) {
+        console.log(e);
+      }
+    };
+    getProfiledetail();
+  }, [reset]);
+
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4 ml-[20%]">
-      <div className="bg-white w-full max-w-4xl rounded-2xl shadow-lg p-8 md:flex md:space-x-8">
+    <div className="min-h-screen bg-gradient-to-br from-[#e8f4f6] via-white to-[#d4eef3] flex items-center justify-center p-6 md:p-10 ml-[20%]">
+      <div className="w-full max-w-5xl bg-white rounded-3xl shadow-2xl shadow-[#93CAD5]/20 overflow-hidden">
+        <div className="md:flex">
 
-        <div className="flex flex-col items-center md:w-1/3 mb-6 md:mb-0">
-          <div className="relative w-32 h-32 rounded-full overflow-hidden border-4 flex justify-center items-center border-[#93CAD5] shadow-md cursor-pointer hover:opacity-90 transition">
-            <img src={getImageUrl(preview) || "/images/defaultprofilepic.png"}alt="Profile" className="w-full h-full object-cover" />
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleImageChange}
-              className="absolute inset-0 opacity-0 cursor-pointer"
-            />
+          <div className="md:w-2/5 bg-gradient-to-b from-[#93CAD5]/15 via-[#cbe4e8] to-[#93CAD5]/10 p-8 flex flex-col items-center justify-center space-y-8">
+
+            <div className="text-center mb-4">
+              <div className="inline-flex items-center gap-2 text-[#5ba3b0] mb-2">
+                <Sparkles className="h-5 w-5" />
+                <span className="text-sm font-medium tracking-wide uppercase">Your Presence</span>
+                <Sparkles className="h-5 w-5" />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-700">Visual Identity</h3>
+            </div>
+            <div className="relative group">
+              <div className="w-36 h-36 rounded-full overflow-hidden ring-4 ring-[#93CAD5]/40 ring-offset-4 ring-offset-white shadow-xl transition-all duration-300 group-hover:ring-[#93CAD5]/70 group-hover:shadow-2xl">
+                <img
+                  src={getImageUrl(preview)}
+                  alt="Profile"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <label className="absolute inset-0 flex items-center justify-center bg-gray-800/50 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 cursor-pointer">
+                <Camera className="h-8 w-8 text-white drop-shadow-lg" />
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="hidden"
+                />
+              </label>
+              {preview && (
+                <button
+                  onClick={() => { setProfilePic(null); setPreview(null); }}
+                  className="absolute -top-2 -right-2 p-1.5 bg-red-500 text-white rounded-full shadow-lg hover:scale-110 transition-transform"
+                  type="button"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
+            </div>
+            <p className="text-gray-500 text-sm">Profile Picture</p>
+
+
+            <div className="w-24 h-px bg-gradient-to-r from-transparent via-[#93CAD5]/50 to-transparent" />
+
+
+            <div className="relative group w-full max-w-xs">
+              <div className="aspect-[3/1] rounded-2xl overflow-hidden ring-2 ring-[#93CAD5]/30 ring-offset-2 ring-offset-white shadow-lg transition-all duration-300 group-hover:ring-[#93CAD5]/60 group-hover:shadow-xl bg-gray-100">
+                <img
+                  src={getImageUrl(coverpreview)}
+                  alt="Cover"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <label className="absolute inset-0 flex items-center justify-center bg-gray-800/50 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-300 cursor-pointer">
+                <Camera className="h-6 w-6 text-white drop-shadow-lg" />
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleCoverChange}
+                  className="hidden"
+                />
+              </label>
+              {coverpreview && (
+                <button
+                  onClick={() => { setCoverPic(null); setCoverpreview(null); }}
+                  className="absolute -top-2 -right-2 p-1.5 bg-red-500 text-white rounded-full shadow-lg hover:scale-110 transition-transform"
+                  type="button"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
+            </div>
+            <p className="text-gray-500 text-sm">Cover Image</p>
           </div>
-          <p className="mt-4 text-gray-600 text-sm text-center">
-            Click image to change profile picture
-          </p>
-          <button onClick={()=>{setPreview(null)}}  className="w-full bg-[#93CAD5] hover:bg-[#82c7a1] text-white font-semibold p-3 rounded-lg mt-4 transition">Remove profile image</button>
-       
-                    <div className="mt-10 relative w-32 h-32  overflow-hidden border-4 flex justify-center items-center border-[#93CAD5] shadow-md cursor-pointer hover:opacity-90 transition">
-            <img src={getImageUrl(coverpreview) || "/images/defaultprofilepic.png"} alt="Profile" className="w-full h-full object-cover" />
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleCoverChange}
-              className="absolute inset-0 opacity-0 cursor-pointer"
-            />
+
+          <div className="md:w-3/5 p-8 md:p-10">
+            <div className="mb-8">
+              <h2 className="text-3xl font-bold text-gray-800 tracking-tight">Edit Profile</h2>
+              <p className="text-gray-500 mt-1">Craft your artistic presence</p>
+            </div>
+
+            <form onSubmit={handleSubmit(onsubmit)} className="space-y-6">
+              <div className="space-y-2">
+                <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                  <User className="h-4 w-4 text-[#5ba3b0]" />
+                  Name <span className="text-red-500">*</span>
+                </label>
+                <input
+                  id="username"
+                  {...register("username", { required: true })}
+                  placeholder="Your artistic name"
+                  className="w-full h-11 px-4 rounded-xl border border-[#93CAD5]/30 bg-[#f8fbfc] focus:border-[#93CAD5] focus:ring-2 focus:ring-[#93CAD5]/20 focus:outline-none transition-all text-gray-800 placeholder:text-gray-400"
+                />
+                {errors.username && (
+                  <p className="text-red-500 text-xs flex items-center gap-1">
+                    <span className="inline-block w-1 h-1 bg-red-500 rounded-full" />
+                    Name is required
+                  </p>
+                )}
+              </div>
+
+
+              <div className="space-y-2">
+                <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                  <Mail className="h-4 w-4 text-[#5ba3b0]" />
+                  Email
+                </label>
+                <input
+                  id="email"
+                  {...register("email")}
+                  type="email"
+                  placeholder="you@example.com"
+                  className="w-full h-11 px-4 rounded-xl border border-[#93CAD5]/30 bg-[#f8fbfc] focus:border-[#93CAD5] focus:ring-2 focus:ring-[#93CAD5]/20 focus:outline-none transition-all text-gray-800 placeholder:text-gray-400"
+                />
+              </div>
+
+
+              <div className="space-y-2">
+                <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                  <Sparkles className="h-4 w-4 text-[#5ba3b0]" />
+                  Bio
+                </label>
+                <textarea
+                  id="bio"
+                  {...register("bio")}
+                  placeholder="A short tagline that makes you stand out..."
+                  className="w-full px-4 py-3 rounded-xl border border-[#93CAD5]/30 bg-[#f8fbfc] focus:border-[#93CAD5] focus:ring-2 focus:ring-[#93CAD5]/20 focus:outline-none transition-all resize-none min-h-[80px] text-gray-800 placeholder:text-gray-400"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                  <FileText className="h-4 w-4 text-[#5ba3b0]" />
+                  About
+                </label>
+                <textarea
+                  id="about"
+                  {...register("about")}
+                  placeholder="Tell your story, share your journey..."
+                  className="w-full px-4 py-3 rounded-xl border border-[#93CAD5]/30 bg-[#f8fbfc] focus:border-[#93CAD5] focus:ring-2 focus:ring-[#93CAD5]/20 focus:outline-none transition-all resize-none min-h-[100px] text-gray-800 placeholder:text-gray-400"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                  <LinkIcon className="h-4 w-4 text-[#5ba3b0]" />
+                  Website / Social Link
+                </label>
+                <input
+                  id="sociallink"
+                  {...register("sociallink")}
+                  type="url"
+                  placeholder="https://yourlink.com"
+                  className="w-full h-11 px-4 rounded-xl border border-[#93CAD5]/30 bg-[#f8fbfc] focus:border-[#93CAD5] focus:ring-2 focus:ring-[#93CAD5]/20 focus:outline-none transition-all text-gray-800 placeholder:text-gray-400"
+                />
+              </div>
+
+              <button
+                type="submit"
+                className="w-full h-12 bg-[#93CAD5] hover:bg-[#7bbcc9] text-white font-semibold rounded-xl shadow-lg shadow-[#93CAD5]/30 hover:shadow-xl hover:shadow-[#93CAD5]/40 transition-all duration-300"
+              >
+                Save Changes
+              </button>
+            </form>
           </div>
-          <p className="mt-4 text-gray-600 text-sm text-center">
-            Click image to change cover picture
-          </p>
-            <button onClick={()=>{setCoverPic(null),setCoverpreview(null)}} className="w-full bg-[#93CAD5] hover:bg-[#82c7a1] text-white font-semibold p-3 rounded-lg mt-4 transition">Remove cover image</button>
-        </div>
-
-
-        <div className="md:w-2/3">
-          <h2 className="text-2xl font-bold mb-6 text-gray-800">Edit Profile</h2>
-          <form className="space-y-4" onSubmit={handleSubmit(onsubmit)}>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
-              <input
-               {...register("username", { required: true })} 
-                type="text"
-                placeholder="Your Name"
-                className="w-full p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#93CAD5] focus:border-transparent transition"
-              />
-              {errors.username && <p className="text-red-500 text-xs mt-1">name is required</p>}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-              <input
-              {...register("email")}
-                type="email"
-                placeholder="you@example.com"
-                className="w-full p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#93CAD5] focus:border-transparent transition"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Bio</label>
-              <input 
-              type="text"
-               {...register("bio")}
-                placeholder="something to stand your out....."
-                className="w-full p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#93CAD5] focus:border-transparent transition resize-none h-24"
-              />
-            </div>
-                  <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">about</label>
-              <input 
-              type="text"
-               {...register("about")}
-                placeholder="Tell us about yourself..."
-                className="w-full p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#93CAD5] focus:border-transparent transition resize-none h-24"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Website / Social Link</label>
-              <input
-                type="url"
-                {...register("sociallink")}
-                placeholder="https://yourlink.com"
-                className="w-full p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#93CAD5] focus:border-transparent transition"
-              />
-            </div>
-
-            <button
-              type="submit"
-              className="w-full bg-[#93CAD5] hover:bg-[#82b8c7] text-white font-semibold p-3 rounded-lg mt-4 transition"
-            >
-              Save Changes
-            </button>
-
-          </form>
         </div>
       </div>
     </div>

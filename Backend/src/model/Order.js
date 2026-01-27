@@ -1,7 +1,7 @@
 
 import { DataTypes } from "sequelize";
 import sequelize from "../Database/db.js";
-import User from "./User.js";
+
 
 const Order = sequelize.define("Order", {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
@@ -11,6 +11,6 @@ const Order = sequelize.define("Order", {
   createdAt: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
 });
 
-Order.belongsTo(User, { foreignKey: "userId" });
+
 
 export default Order;

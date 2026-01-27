@@ -13,21 +13,28 @@ const ArtistProfile = () => {
   const [activeTab, setActiveTab] = useState("about");
   const [merch, setMerch] = useState([]);
   const [reviews, setReviews] = useState([]);
+  const [followersCount, setFollowersCount] = useState(0);
+  const [followers, setFollowers] = useState([]);
+  const [showFollowers, setShowFollowers] = useState(false);
+  const [reviewComment, setReviewComment] = useState("");
+  const [submittingReview, setSubmittingReview] = useState(false);
 
   const navigate = useNavigate();
-  useEffect(() => {
+
     const fetchArtist = async () => {
       try {
         const res = await api.get(`/artist/profile/${artistId}`);
         console.log(res.data.data);
-
+    setFollowersCount(res.data.data.followersCount);
         setArtist(res.data.data.artist);
         setIsFollowing(res.data.data.isFollowing);
+
       } catch (err) {
         console.error("Failed to fetch artist", err);
       }
     };
 
+  useEffect(() => {
     fetchArtist();
   }, [artistId]);
 
@@ -35,7 +42,7 @@ const ArtistProfile = () => {
     if (activeTab === "merch") {
       fetchMerch();
     }
-  }, [activeTab]);
+  }, [activeTab,]);
 
   const fetchMerch = async () => {
     try {
@@ -52,8 +59,8 @@ const ArtistProfile = () => {
 
   const fetchReviews = async () => {
     try {
-      const res = await api.get("/artist/allreviews")
-      console.log(res.data.data, "fetched sucessfully all reviews")
+  const res = await api.get(`/api/reviews/artist/${artistId}`);
+  console.log(res.data.data, "fetched sucessfully all reviews");
       setReviews(res.data.data);
     } catch (error) {
       console.log(error.message)
@@ -112,23 +119,27 @@ const ArtistProfile = () => {
     return num;
   };
 
+const fetchFollowers = async () => {
+    try {
+      const response = await api.get(`/artist/followers/${artistId}`);
+      setFollowers(response.data.followers);
+      setFollowersCount(response.data.count); 
+      setShowFollowers(true);
+    } catch (err) {
+      console.error("Failed to fetch followers", err);
+    }
+  };
 
   const handleFollowToggle = async () => {
     try {
       if (isFollowing) {
         await api.post(`/artist/unfollow/${artist.id}`);
         setIsFollowing(false);
-        setArtist((prev) => ({
-          ...prev,
-          followersCount: prev.followersCount - 1,
-        }));
+        fetchArtist()
       } else {
         await api.post(`/artist/follow/${artist.id}`);
         setIsFollowing(true);
-        setArtist((prev) => ({
-          ...prev,
-          followersCount: prev.followersCount + 1,
-        }));
+       fetchArtist()
       }
     } catch (err) {
       console.error("Follow toggle failed", err);
@@ -147,25 +158,173 @@ const ArtistProfile = () => {
     }
   };
 
+  const handleSubmitReview = async (e) => {
+    e.preventDefault();
+    
+    if (!reviewComment.trim()) {
+      alert("Please write a review");
+      return;
+    }
+
+    setSubmittingReview(true);
+    try {
+      await api.post("/api/reviews", {
+        artistId: artistId,
+        comment: reviewComment,
+      });
+      
+      setReviewComment("");
+      alert("Review posted successfully!");
+      
+      // Refresh reviews
+      fetchReviews();
+    } catch (err) {
+      console.error("Failed to post review:", err);
+      alert("Failed to post review.");
+    } finally {
+      setSubmittingReview(false);
+    }
+  };
+
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-100">
-      <div className="flex-1">
-        {/* COVER */}
-        <div className="relative h-56 bg-[#3593A6]">
-          <img
-            src={`http://localhost:5000/${artist.coverImage}`}
-            alt="cover"
-            className="w-full h-full object-cover opacity-60"
-          />
+    <div className="min-h-screen bg-gray-100">
+      {/* COVER */}
+      <div className="relative h-56 bg-[#3593A6]">
+        <img
+          src={`http://localhost:5000/${artist.coverImage}`}
+          alt="cover"
+          className="w-full h-full object-cover opacity-90"
+        />
 
-          <div className="absolute -bottom-14 left-6">
-            <div className="w-28 h-28 rounded-full border-4 border-white overflow-hidden bg-white">
-              <img
-                src={`http://localhost:5000/${artist.profileImage}`}
-                alt={artist.name}
-                className="w-full h-full object-cover"
-              />
+        <div className="absolute -bottom-14 left-6">
+          <div className="w-28 h-28 rounded-full border-4 border-white overflow-hidden bg-white">
+            <img
+              src={`http://localhost:5000/${artist.profileImage}`}
+              alt={artist.name}
+              className="w-full h-full object-cover"
+            />
+          </div>
+        </div>
+      </div>
+      {showFollowers && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in" onClick={() => setShowFollowers(false)}>
+          <div className="bg-white p-1 pl-3 pr-3 rounded-2xl shadow-2xl max-w-md w-full transform animate-scale-in" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between p-6 border-b">
+              <h2 className="text-xl font-bold text-gray-800">
+                Followers ({followersCount})
+              </h2>
+              <button 
+                onClick={() => setShowFollowers(false)}
+                className="text-gray-400 hover:text-gray-600 text-2xl w-8 h-8 flex items-center justify-center"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="">
+              {followers.length === 0 ? (
+                <p className="text-center text-gray-500 py-8" >No followers yet</p>
+              ) : (
+                followers.map(follower => (
+                  <div key={follower.id} className="flex items-center gap-3 hover:bg-gray-50 p-3 rounded-lg transition-colors">
+                    <img 
+                      src={follower.profileImage || '/default-avatar.png'} 
+                      alt={follower.name} 
+                        className="w-12 h-12 rounded-full object-cover"
+                    />
+                    
+             <div className="flex-1">
+                      <p className="font-semibold text-gray-800">{follower.name}</p>
+                      <p className="text-sm text-gray-500">{follower.email}</p>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+      <div className="px-6 pt-20 pb-6 flex flex-col md:flex-row md:justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">{artist.name}</h1>
+          <p className="text-gray-500 mt-1">{artist.bio}</p>
+          <a className="text-[#2c7f8f] mt-1" href={artist.social}> visit my instagram</a>
+          <div className="flex gap-6 mt-4">
+            <div className="w-10% h-10  cursor-pointer"onClick={fetchFollowers}>
+              <span className="font-semibold">
+                {formatNumber(followersCount)}
+              </span>{" "}
+              <span className="text-gray-500">Followers</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      {/* COVER */}
+      <div className="relative h-56 bg-[#3593A6]">
+        <img
+          src={`http://localhost:5000/${artist.coverImage}`}
+          alt="cover"
+          className="w-full h-full object-cover opacity-90"
+        />
+
+        <div className="absolute -bottom-14 left-6">
+          <div className="w-28 h-28 rounded-full border-4 border-white overflow-hidden bg-white">
+            <img
+              src={`http://localhost:5000/${artist.profileImage}`}
+              alt={artist.name}
+              className="w-full h-full object-cover"
+            />
+          </div>
+        </div>
+      </div>
+{showFollowers && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in" onClick={() => setShowFollowers(false)}>
+          <div className="bg-white p-1 pl-3 pr-3 rounded-2xl shadow-2xl max-w-md w-full transform animate-scale-in" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between p-6 border-b">
+              <h2 className="text-xl font-bold text-gray-800">
+                Followers ({followersCount})
+              </h2>
+              <button 
+                onClick={() => setShowFollowers(false)}
+                className="text-gray-400 hover:text-gray-600 text-2xl w-8 h-8 flex items-center justify-center"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="">
+              {followers.length === 0 ? (
+                <p className="text-center text-gray-500 py-8" >No followers yet</p>
+              ) : (
+                followers.map(follower => (
+                  <div key={follower.id} className="flex items-center gap-3 hover:bg-gray-50 p-3 rounded-lg transition-colors">
+                    <img 
+                      src={follower.profileImage || '/default-avatar.png'} 
+                      alt={follower.name} 
+                        className="w-12 h-12 rounded-full object-cover"
+                    />
+                    
+             <div className="flex-1">
+                      <p className="font-semibold text-gray-800">{follower.name}</p>
+                      <p className="text-sm text-gray-500">{follower.email}</p>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+      <div className="px-6 pt-20 pb-6 flex flex-col md:flex-row md:justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">{artist.name}</h1>
+          <p className="text-gray-500 mt-1">{artist.bio}</p>
+          <a className="text-[#2c7f8f] mt-1" href={artist.social}> visit my instagram</a>
+          <div className="flex gap-6 mt-4">
+            <div className="w-10% h-10  cursor-pointer" onClick={fetchFollowers}>
+              <span className="font-semibold">
+                {formatNumber(followersCount)}
+              </span>{" "}
+              <span className="text-gray-500">Followers</span>
             </div>
           </div>
         </div>
@@ -219,21 +378,18 @@ const ArtistProfile = () => {
           ))}
         </div>
 
-        <div className="px-6 py-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2">
-            {activeTab === "about" && (
-              <div className="bg-white rounded-lg shadow p-6">
-                <h2 className="text-xl font-bold mb-3">
-                  About {artist.name}
-                </h2>
-                <p className="text-gray-700">{artist.about}</p>
-              </div>
-            )}
-            {activeTab === "events" && (
-              <div className="bg-white rounded-lg shadow p-6">
-                <h2 className="text-xl font-bold mb-3">
-                  View all events from {artist.name}
-                </h2>
+        <div className="px-6 pt-6 pb-12">
+          {activeTab === "about" && (
+            <div className="bg-white rounded-lg shadow p-6">
+              <h2 className="text-xl font-bold mb-3">About {artist.name}</h2>
+              <p className="text-gray-700">{artist.about}</p>
+            </div>
+          )}
+          {activeTab === "events" && (
+            <div className="bg-white rounded-lg shadow p-6">
+              <h2 className="text-xl font-bold mb-3">
+                View all events from {artist.name}
+              </h2>
 
 
                 {allgigs.length === 0 && (
@@ -385,26 +541,9 @@ const ArtistProfile = () => {
               )}
             </div>
           </div>
-
-          <div>
-            <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-xl font-bold mb-4">Upcoming Gigs</h2>
-
-              {gigs.length > 0 ? (
-                gigs.map((gig) => (
-                  <div key={gig.id} className="border rounded-lg p-3 mb-3">
-                    <h3 className="font-semibold">{gig.title}</h3>
-                    <p className="text-sm text-gray-500">{gig.status}</p>
-                  </div>
-                ))
-              ) : (
-                <p className="text-gray-500">No upcoming gigs</p>
-              )}
-            </div>
-          </div>
         </div>
+        <Footer />
       </div>
-      <Footer />
     </div>
   );
 };

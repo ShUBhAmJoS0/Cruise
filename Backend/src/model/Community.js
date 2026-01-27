@@ -1,6 +1,7 @@
 // models/Community.js
 import { DataTypes } from "sequelize";
 import sequelize from "../Database/db.js";
+import User from "./User.js"
 
 const Community = sequelize.define("Community", {
   content: {
@@ -16,5 +17,19 @@ const Community = sequelize.define("Community", {
     allowNull: true,
   }
 });
+
+
+// ASSOCIATIONS - Community belongs to User
+
+Community.belongsTo(User, {
+  foreignKey: "userId",
+  as: "User",
+});
+
+User.hasMany(Community, {
+  foreignKey: "userId",
+  as: "Posts",
+});
+
 
 export default Community;
