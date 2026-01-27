@@ -1,44 +1,200 @@
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import Footer from "../components/Footer";
+
+const slides = [
+  {
+    date: "17 NOV — 13 DEC",
+    title: "The Cricket Fever is Here.",
+    description: "Join thousands of fans for the most anticipated sporting event of the season. Experience the intensity live at the stadium.",
+    image: "https://namastesindhupalchowk.com/uploads/nepal-premier-league-npl.png",
+    athlete: "https://cricketvectors.akamaized.net/Series/1NY.png",
+    badge: "NPL 2026",
+    sponsor: "Siddhartha Bank",
+    event: "Nepal Premier League"
+  },
+  {
+    date: "05 JAN — 25 JAN",
+    title: "Music Festival Extravaganza.",
+    description: "Experience world-class performances from international and local artists. A festival you won't forget!",
+    image: "https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=800&h=600&fit=crop",
+    athlete: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=400&h=600&fit=crop",
+    badge: "MUSIC 2026",
+    sponsor: "Prime Events",
+    event: "Music Festival"
+  },
+  {
+    date: "15 FEB — 20 FEB",
+    title: "Tech Summit 2026.",
+    description: "Join industry leaders and innovators for the biggest tech conference of the year. Network, learn, and innovate!",
+    image: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=600&fit=crop",
+    athlete: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=400&h=600&fit=crop",
+    badge: "TECH 2026",
+    sponsor: "Innovation Hub",
+    event: "Tech Summit"
+  }
+];
 
 function LandingPage() {
   const navigate = useNavigate()
+  const [activeSlide, setActiveSlide] = useState(0)
+
+  const nextSlide = () => {
+    setActiveSlide((prev) => (prev + 1) % slides.length);
+  };
+
+  const prevSlide = () => {
+    setActiveSlide((prev) => (prev - 1 + slides.length) % slides.length);
+  };
+
   return (
     <>
       {/* NAVBAR */}
-      <nav className="sticky top-0 z-50 w-full bg-white border-b border-gray-200 shadow-sm">
-        <div className="flex justify-between items-center px-4 md:px-6 py-1">
-          {/* Left Section */}
-          <div className="flex items-center gap-4 md:gap-10">
-            <img src="images/cruise logo.png" className="h-10" alt="Cruise Logo" />
-            <div className="hidden md:flex gap-6">
-              <button onClick={() => { const token = localStorage.getItem('token'); if (!token) navigate('/login'); else navigate('/explore') }} className="text-[#3593A6] font-bold hover:text-[#2d7a8a] transition">Event</button>
-              <button onClick={() => { const token = localStorage.getItem('token'); if (!token) navigate('/login'); else navigate('/categories') }} className="text-[#3593A6] font-bold hover:text-[#2d7a8a] transition">Categories</button>
-              <button onClick={() => { const token = localStorage.getItem('token'); if (!token) navigate('/login'); else navigate('/artist-dashboard') }} className="text-[#3593A6] font-bold hover:text-[#2d7a8a] transition">For Artist</button>
+      <nav className="sticky top-0 z-50 bg-white/70 backdrop-blur-xl border-b border-slate-100">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="flex justify-between items-center h-20">
+            <div className="flex items-center gap-12">
+              <div className="flex items-center">
+                <img src="/images/cruise logo.png" alt="Cruise Logo" className="h-10" />
+              </div>
+              <div className="hidden md:flex items-center space-x-10">
+                <button onClick={() => { const token = localStorage.getItem('token'); if (!token) navigate('/login'); else navigate('/explore') }} className="text-sm font-semibold text-slate-600 hover:text-[#3593A6] transition-colors">Explore</button>
+                <button onClick={() => { const token = localStorage.getItem('token'); if (!token) navigate('/login'); else navigate('/categories') }} className="text-sm font-semibold text-slate-600 hover:text-[#3593A6] transition-colors">Categories</button>
+                <button onClick={() => { const token = localStorage.getItem('token'); if (!token) navigate('/login'); else navigate('/find-artists') }} className="text-sm font-semibold text-slate-600 hover:text-[#3593A6] transition-colors">Artists</button>
+                <button className="text-sm font-semibold text-slate-600 hover:text-[#3593A6] transition-colors">Corporate</button>
+              </div>
             </div>
-          </div>
-
-          {/* Right Section */}
-          <div className="flex items-center gap-2 md:gap-4">
-            <input type="search" className="hidden md:block w-40 px-4 py-2 border border-[#3593A6] rounded-full text-sm" placeholder="Search Events" />
-            <button onClick={() => navigate("/login")} className="px-3 md:px-5 py-2 bg-[#3593A6]/20 text-[#3593A6] rounded-full font-bold text-sm md:text-base hover:scale-105 transition">Login</button>
-            <button onClick={() => navigate("/signup")} className="px-3 md:px-5 py-2 bg-[#3593A6] text-white rounded-full font-bold text-sm md:text-base hover:bg-[#2d7a8a] transition">Sign Up</button>
+            <div className="flex items-center gap-6">
+              <div className="relative hidden lg:block">
+                <input className="w-72 pl-11 pr-4 py-2.5 text-sm bg-slate-100 border-none rounded-full focus:ring-2 focus:ring-[#3593A6]/30 transition-all" placeholder="Search events, artists, venues..." type="text"/>
+                <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-lg">search</span>
+              </div>
+              <button onClick={() => navigate("/login")} className="px-6 py-2.5 text-sm font-bold text-slate-700 hover:bg-slate-50 rounded-full transition-all">Login</button>
+              <button onClick={() => navigate("/signup")} className="px-8 py-2.5 text-sm font-bold bg-[#3593A6] text-white hover:shadow-lg hover:shadow-[#3593A6]/30 transition-all rounded-full">Sign Up</button>
+            </div>
           </div>
         </div>
       </nav>
 
       {/* HERO SECTION */}
-      <section className="relative w-full h-screen overflow-hidden">
-        <div className="fixed top-16 left-0 w-full h-full -z-10">
-          <img src="/images/heroimage.png" alt="Hero Background" className="w-full h-full object-cover" />
-        </div>
-        <div className="flex items-center justify-center h-full">
-          <button onClick={() => { const token = localStorage.getItem('token'); if (!token) navigate('/login'); else navigate('/explore') }} className="px-7 py-3 bg-[#3593A6] text-white rounded-full font-bold text-lg hover:bg-[#2d7a8a] hover:scale-110 transition z-10 shadow-lg hover:shadow-2xl">Explore Event</button>
-        </div>
-        <div className="absolute bottom-0 w-full z-20">
-          <img src="/images/scrap.png" alt="Scrap Design" className="w-full" />
-        </div>
-      </section>
+      <main className="py-12 overflow-hidden">
+        <section className="relative max-w-7xl mx-auto px-6 lg:px-8 mb-24">
+          <div className="text-center mb-12">
+            <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight">Experience Premium Events</h1>
+          </div>
+
+          <div className="relative h-[520px] flex items-center justify-center" style={{perspective: '1500px'}}>
+            {/* Stacked card left - hidden on mobile */}
+            <div className="absolute w-full max-w-4xl h-[450px] bg-white rounded-[2.5rem] overflow-hidden border border-slate-100 pointer-events-none hidden lg:block"
+              style={{
+                transform: 'translateX(-65%) scale(0.85) rotateY(10deg)',
+                opacity: 0.5,
+                filter: 'blur(2px)'
+              }}>
+              <img alt="Previous Event" className="w-full h-full object-cover opacity-60" src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800&h=600&fit=crop" />
+            </div>
+
+            {/* Main card */}
+            <div className="relative z-10 w-full max-w-5xl h-[500px] bg-white rounded-[2.5rem] shadow-2xl border border-slate-50 overflow-hidden flex flex-col md:flex-row"
+              style={{boxShadow: '0 20px 50px -12px rgba(0, 0, 0, 0.08)'}}>
+              
+              {/* Left side - Image */}
+              <div className="relative md:w-3/5 h-full bg-[#1a2c5b] overflow-hidden">
+                <img alt={slides[activeSlide].event} className="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-luminosity hover:scale-105 transition-transform duration-700" 
+                  src={slides[activeSlide].image} />
+                <div className="absolute inset-0 bg-gradient-to-r from-[#1a2c5b]/80 via-transparent to-transparent"></div>
+                
+                {/* Athlete Image Overlay */}
+                <img alt="Athletes" className="absolute bottom-0 left-0 h-[95%] w-auto object-contain transform translate-x-4 z-20" 
+                  src={slides[activeSlide].athlete} />
+                
+                {/* Badge */}
+                <div className="absolute top-8 left-8 z-30 bg-white/10 backdrop-blur-md border border-white/20 p-4 rounded-2xl flex items-center gap-3">
+                  <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center font-black text-[#1a2c5b] text-[10px] leading-tight text-center">{slides[activeSlide].badge.split(' ')[0]}<br/>{slides[activeSlide].badge.split(' ')[1]}</div>
+                  <div className="text-white">
+                    <p className="text-[10px] font-bold uppercase tracking-wider opacity-80">{slides[activeSlide].sponsor}</p>
+                    <p className="text-xs font-extrabold">{slides[activeSlide].event}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right side - Content */}
+              <div className="md:w-2/5 p-10 lg:p-14 flex flex-col justify-center">
+                <div className="mb-8">
+                  <div className="flex items-center gap-2 text-[#3593A6] mb-3">
+                    <span className="material-symbols-outlined text-lg">calendar_today</span>
+                    <span className="text-sm font-bold tracking-wide">{slides[activeSlide].date}</span>
+                  </div>
+                  <h2 className="text-4xl font-extrabold text-slate-900 leading-[1.1] mb-4">{slides[activeSlide].title}</h2>
+                  <p className="text-slate-500 leading-relaxed text-sm">{slides[activeSlide].description}</p>
+                </div>
+
+                <div className="flex flex-col gap-4">
+                  <button onClick={() => { const token = localStorage.getItem('token'); if (!token) navigate('/login'); else navigate('/explore') }} 
+                    className="w-full py-4 bg-[#3593A6] text-white font-extrabold rounded-2xl shadow-xl shadow-[#3593A6]/20 hover:-translate-y-1 transition-all">
+                    Book Your Tickets
+                  </button>
+                  <button className="w-full py-4 bg-slate-50 text-slate-700 font-bold rounded-2xl hover:bg-slate-100 transition-all border border-slate-200/50">
+                    View Match Schedule
+                  </button>
+                </div>
+
+                {/* Attendees */}
+                <div className="mt-10 flex items-center gap-6">
+                  <div className="flex -space-x-3">
+                    <div className="w-10 h-10 rounded-full border-2 border-white bg-slate-200 overflow-hidden">
+                      <img alt="user" src="https://i.pravatar.cc/40?img=1" />
+                    </div>
+                    <div className="w-10 h-10 rounded-full border-2 border-white bg-slate-200 overflow-hidden">
+                      <img alt="user" src="https://i.pravatar.cc/40?img=2" />
+                    </div>
+                    <div className="w-10 h-10 rounded-full border-2 border-white bg-slate-200 overflow-hidden">
+                      <img alt="user" src="https://i.pravatar.cc/40?img=3" />
+                    </div>
+                    <div className="w-10 h-10 rounded-full border-2 border-white bg-[#3593A6] flex items-center justify-center text-[10px] text-white font-bold">
+                      +2k
+                    </div>
+                  </div>
+                  <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Attending the match</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Stacked card right - hidden on mobile */}
+            <div className="absolute w-full max-w-4xl h-[450px] bg-white rounded-[2.5rem] overflow-hidden border border-slate-100 pointer-events-none hidden lg:block"
+              style={{
+                transform: 'translateX(65%) scale(0.85) rotateY(-10deg)',
+                opacity: 0.5,
+                filter: 'blur(2px)'
+              }}>
+              <img alt="Next Event" className="w-full h-full object-cover opacity-60" src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&h=600&fit=crop" />
+            </div>
+
+            {/* Navigation arrows */}
+            <button onClick={prevSlide} className="absolute left-4 lg:left-0 top-1/2 -translate-y-1/2 z-40 w-14 h-14 bg-white rounded-full shadow-lg border border-slate-100 flex items-center justify-center text-slate-800 hover:text-[#3593A6] transition-all group">
+              <span className="material-symbols-outlined group-hover:-translate-x-0.5 transition-transform">arrow_back_ios_new</span>
+            </button>
+            <button onClick={nextSlide} className="absolute right-4 lg:right-0 top-1/2 -translate-y-1/2 z-40 w-14 h-14 bg-white rounded-full shadow-lg border border-slate-100 flex items-center justify-center text-slate-800 hover:text-[#3593A6] transition-all group">
+              <span className="material-symbols-outlined group-hover:translate-x-0.5 transition-transform">arrow_forward_ios</span>
+            </button>
+          </div>
+
+          {/* Pagination dots */}
+          <div className="flex justify-center gap-3 mt-10">
+            {slides.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setActiveSlide(index)}
+                className={`rounded-full transition-all ${
+                  activeSlide === index
+                    ? 'w-12 h-1.5 bg-[#3593A6]'
+                    : 'w-3 h-1.5 bg-slate-200 hover:bg-slate-300'
+                }`}
+              ></button>
+            ))}
+          </div>
+        </section>
+      </main>
 
       {/* TRENDING EVENTS */}
       <section className="bg-gray-100 px-4 md:px-8 py-10 md:py-16 z-10 relative">
