@@ -9,6 +9,12 @@ function EventRequests({ onNavigate, onLogout }) {
   const [activeFilter, setActiveFilter] = useState('all');
   const [loading, setLoading] = useState(true);
   const [selectedEvent, setSelectedEvent] = useState(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const handleNavigate = (page) => {
+    setSidebarOpen(false);
+    if (onNavigate) onNavigate(page);
+  };
 
   // Calculate counts
   const totalRequests = allRequests.length;
@@ -129,16 +135,34 @@ function EventRequests({ onNavigate, onLogout }) {
     <div className="flex h-screen w-full overflow-hidden bg-[#f6f7f8]">
       <ToastContainer position="top-right" autoClose={3000} />
 
-      <aside className="flex w-64 flex-col bg-white border-r border-[#e5e7eb] shrink-0">
+      {/* Mobile overlay */}
+      {sidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden" 
+          onClick={() => setSidebarOpen(false)} 
+        />
+      )}
+
+      <aside className={`fixed lg:static inset-y-0 left-0 z-50 w-64 transform transition-transform duration-300 ease-in-out ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'} flex flex-col bg-white border-r border-[#e5e7eb] shrink-0`}>
         <div className="flex flex-col h-full p-4 justify-between">
           <div className="flex flex-col gap-8">
-            <div className="flex flex-col px-2">
-              <h1 className="text-[#3593A6] text-xl font-bold leading-normal tracking-tight">Cruise Admin</h1>
-              <p className="text-[#617589] text-xs font-medium uppercase tracking-wider mt-1">Event Requests</p>
+            <div className="flex items-center justify-between px-2">
+              <div>
+                <h1 className="text-[#3593A6] text-xl font-bold leading-normal tracking-tight">Cruise Admin</h1>
+                <p className="text-[#617589] text-xs font-medium uppercase tracking-wider mt-1">Event Requests</p>
+              </div>
+              <button 
+                onClick={() => setSidebarOpen(false)} 
+                className="lg:hidden p-2 rounded-lg hover:bg-gray-100 text-gray-600"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
             </div>
 
             <nav className="flex flex-col gap-2">
-              <button onClick={() => onNavigate && onNavigate('dashboard')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#617589] hover:bg-[#f0f2f4] transition-colors group cursor-pointer">
+              <button onClick={() => handleNavigate('dashboard')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#617589] hover:bg-[#f0f2f4] transition-colors group cursor-pointer">
                 <svg className="w-6 h-6 group-hover:text-[#3593A6] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                 </svg>
@@ -153,7 +177,7 @@ function EventRequests({ onNavigate, onLogout }) {
               </button>
 
               <button
-                onClick={() => onNavigate && onNavigate('user-problems')}
+                onClick={() => handleNavigate('user-problems')}
                 className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#617589] hover:bg-[#f0f2f4] transition-colors group w-full text-left"
               >
                 <svg className="w-6 h-6 group-hover:text-[#3593A6] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -187,43 +211,49 @@ function EventRequests({ onNavigate, onLogout }) {
       </aside>
 
       <main className="flex-1 flex flex-col h-full overflow-hidden">
-        <header className="h-16 flex items-center justify-between px-8 bg-white border-b border-[#e5e7eb] shrink-0">
-          <div>
-            <h2 className="text-lg font-semibold text-[#111418]">Event Hosting Requests</h2>
+        <header className="h-16 flex items-center justify-between px-4 md:px-8 bg-white border-b border-[#e5e7eb] shrink-0">
+          <div className="flex items-center gap-3">
+            <button 
+              onClick={() => setSidebarOpen(true)} 
+              className="lg:hidden p-2 rounded-lg hover:bg-gray-100 text-gray-600"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+            <h2 className="text-base md:text-lg font-semibold text-[#111418]">Event Requests</h2>
           </div>
           <div className="flex items-center gap-4">
-            <NotificationDropdown onNavigate={onNavigate} />
+            <NotificationDropdown onNavigate={handleNavigate} />
           </div>
         </header>
 
-        <div className="flex-1 overflow-y-auto p-8">
-          <div className="max-w-6xl mx-auto flex flex-col gap-8 pb-10">
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-              <div className="flex flex-col gap-2">
-                <h1 className="text-[#111418] text-3xl font-black leading-tight tracking-tight">Event Hosting Submissions</h1>
-                <p className="text-[#617589] text-base font-normal">Review artist event hosting proposals and manage event approvals.</p>
-              </div>
+        <div className="flex-1 overflow-y-auto p-4 md:p-8">
+          <div className="max-w-6xl mx-auto flex flex-col gap-4 md:gap-8 pb-10">
+            <div className="flex flex-col gap-2">
+              <h1 className="text-[#111418] text-2xl md:text-3xl font-black leading-tight tracking-tight">Event Submissions</h1>
+              <p className="text-[#617589] text-sm md:text-base font-normal">Review artist event hosting proposals and manage approvals.</p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div className="flex flex-col gap-1 rounded-xl p-6 border border-[#e5e7eb] bg-white shadow-sm">
-                <p className="text-[#617589] text-sm font-medium uppercase tracking-wider">Total Requests</p>
-                <p className="text-[#111418] text-3xl font-bold leading-tight">{totalRequests}</p>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+              <div className="flex flex-col gap-1 rounded-xl p-4 md:p-6 border border-[#e5e7eb] bg-white shadow-sm">
+                <p className="text-[#617589] text-xs md:text-sm font-medium uppercase tracking-wider">Total</p>
+                <p className="text-[#111418] text-2xl md:text-3xl font-bold leading-tight">{totalRequests}</p>
               </div>
 
-              <div className="flex flex-col gap-1 rounded-xl p-6 border border-l-4 border-[#e5e7eb] border-l-yellow-500 bg-white shadow-sm">
-                <p className="text-[#617589] text-sm font-medium uppercase tracking-wider">Pending Review</p>
-                <p className="text-[#111418] text-3xl font-bold leading-tight">{pendingCount}</p>
+              <div className="flex flex-col gap-1 rounded-xl p-4 md:p-6 border border-l-4 border-[#e5e7eb] border-l-yellow-500 bg-white shadow-sm">
+                <p className="text-[#617589] text-xs md:text-sm font-medium uppercase tracking-wider">Pending</p>
+                <p className="text-[#111418] text-2xl md:text-3xl font-bold leading-tight">{pendingCount}</p>
               </div>
 
-              <div className="flex flex-col gap-1 rounded-xl p-6 border border-l-4 border-[#e5e7eb] border-l-green-500 bg-white shadow-sm">
-                <p className="text-[#617589] text-sm font-medium uppercase tracking-wider">Approved</p>
-                <p className="text-[#111418] text-3xl font-bold leading-tight">{approvedCount}</p>
+              <div className="flex flex-col gap-1 rounded-xl p-4 md:p-6 border border-l-4 border-[#e5e7eb] border-l-green-500 bg-white shadow-sm">
+                <p className="text-[#617589] text-xs md:text-sm font-medium uppercase tracking-wider">Approved</p>
+                <p className="text-[#111418] text-2xl md:text-3xl font-bold leading-tight">{approvedCount}</p>
               </div>
 
-              <div className="flex flex-col gap-1 rounded-xl p-6 border border-l-4 border-[#e5e7eb] border-l-red-500 bg-white shadow-sm">
-                <p className="text-[#617589] text-sm font-medium uppercase tracking-wider">Rejected</p>
-                <p className="text-[#111418] text-3xl font-bold leading-tight">{rejectedCount}</p>
+              <div className="flex flex-col gap-1 rounded-xl p-4 md:p-6 border border-l-4 border-[#e5e7eb] border-l-red-500 bg-white shadow-sm">
+                <p className="text-[#617589] text-xs md:text-sm font-medium uppercase tracking-wider">Rejected</p>
+                <p className="text-[#111418] text-2xl md:text-3xl font-bold leading-tight">{rejectedCount}</p>
               </div>
             </div>
 
