@@ -49,7 +49,7 @@ console.log("Cart items fetched for order:", items.map(i => ({
         return res.status(400).json({ message: "Product not found" });
 
       if (i.product.productQuantity < i.quantity) {
-        return res.status(400).json({
+        return res.status(500).json({
           message: `Only ${i.Product.productQuantity} items left for ${i.product.productName}`,
         });
       }

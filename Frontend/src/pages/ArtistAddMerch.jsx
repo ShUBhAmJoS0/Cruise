@@ -1,6 +1,8 @@
 import { useForm } from "react-hook-form";
 import { useState, useEffect } from "react";
 import api from "../api/axios";
+import toast from "react-hot-toast";
+
 
 function AddMerch() {
   const { register, handleSubmit, reset, formState: { errors } } = useForm();
@@ -10,6 +12,7 @@ function AddMerch() {
   const [showPopup, setShowPopup] = useState(null);
   const [editpopup, setEditpopup] = useState(null);
   const [getItems, setGetItems] = useState([]);
+
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -33,13 +36,13 @@ function AddMerch() {
       const res = await api.post("/artist/addmerch", formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
-      alert(res.data.message);
+      toast(res.data.message, "success");
       reset();
       setSelectedImage(null);
       setPreview("");
       getMerchItems();
     } catch (error) {
-      alert(error.response?.data?.message || "Failed to add product");
+      toast(error.response?.data?.message || "Failed to add product", "error");
       console.log(error.message);
     }
   };
@@ -61,6 +64,7 @@ function AddMerch() {
     const [image, setImage] = useState(null);
     const [preview, setPreview] = useState(`http://localhost:5000/${item.productImage}`);
     const { register, handleSubmit, reset } = useForm();
+ 
 
     useEffect(() => {
       if (item) {
@@ -90,12 +94,12 @@ function AddMerch() {
       if (image) formData.append("image", image);
       try {
         await api.put(`/artist/addmerch/${item.productId}`, formData);
-        alert("Updated successfully");
+        toast("Updated successfully", "success");
         refresh();
         close();
       } catch (error) {
         console.log(error);
-        alert("Failed to update");
+       toast("Failed to update", "error");
       }
     };
 
@@ -160,11 +164,11 @@ function AddMerch() {
     try {
       const res = await api.delete(`/artist/addmerch/${id}`)
       console.log(deleteProduct)
-      alert(res.data.message)
+      toast(res.data.message, "success")
       getMerchItems()
     } catch(error) {
       console.log(error)
-      alert(error.response.data.message)
+      toast(error.response?.data?.message || "Failed to delete product", "error")
     }
   }
 
