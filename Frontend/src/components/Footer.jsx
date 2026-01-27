@@ -7,7 +7,6 @@ const Footer = () => {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
         email: "",
-        subject: "",
         message: ""
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -37,7 +36,7 @@ const Footer = () => {
 
             if (data.success) {
                 toast.success("Problem reported successfully! We'll get back to you soon.");
-                setFormData({ email: "", subject: "", message: "" });
+                setFormData({ email: "", message: "" });
             } else {
                 toast.error(data.message || "Failed to report problem.");
             }
@@ -50,43 +49,62 @@ const Footer = () => {
     };
 
     return (
-        <footer className="bg-white border-t border-gray-200 w-full relative">
+        <footer className="bg-[#1a2c5b] w-full relative">
             <ToastContainer position="bottom-right" autoClose={3000} />
-            <div className="px-4 md:px-8 py-10 md:py-16 max-w-7xl mx-auto">
-                <div className="grid grid-cols-1 md:grid-cols-5 gap-10 md:gap-8 mb-8">
-                    <div>
-                        <p className="font-bold text-lg mb-4 text-[#111418]">Quick Links</p>
-                        <div className="flex flex-col gap-3 text-sm text-gray-600">
-                            <button onClick={() => navigate('/')} className="hover:text-[#3593A6] text-left cursor-pointer transition">About Us</button>
-                            <button onClick={() => { const token = localStorage.getItem('token'); if (!token) navigate('/login'); else navigate('/explore') }} className="hover:text-[#3593A6] text-left cursor-pointer transition">Events</button>
-                            <button onClick={() => navigate('/')} className="hover:text-[#3593A6] text-left cursor-pointer transition">Blog</button>
+            
+            {/* Main Footer Content */}
+            <div className="px-4 md:px-8 py-16 max-w-7xl mx-auto">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-12">
+                    
+                    {/* Left Column - Logo & About */}
+                    <div className="flex flex-col gap-6">
+                        <div className="flex items-center gap-2">
+                            <img src="/images/cruise logo.png" alt="Cruise Logo" className="h-20 w-20 object-contain" />
+                            {/* <span className="text-white font-bold text-xl">Cruise</span> */}
+                        </div>
+                        <div className="flex flex-col gap-4">
+                            <p className="text-sm font-semibold text-[#3593A6] uppercase tracking-wide">Company</p>
+                            <div className="flex flex-col gap-2">
+                                <button onClick={() => navigate('/')} className="text-gray-300 hover:text-[#3593A6] text-sm transition duration-300 text-left">About Us</button>
+                                <button onClick={() => navigate('/')} className="text-gray-300 hover:text-[#3593A6] text-sm transition duration-300 text-left">Careers</button>
+                                <button onClick={() => navigate('/')} className="text-gray-300 hover:text-[#3593A6] text-sm transition duration-300 text-left">Blog</button>
+                            </div>
                         </div>
                     </div>
-                    <div>
-                        <p className="font-bold text-lg mb-4 text-[#111418]">Support</p>
-                        <div className="flex flex-col gap-3 text-sm text-gray-600">
-                            <button onClick={() => navigate('/')} className="hover:text-[#3593A6] text-left cursor-pointer transition">Help Center</button>
-                            <button onClick={() => navigate('/')} className="hover:text-[#3593A6] text-left cursor-pointer transition">Contact Us</button>
-                            <button onClick={() => navigate('/')} className="hover:text-[#3593A6] text-left cursor-pointer transition">FAQ</button>
+
+                    {/* Middle Column - Support */}
+                    <div className="flex flex-col gap-6">
+                        <p className="text-sm font-bold text-white uppercase tracking-wider">Support</p>
+                        <div className="flex flex-col gap-2">
+                            <button onClick={() => navigate('/')} className="text-gray-300 hover:text-[#3593A6] text-sm transition duration-300 text-left">Help Center</button>
+                            <button onClick={() => navigate('/')} className="text-gray-300 hover:text-[#3593A6] text-sm transition duration-300 text-left">Contact Us</button>
+                            <button onClick={() => navigate('/')} className="text-gray-300 hover:text-[#3593A6] text-sm transition duration-300 text-left">Terms of Service</button>
+                            <button onClick={() => navigate('/')} className="text-gray-300 hover:text-[#3593A6] text-sm transition duration-300 text-left">Privacy Policy</button>
                         </div>
                     </div>
-                    <div>
-                        <p className="font-bold text-lg mb-4 text-[#111418]">Legal</p>
-                        <div className="flex flex-col gap-3 text-sm text-gray-600">
-                            <button onClick={() => navigate('/')} className="hover:text-[#3593A6] text-left cursor-pointer transition">Privacy Policy</button>
-                            <button onClick={() => navigate('/')} className="hover:text-[#3593A6] text-left cursor-pointer transition">Terms of Service</button>
+
+                    {/* Right Column - Social & Form */}
+                    <div className="flex flex-col gap-6">
+                        <p className="text-sm font-bold text-white uppercase tracking-wider">Follow Us</p>
+                        <div className="flex gap-3">
+                            <a href="#" className="w-10 h-10 bg-[#3593A6] hover:bg-[#2d7a8a] rounded-lg flex items-center justify-center transition duration-300 text-white" title="Facebook">
+                                <span className="text-lg font-bold">f</span>
+                            </a>
+                            <a href="#" className="w-10 h-10 bg-[#3593A6] hover:bg-[#2d7a8a] rounded-lg flex items-center justify-center transition duration-300 text-white" title="Instagram">
+                                <span className="material-symbols-outlined text-[18px]">photo_camera</span>
+                            </a>
+                            <a href="#" className="w-10 h-10 bg-[#3593A6] hover:bg-[#2d7a8a] rounded-lg flex items-center justify-center transition duration-300 text-white text-xs font-bold" title="Twitter">
+                                X
+                            </a>
+                            <a href="#" className="w-10 h-10 bg-[#3593A6] hover:bg-[#2d7a8a] rounded-lg flex items-center justify-center transition duration-300 text-white" title="LinkedIn">
+                                <span className="text-lg font-bold">in</span>
+                            </a>
                         </div>
                     </div>
-                    <div>
-                        <p className="font-bold text-lg mb-4 text-[#111418]">Follow Us</p>
-                        <div className="flex gap-4">
-                            <img src="https://ichef.bbci.co.uk/news/1024/branded_news/C5CC/production/_89663605_instagram_logo_976.jpg" alt="Instagram" className="h-9 w-9 cursor-pointer hover:scale-110 transition object-cover rounded-lg shadow-sm" />
-                            <img src="https://content.linkedin.com/content/dam/me/business/en-us/amp/xbu/linkedin-revised-brand-guidelines/home/fg/brand-homepg-guidance-inlogo-dsk-v01.jpg.original.jpg" alt="LinkedIn" className="h-9 w-9 cursor-pointer hover:scale-110 transition object-cover rounded-lg shadow-sm" />
-                            <img src="https://1000logos.net/wp-content/uploads/2017/02/Facebook-Logosu.png" alt="Facebook" className="h-9 w-9 cursor-pointer hover:scale-110 transition object-cover rounded-lg shadow-sm" />
-                        </div>
-                    </div>
-                    <div className="col-span-1 md:col-span-1 lg:col-span-1">
-                        <p className="font-bold text-lg mb-4 text-[#111418]">Any Issues? Contact Us</p>
+
+                    {/* Right Column - Contact Form */}
+                    <div className="flex flex-col gap-6">
+                        <p className="text-sm font-bold text-white uppercase tracking-wider">Contact Us</p>
                         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
                             <input
                                 type="email"
@@ -94,30 +112,22 @@ const Footer = () => {
                                 value={formData.email}
                                 onChange={handleChange}
                                 placeholder="Your Email"
-                                className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#3593A6]/20 focus:border-[#3593A6] transition"
+                                className="w-full px-4 py-2.5 bg-white/10 border border-white/20 rounded-lg text-sm text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#3593A6] transition"
                                 required
-                            />
-                            <input
-                                type="text"
-                                name="subject"
-                                value={formData.subject}
-                                onChange={handleChange}
-                                placeholder="Subject"
-                                className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#3593A6]/20 focus:border-[#3593A6] transition"
                             />
                             <textarea
                                 name="message"
                                 value={formData.message}
                                 onChange={handleChange}
-                                placeholder="Write your problem here..."
+                                placeholder="Your message..."
                                 rows="3"
-                                className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#3593A6]/20 focus:border-[#3593A6] transition resize-none"
+                                className="w-full px-4 py-2.5 bg-white/10 border border-white/20 rounded-lg text-sm text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#3593A6] transition resize-none"
                                 required
                             ></textarea>
                             <button
                                 type="submit"
                                 disabled={isSubmitting}
-                                className={`w-full py-2.5 rounded-xl bg-[#3593A6] text-white font-semibold text-sm shadow-md hover:bg-[#2d7a8a] transition-all transform active:scale-[0.98] ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`}
+                                className={`w-full py-2.5 rounded-lg bg-[#3593A6] hover:bg-[#2d7a8a] text-white font-semibold text-sm transition-all transform active:scale-[0.98] ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`}
                             >
                                 {isSubmitting ? 'Sending...' : 'Send Message'}
                             </button>
@@ -125,9 +135,15 @@ const Footer = () => {
                     </div>
                 </div>
             </div>
-            <div className="h-1 bg-[#3593A6] w-full mt-4"></div>
-            <div className="px-4 md:px-8 py-6 text-center text-sm text-gray-600">
-                2025 Cruise Inc. All rights reserved.
+
+            {/* Divider */}
+            <div className="h-px bg-white/10 w-full"></div>
+
+            {/* Bottom Footer */}
+            <div className="px-4 md:px-8 py-6 max-w-7xl mx-auto">
+                <div className="text-center text-sm text-gray-400">
+                    <p>© 2026 Cruise Inc. All rights reserved.</p>
+                </div>
             </div>
         </footer>
     );

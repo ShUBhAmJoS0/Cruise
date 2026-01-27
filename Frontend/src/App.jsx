@@ -32,7 +32,7 @@ import UserEditProfile from "./pages/UserEditProfile";
 
 function AppRoutes() {
   const location = useLocation();
-  const noNavPatterns = ["/", "/artist/profile/", "/admin"];
+  const noNavPatterns = ["/", "/artist/profile/", "/admin", "/login", "/signup", "/forgotpassword"];
   const showLayout = !noNavPatterns.some(path => {
     if (path === "/") {
       return location.pathname === "/";
@@ -42,11 +42,6 @@ function AppRoutes() {
   return showLayout ? (
     <Layout>
       <Routes>
-        {/* public */}
-        <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
-        <Route path="/signup" element={<PublicRoute><Signup /></PublicRoute>} />
-        <Route path="/forgotpassword" element={<PublicRoute><ForgetPassword /></PublicRoute>} />
-
         {/* users */}
         <Route path="/events" element={<ProtectedRoute allowedRoles={["Attendee"]}><ExploreEvents /></ProtectedRoute>} />
         <Route path="/merchandise" element={<ProtectedRoute allowedRoles={["Attendee"]}><Merchandise></Merchandise></ProtectedRoute>} />
@@ -70,6 +65,9 @@ function AppRoutes() {
   ) : (
     <Routes>
       <Route path="/" element={<Landing />} />
+      <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
+      <Route path="/signup" element={<PublicRoute><Signup /></PublicRoute>} />
+      <Route path="/forgotpassword" element={<PublicRoute><ForgetPassword /></PublicRoute>} />
       <Route path="/artist/profile/:id" element={<ProtectedRoute allowedRoles={["Attendee"]}><ArtistProfile /></ProtectedRoute>} />
       <Route path="/admin/login" element={<AdminLogin />} />
       <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />

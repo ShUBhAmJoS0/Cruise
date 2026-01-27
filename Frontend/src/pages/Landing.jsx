@@ -86,8 +86,8 @@ function LandingPage() {
       </nav>
 
       {/* HERO SECTION */}
-      <main className="py-12 overflow-hidden">
-        <section className="relative max-w-7xl mx-auto px-6 lg:px-8 mb-24">
+      <main className="py-6 overflow-hidden">
+        <section className="relative max-w-7xl mx-auto px-6 lg:px-8 mb-12">
           <div className="text-center mb-12">
             <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight">Experience Premium Events</h1>
           </div>
@@ -206,7 +206,7 @@ function LandingPage() {
       </main>
 
       {/* TRENDING EVENTS */}
-      <section className="bg-white px-4 md:px-8 py-10 md:py-20 z-10 relative">
+      <section className="bg-white px-4 md:px-8 py-10 md:py-16 z-10 relative">
         <div className="max-w-7xl mx-auto">
           {/* Section Header */}
           <div className="flex items-center justify-between mb-12">
@@ -327,31 +327,60 @@ function LandingPage() {
         </div>
       </section>
 
-      {/* EVENT CATEGORIES */}
-      <section className="bg-slate-50 px-4 md:px-8 py-10 md:py-20">
+      {/* EXPLORE CATEGORIES */}
+      <section className="bg-white px-4 md:px-8 py-10 md:py-16">
         <div className="max-w-7xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight mb-10">Event Categories</h2>
+          <div className="flex items-center justify-between mb-12">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#3593A6] mb-2">Collections</p>
+              <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight">Explore Categories</h2>
+              <p className="text-slate-500 mt-2">Vibrant visual anchors for every creative and physical pursuit</p>
+            </div>
+            <div className="hidden md:flex gap-2">
+              <button className="w-10 h-10 rounded-full border-2 border-slate-200 hover:border-[#3593A6] flex items-center justify-center text-slate-600 hover:text-[#3593A6] transition-all">
+                <span className="material-symbols-outlined text-lg">arrow_back</span>
+              </button>
+              <button className="w-10 h-10 rounded-full border-2 border-slate-200 hover:border-[#3593A6] flex items-center justify-center text-slate-600 hover:text-[#3593A6] transition-all">
+                <span className="material-symbols-outlined text-lg">arrow_forward</span>
+              </button>
+            </div>
+          </div>
+          
           <div className="overflow-x-auto custom-scrollbar -mx-4 px-4">
-            <div className="flex gap-4 md:gap-6 pb-4">
-              <button onClick={() => { const token = localStorage.getItem('token'); if (!token) navigate('/login'); else navigate('/category/music') }} className="flex-shrink-0 flex flex-col items-center gap-3 p-6 bg-white rounded-2xl shadow-sm hover:shadow-lg border border-slate-100 cursor-pointer group transition-all duration-300 hover:border-[#3593A6]/30">
-                <img src="https://imgs.search.brave.com/DX5lnxp2JSTn0DPFxvD0wJAHLttHN5w4wVtS4S632-8/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9zdGF0/aWMudmVjdG9yemU5/OWltYWdlcy5jb20vc3lzdGVtL3Jlc291cmNlcy90aHVtYm5haWxzLzA1OS80OTIvMDE3L3NtYWxsL211c2ljLW5vdGUtaWNvbi13aXRoLXN0YXJzLW9uLWl0LWZyZWUtcG5nLnBuZw" alt="Music Icon" className="h-14 w-14 group-hover:scale-110 transition-transform duration-300" />
-                <span className="font-bold text-sm text-center text-slate-900 group-hover:text-[#3593A6] transition-colors">Music</span>
+            <div className="flex gap-6 pb-4 md:pb-0">
+              {/* Sports */}
+              <button onClick={() => { const token = localStorage.getItem('token'); if (!token) navigate('/login'); else navigate('/category/sports') }} className="flex-shrink-0 w-32 h-32 md:w-40 md:h-40 rounded-full bg-gradient-to-br from-teal-600 to-teal-700 flex items-center justify-center cursor-pointer group transition-all duration-300 hover:shadow-lg hover:scale-105">
+                <span className="material-symbols-outlined text-white text-5xl group-hover:scale-110 transition-transform">sports_basketball</span>
               </button>
-              <button onClick={() => { const token = localStorage.getItem('token'); if (!token) navigate('/login'); else navigate('/category/sports') }} className="flex-shrink-0 flex flex-col items-center gap-3 p-6 bg-white rounded-2xl shadow-sm hover:shadow-lg border border-slate-100 cursor-pointer group transition-all duration-300 hover:border-[#3593A6]/30">
-                <img src="https://imgs.search.brave.com/8qxJ66lt7GoK_iUa6q0qd0xx5hFba97Qbc_kPkZmI_k/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9jZG4z/ZC5pY29uc2NvdXQu/Y29tLzNkL3ByZW1p/dW0vdGh1bWIvc3Bv/cnRzLTNkLWljb24t/cG5nLWRvd25sb2Fk/LTgzODI4NjAucG5n" alt="Sports Icon" className="h-14 w-14 group-hover:scale-110 transition-transform duration-300" />
-                <span className="font-bold text-sm text-center text-slate-900 group-hover:text-[#3593A6] transition-colors">Sports</span>
+              
+              {/* Festivals */}
+              <button onClick={() => { const token = localStorage.getItem('token'); if (!token) navigate('/login'); else navigate('/category/festivals') }} className="flex-shrink-0 w-32 h-32 md:w-40 md:h-40 rounded-full bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center cursor-pointer group transition-all duration-300 hover:shadow-lg hover:scale-105">
+                <span className="material-symbols-outlined text-white text-5xl group-hover:scale-110 transition-transform">celebration</span>
               </button>
-              <button onClick={() => { const token = localStorage.getItem('token'); if (!token) navigate('/login'); else navigate('/category/festivals') }} className="flex-shrink-0 flex flex-col items-center gap-3 p-6 bg-white rounded-2xl shadow-sm hover:shadow-lg border border-slate-100 cursor-pointer group transition-all duration-300 hover:border-[#3593A6]/30">
-                <img src="https://imgs.search.brave.com/sm9r2AjEltlDEEMh8d86LofhOfyAbkpc_ftNbRFucs4/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9jZG4u/aWNvbnNjb3V0LmNv/bS9pY29uL3ByZW1p/dW0vcG5nLTI1Ni10/aHVtYi9mZXN0aXZh/bC1zdGlja2VyLWlj/b24tc3ZnLXBuZy1k/b3dubG9hZC04NTQ1/ODEyLnBuZz9mPXdl/YnAmdz0xMjg" alt="Festival Icon" className="h-14 w-14 group-hover:scale-110 transition-transform duration-300" />
-                <span className="font-bold text-sm text-center text-slate-900 group-hover:text-[#3593A6] transition-colors">Festivals</span>
+              
+              {/* Cruise */}
+              <button onClick={() => { const token = localStorage.getItem('token'); if (!token) navigate('/login'); else navigate('/category/cruise') }} className="flex-shrink-0 w-32 h-32 md:w-40 md:h-40 rounded-full bg-gradient-to-br from-blue-700 to-blue-800 flex items-center justify-center cursor-pointer group transition-all duration-300 hover:shadow-lg hover:scale-105">
+                <span className="material-symbols-outlined text-white text-5xl group-hover:scale-110 transition-transform">directions_boat</span>
               </button>
-              <button onClick={() => { const token = localStorage.getItem('token'); if (!token) navigate('/login'); else navigate('/category/comedy') }} className="flex-shrink-0 flex flex-col items-center gap-3 p-6 bg-white rounded-2xl shadow-sm hover:shadow-lg border border-slate-100 cursor-pointer group transition-all duration-300 hover:border-[#3593A6]/30">
-                <img src="https://imgs.search.brave.com/v8Zy_w8n_fscDzglTcElDENQaMVlzVwGs45rIcH8Djc/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9jZG4u/aWNvbnNjb3V0LmNv/bS9pY29uL3ByZW1p/dW0vcG5nLTI1Ni10/aHVtYi9jb21lZHkt/aWNvbi1zdmctZG93/bmxvYWQtcG5nLTc1/Mzg1ODMucG5nP2Y9/d2VicCZ3PTEyOA" alt="Comedy Icon" className="h-14 w-14 group-hover:scale-110 transition-transform duration-300" />
-                <span className="font-bold text-sm text-center text-slate-900 group-hover:text-[#3593A6] transition-colors">Comedy</span>
+              
+              {/* Photo */}
+              <button onClick={() => { const token = localStorage.getItem('token'); if (!token) navigate('/login'); else navigate('/category/photo') }} className="flex-shrink-0 w-32 h-32 md:w-40 md:h-40 rounded-full bg-gradient-to-br from-cyan-500 to-cyan-600 flex items-center justify-center cursor-pointer group transition-all duration-300 hover:shadow-lg hover:scale-105">
+                <span className="material-symbols-outlined text-white text-5xl group-hover:scale-110 transition-transform">camera</span>
               </button>
-              <button onClick={() => { const token = localStorage.getItem('token'); if (!token) navigate('/login'); else navigate('/category/theater') }} className="flex-shrink-0 flex flex-col items-center gap-3 p-6 bg-white rounded-2xl shadow-sm hover:shadow-lg border border-slate-100 cursor-pointer group transition-all duration-300 hover:border-[#3593A6]/30">
-                <img src="https://imgs.search.brave.com/nrsLmYJSjeZRTKseHGqQcS-QfcnKJhGTFUJtdlBmULA/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9zdGF0/aWMudmVjdG9yemU5/OWltYWdlcy5jb20vc3lzdGVtL3Jlc291cmNlcy90aHVtYm5haWxzLzAyOC84NjYvMDg1L3NtYWxsL3RoZWF0ZXItM2QtcmVuZGVyaW5nLWljb24taWxsdXN0cmF0aW9uLXBuZy5wbmc" alt="Theater Icon" className="h-14 w-14 group-hover:scale-110 transition-transform duration-300" />
-                <span className="font-bold text-sm text-center text-slate-900 group-hover:text-[#3593A6] transition-colors">Theater</span>
+              
+              {/* Comedy */}
+              <button onClick={() => { const token = localStorage.getItem('token'); if (!token) navigate('/login'); else navigate('/category/comedy') }} className="flex-shrink-0 w-32 h-32 md:w-40 md:h-40 rounded-full bg-gradient-to-br from-purple-600 to-purple-700 flex items-center justify-center cursor-pointer group transition-all duration-300 hover:shadow-lg hover:scale-105">
+                <span className="material-symbols-outlined text-white text-5xl group-hover:scale-110 transition-transform">mood</span>
+              </button>
+              
+              {/* Art */}
+              <button onClick={() => { const token = localStorage.getItem('token'); if (!token) navigate('/login'); else navigate('/category/art') }} className="flex-shrink-0 w-32 h-32 md:w-40 md:h-40 rounded-full bg-gradient-to-br from-pink-600 to-pink-700 flex items-center justify-center cursor-pointer group transition-all duration-300 hover:shadow-lg hover:scale-105">
+                <span className="material-symbols-outlined text-white text-5xl group-hover:scale-110 transition-transform">palette</span>
+              </button>
+              
+              {/* Music */}
+              <button onClick={() => { const token = localStorage.getItem('token'); if (!token) navigate('/login'); else navigate('/category/music') }} className="flex-shrink-0 w-32 h-32 md:w-40 md:h-40 rounded-full bg-gradient-to-br from-blue-600 to-blue-700 flex items-center justify-center cursor-pointer group transition-all duration-300 hover:shadow-lg hover:scale-105">
+                <span className="material-symbols-outlined text-white text-5xl group-hover:scale-110 transition-transform">music_note</span>
               </button>
             </div>
           </div>
