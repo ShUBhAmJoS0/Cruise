@@ -7,17 +7,21 @@ function AdminDashboard({ onLogout }) {
   const [currentPage, setCurrentPage] = useState('dashboard');
   const [dashboardStats, setDashboardStats] = useState({
     totalUsers: 0,
-    artistsLoggedIn: 0,
+    totalArtists: 0,
     upcomingEvents: 0,
     totalEvents: 0,
     totalRevenue: 0,
-    bookingsThisMonth: 0,
-    pendingEventRequests: 0
+    totalBookings: 0,
+    pendingEventRequests: 0,
+    openProblems: 0
   });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchDashboardStats();
+    // Real-time polling every 30 seconds
+    const interval = setInterval(fetchDashboardStats, 30000);
+    return () => clearInterval(interval);
   }, []);
 
   const fetchDashboardStats = async () => {
@@ -139,7 +143,7 @@ function AdminDashboard({ onLogout }) {
         <div className="flex-1 overflow-y-auto p-8">
           <div className="max-w-7xl mx-auto flex flex-col gap-8 pb-10">
             {/* Statistics Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {/* Total Users Card */}
               <div className="bg-white rounded-2xl p-6 border border-[#e5e7eb] shadow-sm hover:shadow-lg transition-all duration-300">
                 <div className="flex items-center justify-between mb-4">
@@ -153,15 +157,15 @@ function AdminDashboard({ onLogout }) {
                     </svg>
                   </div>
                 </div>
-                <p className="text-xs text-[#617589]">Updated today</p>
+                <p className="text-xs text-[#617589]">Registered users</p>
               </div>
 
-              {/* Artists Logged In Card */}
+              {/* Artists Signed Up Card */}
               <div className="bg-white rounded-2xl p-6 border border-[#e5e7eb] shadow-sm hover:shadow-lg transition-all duration-300">
                 <div className="flex items-center justify-between mb-4">
                   <div>
-                    <p className="text-[#617589] text-sm font-medium uppercase tracking-wider">Artists Online</p>
-                    <p className="text-[#111418] text-3xl font-bold leading-tight mt-2">{loading ? '-' : dashboardStats.artistsLoggedIn}</p>
+                    <p className="text-[#617589] text-sm font-medium uppercase tracking-wider">Total Artists</p>
+                    <p className="text-[#111418] text-3xl font-bold leading-tight mt-2">{loading ? '-' : dashboardStats.totalArtists}</p>
                   </div>
                   <div className="h-14 w-14 rounded-full bg-blue-100 flex items-center justify-center">
                     <svg className="w-7 h-7 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
@@ -169,7 +173,7 @@ function AdminDashboard({ onLogout }) {
                     </svg>
                   </div>
                 </div>
-                <p className="text-xs text-[#617589]">Active now</p>
+                <p className="text-xs text-[#617589]">Artist accounts</p>
               </div>
 
               {/* Upcoming Events Card */}
@@ -185,7 +189,7 @@ function AdminDashboard({ onLogout }) {
                     </svg>
                   </div>
                 </div>
-                <p className="text-xs text-[#617589]">Next 30 days</p>
+                <p className="text-xs text-[#617589]">Approved & scheduled</p>
               </div>
 
               {/* Total Events Card */}
@@ -201,7 +205,7 @@ function AdminDashboard({ onLogout }) {
                     </svg>
                   </div>
                 </div>
-                <p className="text-xs text-[#617589]">All time</p>
+                <p className="text-xs text-[#617589]">Approved events</p>
               </div>
 
               {/* Total Revenue Card */}
@@ -209,7 +213,11 @@ function AdminDashboard({ onLogout }) {
                 <div className="flex items-center justify-between mb-4">
                   <div>
                     <p className="text-[#617589] text-sm font-medium uppercase tracking-wider">Total Revenue</p>
-                    <p className="text-[#111418] text-3xl font-bold leading-tight mt-2">${loading ? '-' : (dashboardStats.totalRevenue / 1000).toFixed(1)}K</p>
+                    <p className="text-[#111418] text-3xl font-bold leading-tight mt-2">
+                      ${loading ? '-' : dashboardStats.totalRevenue >= 1000 
+                        ? (dashboardStats.totalRevenue / 1000).toFixed(1) + 'K' 
+                        : dashboardStats.totalRevenue.toFixed(2)}
+                    </p>
                   </div>
                   <div className="h-14 w-14 rounded-full bg-yellow-100 flex items-center justify-center">
                     <svg className="w-7 h-7 text-yellow-600" fill="currentColor" viewBox="0 0 24 24">
@@ -217,23 +225,23 @@ function AdminDashboard({ onLogout }) {
                     </svg>
                   </div>
                 </div>
-                <p className="text-xs text-[#617589]">This year</p>
+                <p className="text-xs text-[#617589]">Tickets + Merch</p>
               </div>
 
-              {/* Bookings This Month Card */}
+              {/* Total Bookings Card */}
               <div className="bg-white rounded-2xl p-6 border border-[#e5e7eb] shadow-sm hover:shadow-lg transition-all duration-300">
                 <div className="flex items-center justify-between mb-4">
                   <div>
-                    <p className="text-[#617589] text-sm font-medium uppercase tracking-wider">Bookings</p>
-                    <p className="text-[#111418] text-3xl font-bold leading-tight mt-2">{loading ? '-' : dashboardStats.bookingsThisMonth}</p>
+                    <p className="text-[#617589] text-sm font-medium uppercase tracking-wider">Total Bookings</p>
+                    <p className="text-[#111418] text-3xl font-bold leading-tight mt-2">{loading ? '-' : dashboardStats.totalBookings}</p>
                   </div>
                   <div className="h-14 w-14 rounded-full bg-red-100 flex items-center justify-center">
                     <svg className="w-7 h-7 text-red-600" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M16 4v12H8V4h8m2-2H6c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
+                      <path d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
                     </svg>
                   </div>
                 </div>
-                <p className="text-xs text-[#617589]">This month</p>
+                <p className="text-xs text-[#617589]">Event tickets sold</p>
               </div>
 
               {/* Pending Event Requests Card */}
@@ -256,6 +264,30 @@ function AdminDashboard({ onLogout }) {
                   <p className="text-xs text-[#617589]">Awaiting approval</p>
                   {dashboardStats.pendingEventRequests > 0 && (
                     <span className="text-xs font-medium text-[#3593A6] group-hover:underline">View all →</span>
+                  )}
+                </div>
+              </div>
+
+              {/* User Problems Card */}
+              <div
+                onClick={() => handleNavigate('user-problems')}
+                className="bg-white rounded-2xl p-6 border border-[#e5e7eb] shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer hover:border-red-300 group"
+              >
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <p className="text-[#617589] text-sm font-medium uppercase tracking-wider">User Problems</p>
+                    <p className="text-[#111418] text-3xl font-bold leading-tight mt-2">{loading ? '-' : dashboardStats.openProblems}</p>
+                  </div>
+                  <div className="h-14 w-14 rounded-full bg-pink-100 flex items-center justify-center group-hover:bg-pink-200 transition-colors">
+                    <svg className="w-7 h-7 text-pink-600" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <p className="text-xs text-[#617589]">Open issues</p>
+                  {dashboardStats.openProblems > 0 && (
+                    <span className="text-xs font-medium text-red-500 group-hover:underline">View all →</span>
                   )}
                 </div>
               </div>

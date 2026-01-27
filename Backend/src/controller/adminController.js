@@ -3,25 +3,26 @@ import Event from "../model/Event.js";
 import Booking from "../model/Booking.js";
 import Order from "../model/Order.js";
 import Notification from "../model/Notification.js";
+import UserProblem from "../model/UserProblem.js";
 import sequelize from "../Database/db.js";
 import { Op } from "sequelize";
 
 export const getDashboardStats = async (req, res) => {
   try {
-    // users count cha ya
+    // Total registered users count
     const totalUsers = await User.count();
 
-
+    // Total artists (signed up as Artist)
     const totalArtists = await User.count({
       where: { userType: "Artist" }
     });
 
-    // pending req ya
+    // Pending event requests from artists
     const pendingEventRequests = await Event.count({
       where: { status: "pending" }
     });
 
-    // upcoming events yah
+    // Upcoming events - approved and date in future
     const upcomingEvents = await Event.count({
       where: {
         status: "Approved",
@@ -31,41 +32,57 @@ export const getDashboardStats = async (req, res) => {
       }
     });
 
-    //  total events
-    const totalEvents = await Event.count();
+    // Total events that are approved (done or ongoing)
+    const totalEvents = await Event.count({
+      where: { status: "Approved" }
+    });
 
-    //  total bookings/orders for revenue calculation
-    const totalOrders = await Order.findAll({
+    // Total revenue from merchandise orders
+    const merchandiseRevenue = await Order.findOne({
       attributes: [
-        [sequelize.fn('SUM', sequelize.col('total_price')), 'totalRevenue'],
-        [sequelize.fn('COUNT', sequelize.col('id')), 'totalBookings']
+        [sequelize.fn('COALESCE', sequelize.fn('SUM', sequelize.col('totalPrice')), 0), 'total']
       ],
       raw: true
     });
 
-    const totalRevenue = totalOrders[0]?.totalRevenue || 0;
-    const bookingsThisMonth = totalOrders[0]?.totalBookings || 0;
-
-    // Get current month bookings count
-    const currentDate = new Date();
-    const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-
-    const monthlyBookings = await Order.count({
+    // Total revenue from ticket bookings
+    const ticketRevenue = await Booking.findOne({
+      attributes: [
+        [sequelize.fn('COALESCE', sequelize.fn('SUM', sequelize.col('total_price')), 0), 'total']
+      ],
       where: {
-        createdAt: {
-          [Op.gte]: firstDayOfMonth
+        paymentStatus: 'success'
+      },
+      raw: true
+    });
+
+    const totalRevenue = (parseFloat(merchandiseRevenue?.total) || 0) + (parseFloat(ticketRevenue?.total) || 0);
+
+    // Total bookings count (users who booked events)
+    const totalBookings = await Booking.count({
+      where: {
+        paymentStatus: 'success'
+      }
+    });
+
+    // Open user problems count
+    const openProblems = await UserProblem.count({
+      where: {
+        status: {
+          [Op.in]: ['Open', 'In Progress']
         }
       }
     });
 
     res.status(200).json({
       totalUsers,
-      artistsLoggedIn: totalArtists,
+      totalArtists,
       upcomingEvents,
       totalEvents,
-      totalRevenue: parseInt(totalRevenue) || 0,
-      bookingsThisMonth: monthlyBookings || 0,
-      pendingEventRequests
+      totalRevenue: Math.round(totalRevenue * 100) / 100,
+      totalBookings,
+      pendingEventRequests,
+      openProblems
     });
   } catch (error) {
     console.error('Error fetching dashboard stats:', error);
