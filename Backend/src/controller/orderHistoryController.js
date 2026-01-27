@@ -1,28 +1,44 @@
+import Order from "../model/Order.js";
 import OrderHistory from "../model/OrderHistory.js";
+import OrderItem from "../model/OrderItems.js";
+import { Product } from "../model/Product.js";
 import User from "../model/User.js";
 
 export const getOrderHistory = async (req, res) => {
+  console.log("getting order history api");
+
   try {
-   
     const userId = req.user?.id;
 
     if (!userId) {
       return res.status(401).json({ error: "User not authenticated" });
     }
 
-    const orders = await OrderHistory.findAll({
+    const orders = await Order.findAll({
       where: { userId },
-      order: [["orderDate", "DESC"]], 
+      order: [["createdAt", "DESC"]],
       include: [
         {
           model: User,
-          as: "User",
           attributes: ["id", "name", "email"],
+        },
+        {
+          model: OrderItem,
+          include: [
+            {
+              model: Product,
+            },
+          ],
         },
       ],
     });
 
-    res.json(orders);
+    res.status(200).json({
+      success: true,
+      count: orders.length,
+      orders,
+    });
+
   } catch (error) {
     console.error("GET ORDER HISTORY ERROR:", error);
     res.status(500).json({ error: error.message });
@@ -30,6 +46,7 @@ export const getOrderHistory = async (req, res) => {
 };
 
 export const getOrderById = async (req, res) => {
+  console.log("getting order by id")
   try {
     const { id } = req.params;
     const userId = req.user?.id;

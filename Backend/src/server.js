@@ -15,7 +15,6 @@ import cartRoutes from "./routes/cartRoutes.js";
 import communityRoutes from "./routes/communityRoutes.js";
 import reviewRoutes from "./routes/reviewRoutes.js";
 import orderHistoryRoutes from "./routes/orderHistoryRoutes.js";
-import communityGuidelinesRoutes from "./routes/communityGuidelinesRoutes.js";
 
 import "./model/index.js"
 const app=express();
@@ -30,8 +29,6 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static('uploads'));
-
-app.use("/api/communityguidelines", communityGuidelinesRoutes);
 
 
 app.use(authToken)

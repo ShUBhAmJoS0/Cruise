@@ -14,7 +14,7 @@ const OrderHistory = sequelize.define("OrderHistory", {
   },
   eventId: {
     type: DataTypes.INTEGER,
-    allowNull: true, // In case event is deleted
+    allowNull: true, 
   },
   eventName: {
     type: DataTypes.STRING,
