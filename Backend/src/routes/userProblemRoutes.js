@@ -4,6 +4,7 @@ import {
     submitProblem,
     getAllProblems,
     resolveProblem,
+    updateStatus,
     deleteProblem
 } from '../controller/userProblemController.js';
 import authToken from '../middleware/firebaseAuth.js';
@@ -18,6 +19,7 @@ router.post('/', submitProblem);
 
 // Admin / management routes
 router.get('/', getAllProblems);
+router.patch('/:id/status', updateStatus);
 router.post('/:id/resolve', resolveProblem);
 router.delete('/:id', deleteProblem);
 

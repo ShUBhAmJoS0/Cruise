@@ -1,14 +1,19 @@
 import { useState, useEffect } from 'react';
-import Footer from '../../components/Footer';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function UserProblems({ onNavigate, onLogout }) {
   const [problems, setProblems] = useState([]);
   const [activeFilter, setActiveFilter] = useState('all');
   const [loading, setLoading] = useState(true);
+  const [replyData, setReplyData] = useState({}); // { problemId: replyText }
 
   const totalProblems = problems.length;
   const openCount = problems.filter(p => p.status === "Open" || p.status === "open").length;
+  const inProgressCount = problems.filter(p => p.status === "In Progress" || p.status === "in progress").length;
+  const verifiedCount = problems.filter(p => p.status === "Verified" || p.status === "verified").length;
   const resolvedCount = problems.filter(p => p.status === "Resolved" || p.status === "resolved").length;
+  const rejectedCount = problems.filter(p => p.status === "Rejected" || p.status === "rejected").length;
 
   useEffect(() => {
     fetchProblems();
@@ -39,37 +44,44 @@ function UserProblems({ onNavigate, onLogout }) {
     }
   };
 
-  const handleResolve = async (id) => {
-    if (!window.confirm('Mark this problem as resolved?')) {
-      return;
-    }
+  const handleReplyChange = (id, value) => {
+    setReplyData(prev => ({ ...prev, [id]: value }));
+  };
 
+  const handleUpdateStatus = async (id, newStatus) => {
+    const adminNotes = replyData[id] || '';
+    
     try {
-      const response = await fetch(`http://localhost:5000/api/user-problems/${id}/resolve`, {
-        method: 'POST',
+      const response = await fetch(`http://localhost:5000/api/user-problems/${id}/status`, {
+        method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
-        }
+        },
+        body: JSON.stringify({ status: newStatus, adminNotes })
       });
 
       if (!response.ok) {
-        throw new Error('Failed to resolve problem');
+        throw new Error('Failed to update status');
       }
 
-      setProblems(problems.map(p => p.id === id ? { ...p, status: 'Resolved' } : p));
-      alert('Problem marked as resolved!');
+      setProblems(problems.map(p => p.id === id ? { ...p, status: newStatus, adminNotes } : p));
+      setReplyData(prev => ({ ...prev, [id]: '' }));
+      
+      if (newStatus === 'Resolved') {
+        toast.success('Problem marked as Solved!');
+      } else if (newStatus === 'Rejected') {
+        toast.info('Problem marked as Rejected.');
+      } else {
+        toast.warning('Problem marked as Unfixed.');
+      }
     } catch (error) {
-      console.error('Error resolving problem:', error);
-      alert('Failed to resolve problem. Please try again.');
+      console.error('Error updating status:', error);
+      toast.error('Failed to update status. Please try again.');
     }
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this problem report?')) {
-      return;
-    }
-
     try {
       const response = await fetch(`http://localhost:5000/api/user-problems/${id}`, {
         method: 'DELETE',
@@ -84,10 +96,10 @@ function UserProblems({ onNavigate, onLogout }) {
       }
 
       setProblems(problems.filter(p => p.id !== id));
-      alert('Problem report deleted.');
+      toast.success('Problem report deleted.');
     } catch (error) {
       console.error('Error deleting problem:', error);
-      alert('Failed to delete problem. Please try again.');
+      toast.error('Failed to delete problem. Please try again.');
     }
   };
 
@@ -107,9 +119,12 @@ function UserProblems({ onNavigate, onLogout }) {
   };
 
   const getStatusColor = (status) => {
-    if (status === "Open" || status === "open") return "bg-red-100 text-red-800 border-red-200";
-    if (status === "In Progress" || status === "in progress") return "bg-yellow-100 text-yellow-800 border-yellow-200";
-    if (status === "Resolved" || status === "resolved") return "bg-green-100 text-green-800 border-green-200";
+    const s = status?.toLowerCase();
+    if (s === "open") return "bg-red-100 text-red-800 border-red-200";
+    if (s === "in progress") return "bg-yellow-100 text-yellow-800 border-yellow-200";
+    if (s === "verified") return "bg-blue-100 text-blue-800 border-blue-200";
+    if (s === "resolved") return "bg-green-100 text-green-800 border-green-200";
+    if (s === "rejected") return "bg-gray-100 text-gray-800 border-gray-200";
     return "bg-gray-100 text-gray-800 border-gray-200";
   };
 
@@ -119,6 +134,7 @@ function UserProblems({ onNavigate, onLogout }) {
 
   return (
     <div className="flex h-screen w-full overflow-hidden bg-[#f6f7f8]">
+      <ToastContainer position="top-right" autoClose={3000} />
       <aside className="flex w-64 flex-col bg-white border-r border-[#e5e7eb] shrink-0">
         <div className="flex flex-col h-full p-4 justify-between">
           <div className="flex flex-col gap-8">
@@ -278,6 +294,19 @@ function UserProblems({ onNavigate, onLogout }) {
                   }`}
               >
                 In Progress
+                <span className={`text-xs px-1.5 py-0.5 rounded-full ${activeFilter === 'in progress' ? 'bg-white/20' : 'bg-gray-200'
+                  }`}>{inProgressCount}</span>
+              </button>
+              <button
+                onClick={() => setActiveFilter('verified')}
+                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${activeFilter === 'verified'
+                  ? 'bg-[#111418] text-white'
+                  : 'bg-white border border-gray-300 text-[#111418] hover:bg-gray-50 hover:border-gray-400'
+                  }`}
+              >
+                Verified
+                <span className={`text-xs px-1.5 py-0.5 rounded-full ${activeFilter === 'verified' ? 'bg-white/20' : 'bg-gray-200'
+                  }`}>{verifiedCount}</span>
               </button>
               <button
                 onClick={() => setActiveFilter('resolved')}
@@ -287,6 +316,19 @@ function UserProblems({ onNavigate, onLogout }) {
                   }`}
               >
                 Resolved
+                <span className={`text-xs px-1.5 py-0.5 rounded-full ${activeFilter === 'resolved' ? 'bg-white/20' : 'bg-gray-200'
+                  }`}>{resolvedCount}</span>
+              </button>
+              <button
+                onClick={() => setActiveFilter('rejected')}
+                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${activeFilter === 'rejected'
+                  ? 'bg-[#111418] text-white'
+                  : 'bg-white border border-gray-300 text-[#111418] hover:bg-gray-50 hover:border-gray-400'
+                  }`}
+              >
+                Rejected
+                <span className={`text-xs px-1.5 py-0.5 rounded-full ${activeFilter === 'rejected' ? 'bg-white/20' : 'bg-gray-200'
+                  }`}>{rejectedCount}</span>
               </button>
             </div>
 
@@ -308,68 +350,107 @@ function UserProblems({ onNavigate, onLogout }) {
                   <p className="text-[#617589] text-sm">All user problems have been resolved or there are currently no reports.</p>
                 </div>
               ) : (
-                filteredProblems.map((problem) => (
-                  <div key={problem.id} className="bg-white rounded-xl border border-[#e5e7eb] shadow-sm hover:shadow-md hover:border-[#3593A6]/30 transition-all duration-300 p-6 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-6">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-start gap-3 mb-3">
-                        <div className="flex-1">
-                          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
-                            <h3 className="text-lg font-semibold text-[#111418]">
-                              {problem.title || 'Untitled Problem'}
-                            </h3>
-                            <div className="flex items-center gap-2">
-                              <span className={`text-xs font-semibold px-2.5 py-1 rounded-full border ${getStatusColor(problem.status)}`}>
-                                {problem.status || 'Open'}
-                              </span>
+                              filteredProblems.map((problem) => (
+                  <div key={problem.id} className="bg-white rounded-xl border border-[#e5e7eb] shadow-sm hover:shadow-md hover:border-[#3593A6]/30 transition-all duration-300 p-6 flex flex-col gap-4">
+                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
+                          <h3 className="text-lg font-semibold text-[#111418]">
+                            {problem.subject || 'No Subject'}
+                          </h3>
+                          <div className="flex items-center gap-2">
+                            <span className={`text-xs font-semibold px-2.5 py-1 rounded-full border ${getStatusColor(problem.status)}`}>
+                              {problem.status || 'Open'}
+                            </span>
+                            {problem.priority && (
                               <span className={`text-xs font-semibold px-2.5 py-1 rounded-full border ${getPriorityColor(problem.priority)}`}>
-                                {problem.priority || 'Medium'} Priority
+                                {problem.priority} Priority
                               </span>
-                            </div>
-                          </div>
-
-                          <p className="text-sm text-[#617589] mb-3">
-                            From <span className="font-medium text-[#111418]">{problem.reportedBy || 'Unknown User'}</span> • {problem.reportedDate || 'Recently'}
-                          </p>
-
-                          <p className="text-sm text-[#111418] leading-relaxed mb-4 text-justify">
-                            {problem.description || 'No description provided.'}
-                          </p>
-
-                          {problem.attachments && problem.attachments.length > 0 && (
-                            <div className="flex flex-wrap gap-2 mb-4">
-                              {problem.attachments.map((attachment, index) => (
-                                <div key={index} className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer text-xs text-[#617589] font-medium">
-                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 18h.01M4 14h16a2 2 0 002-2V6a2 2 0 00-2-2H4a2 2 0 00-2 2v6a2 2 0 002 2z" />
-                                  </svg>
-                                  {attachment}
-                                </div>
-                              ))}
-                            </div>
-                          )}
-
-                          <div className="text-xs text-[#617589] font-medium">
-                            Category: <span className="text-[#111418]">{problem.category || 'Other'}</span>
+                            )}
                           </div>
                         </div>
+
+                        <div className="flex flex-col gap-1 text-sm text-[#617589] mb-3">
+                          <p>
+                            <span className="font-medium text-[#111418]">{problem.name || 'Anonymous'}</span>
+                            {' '}&bull;{' '}
+                            <span className="text-[#3593A6]">{problem.email}</span>
+                          </p>
+                          <p className="text-xs">
+                            {problem.reporter?.name ? `Registered User: ${problem.reporter.name}` : 'Guest User'}
+                            {' '}&bull;{' '}
+                            {new Date(problem.createdAt).toLocaleDateString('en-US', { 
+                              year: 'numeric', 
+                              month: 'short', 
+                              day: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit'
+                            })}
+                          </p>
+                        </div>
+
+                        <p className="text-sm text-[#111418] leading-relaxed mb-4 bg-gray-50 p-3 rounded-lg">
+                          {problem.message || 'No message provided.'}
+                        </p>
+
+                        {problem.adminNotes && (
+                          <div className="text-xs text-[#617589] bg-blue-50 p-2 rounded-lg border border-blue-100">
+                            <span className="font-medium text-blue-700">Admin Reply:</span> {problem.adminNotes}
+                          </div>
+                        )}
                       </div>
                     </div>
 
-                    <div className="flex flex-col gap-2 w-full sm:w-auto sm:shrink-0">
-                      <button
-                        onClick={() => handleResolve(problem.id)}
-                        className="px-4 py-2.5 rounded-lg bg-green-600 hover:bg-green-700 text-white font-medium text-sm shadow-md transition-all duration-200 flex items-center justify-center gap-2 hover:shadow-lg"
-                      >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                        </svg>
-                        Mark Resolved
-                      </button>
+                    {/* Reply Text Input */}
+                    {problem.status?.toLowerCase() !== 'resolved' && problem.status?.toLowerCase() !== 'rejected' && (
+                      <div className="mb-3">
+                        <textarea
+                          value={replyData[problem.id] || ''}
+                          onChange={(e) => handleReplyChange(problem.id, e.target.value)}
+                          placeholder="Write your solution or reply here..."
+                          rows="2"
+                          className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3593A6] focus:border-transparent resize-none"
+                        />
+                      </div>
+                    )}
+
+                    <div className="flex flex-wrap gap-2 pt-2 border-t border-gray-100">
+                      {problem.status?.toLowerCase() !== 'resolved' && problem.status?.toLowerCase() !== 'rejected' && (
+                        <>
+                          <button
+                            onClick={() => handleUpdateStatus(problem.id, 'Resolved')}
+                            className="px-3 py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white font-medium text-sm transition-all duration-200 flex items-center gap-2"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                            </svg>
+                            Solved
+                          </button>
+                          <button
+                            onClick={() => handleUpdateStatus(problem.id, 'In Progress')}
+                            className="px-3 py-2 rounded-lg bg-yellow-500 hover:bg-yellow-600 text-white font-medium text-sm transition-all duration-200 flex items-center gap-2"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            Unfixed
+                          </button>
+                          <button
+                            onClick={() => handleUpdateStatus(problem.id, 'Rejected')}
+                            className="px-3 py-2 rounded-lg bg-gray-500 hover:bg-gray-600 text-white font-medium text-sm transition-all duration-200 flex items-center gap-2"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                            Rejected
+                          </button>
+                        </>
+                      )}
                       <button
                         onClick={() => handleDelete(problem.id)}
-                        className="px-4 py-2.5 rounded-lg border-2 border-red-500 bg-white text-red-600 hover:bg-red-50 hover:border-red-600 font-medium text-sm transition-all duration-200 flex items-center justify-center gap-2"
+                        className="px-3 py-2 rounded-lg border border-red-300 bg-white text-red-600 hover:bg-red-50 font-medium text-sm transition-all duration-200 flex items-center gap-2 ml-auto"
                       >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                         </svg>
                         Delete
@@ -380,7 +461,6 @@ function UserProblems({ onNavigate, onLogout }) {
               )}
             </div>
           </div>
-          <Footer />
         </div>
       </main>
     </div>

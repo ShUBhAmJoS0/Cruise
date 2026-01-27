@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Footer from '../../components/Footer';
 
 function AdminLogin() {
   const [username, setUsername] = useState('');
@@ -193,7 +192,6 @@ function AdminLogin() {
           </div>
         </div>
       </div>
-      <Footer />
     </div>
   );
 }

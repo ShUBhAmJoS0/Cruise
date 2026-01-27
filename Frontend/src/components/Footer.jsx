@@ -6,7 +6,9 @@ import 'react-toastify/dist/ReactToastify.css';
 const Footer = () => {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
+        name: "",
         email: "",
+        subject: "",
         message: ""
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -36,7 +38,7 @@ const Footer = () => {
 
             if (data.success) {
                 toast.success("Problem reported successfully! We'll get back to you soon.");
-                setFormData({ email: "", message: "" });
+                setFormData({ name: "", email: "", subject: "", message: "" });
             } else {
                 toast.error(data.message || "Failed to report problem.");
             }
@@ -107,6 +109,14 @@ const Footer = () => {
                         <p className="text-sm font-bold text-white uppercase tracking-wider">Contact Us</p>
                         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
                             <input
+                                type="text"
+                                name="name"
+                                value={formData.name}
+                                onChange={handleChange}
+                                placeholder="Your Name"
+                                className="w-full px-4 py-2.5 bg-white/10 border border-white/20 rounded-lg text-sm text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#3593A6] transition"
+                            />
+                            <input
                                 type="email"
                                 name="email"
                                 value={formData.email}
@@ -114,6 +124,14 @@ const Footer = () => {
                                 placeholder="Your Email"
                                 className="w-full px-4 py-2.5 bg-white/10 border border-white/20 rounded-lg text-sm text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#3593A6] transition"
                                 required
+                            />
+                            <input
+                                type="text"
+                                name="subject"
+                                value={formData.subject}
+                                onChange={handleChange}
+                                placeholder="Subject"
+                                className="w-full px-4 py-2.5 bg-white/10 border border-white/20 rounded-lg text-sm text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#3593A6] transition"
                             />
                             <textarea
                                 name="message"

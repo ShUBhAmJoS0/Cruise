@@ -40,7 +40,8 @@ export const getAllProblems = async (req, res) => {
                 {
                     model: User,
                     as: "reporter",
-                    attributes: ['id', 'name', 'email']
+                    attributes: ['id', 'name', 'email'],
+                    required: false
                 }
             ],
             order: [['createdAt', 'DESC']]
@@ -52,6 +53,43 @@ export const getAllProblems = async (req, res) => {
         res.status(500).json({
             success: false,
             message: 'Failed to fetch problems',
+            error: error.message
+        });
+    }
+};
+
+export const updateStatus = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { status, adminNotes } = req.body;
+        
+        const validStatuses = ["Open", "In Progress", "Verified", "Resolved", "Rejected"];
+        if (!validStatuses.includes(status)) {
+            return res.status(400).json({ success: false, message: 'Invalid status value' });
+        }
+
+        const problem = await UserProblem.findByPk(id);
+
+        if (!problem) {
+            return res.status(404).json({ success: false, message: 'Problem not found' });
+        }
+
+        problem.status = status;
+        if (adminNotes) {
+            problem.adminNotes = adminNotes;
+        }
+        await problem.save();
+
+        res.status(200).json({
+            success: true,
+            message: `Problem status updated to ${status}`,
+            data: problem
+        });
+    } catch (error) {
+        console.error('Error updating problem status:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to update problem status',
             error: error.message
         });
     }

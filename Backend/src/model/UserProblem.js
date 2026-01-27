@@ -26,7 +26,7 @@ const UserProblem = sequelize.define("UserProblem", {
         allowNull: false
     },
     status: {
-        type: DataTypes.ENUM("Open", "Resolved"),
+        type: DataTypes.ENUM("Open", "In Progress", "Verified", "Resolved", "Rejected"),
         defaultValue: "Open",
         allowNull: false
     },
@@ -34,6 +34,10 @@ const UserProblem = sequelize.define("UserProblem", {
         type: DataTypes.ENUM("Low", "Medium", "High"),
         defaultValue: "Medium",
         allowNull: false
+    },
+    adminNotes: {
+        type: DataTypes.TEXT,
+        allowNull: true
     },
     reportedBy: {
         type: DataTypes.INTEGER,
