@@ -1,4 +1,4 @@
-     import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import api from "../api/axios";
 
 import { Link, useNavigate } from 'react-router-dom';
@@ -376,7 +376,7 @@ const handleClearAll = async (e) => {
               <button
                 key={opt}
                 onClick={() => setTempDate(tempDate === opt ? null : opt)}
-                className="block w-full text-left py-3 px-5 rounded-full mb-2 font-medium transition-colors hover:opacity-90"
+                className="block w-full text-left py-3 px-5 rounded-full mb-2 font-medium transition-colors hover:opacity-90 cursor-pointer"
                 style={{
                   backgroundColor: tempDate === opt ? primaryColor : '#e0f4f7',
                   color: tempDate === opt ? 'white' : primaryColor,
@@ -428,7 +428,7 @@ const handleClearAll = async (e) => {
               <button
                 key={loc}
                 onClick={() => setTempLocation(tempLocation === loc ? null : loc)}
-                className="block w-full text-left py-3 px-5 rounded-full mb-2 font-medium transition-colors hover:opacity-90"
+                className="block w-full text-left py-3 px-5 rounded-full mb-2 font-medium transition-colors hover:opacity-90 cursor-pointer"
                 style={{
                   backgroundColor: tempLocation === loc ? primaryColor : '#e0f4f7',
                   color: tempLocation === loc ? 'white' : primaryColor,
@@ -441,7 +441,7 @@ const handleClearAll = async (e) => {
 
           <button
             onClick={handleApplyFilters}
-            className="w-full py-4 text-white rounded-full text-lg font-bold mt-10 transition hover:opacity-90"
+            className="w-full py-4 text-white rounded-full text-lg font-bold mt-10 transition hover:opacity-90 cursor-pointer"
             style={{ backgroundColor: primaryColor }}
           >
             Apply Filters
@@ -453,7 +453,7 @@ const handleClearAll = async (e) => {
           {/* Hero */}
           <div
             className="text-white py-18 px-12 rounded-3xl text-center mb-12 shadow-lg"
-            style={{ background: `linear-gradient(135deg, ${primaryColor} 0%, #66c7d6 100%)` }}
+            style={{ background: primaryColor }}
           >
             <h1 className="text-6xl font-bold mb-2">Explore Live Events Near You</h1>
             <p className="text-lg opacity-90">Discover amazing experiences in your city</p>
@@ -514,7 +514,7 @@ const handleClearAll = async (e) => {
                             <strong style={{ color: primaryColor }}>Category:</strong> {event.category}
                           </p>
                           <button
-                            className="w-full py-3.5 text-white rounded-full font-bold mt-4 transition hover:opacity-90"
+                            className="w-full py-3.5 text-white rounded-full font-bold mt-4 transition hover:opacity-90 cursor-pointer"
                             style={{ backgroundColor: primaryColor }}
                              onClick={() =>navigate(`/event/${event.id}`)}
                           >
@@ -560,10 +560,8 @@ const handleClearAll = async (e) => {
                             <strong style={{ color: primaryColor }}>Category:</strong> {event.category}
                           </p>
                           <button
-                            className="w-full py-3.5 text-white rounded-full font-bold mt-4 transition hover:opacity-90"
+                            className="w-full py-3.5 text-white rounded-full font-bold mt-4 transition hover:opacity-90 cursor-pointer"
                             style={{ backgroundColor: primaryColor }}
-                           
-                          
                           >
                             Book Ticket
                           </button>
