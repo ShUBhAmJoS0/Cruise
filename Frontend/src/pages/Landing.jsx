@@ -328,61 +328,78 @@ function LandingPage() {
       </section>
 
       {/* EXPLORE CATEGORIES */}
-      <section className="bg-white px-4 md:px-8 py-10 md:py-16">
+      <section className="bg-white px-4 md:px-8 py-10">
         <div className="max-w-7xl mx-auto">
-          <div className="flex items-center justify-between mb-12">
-            <div>
-              <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#3593A6] mb-2">Collections</p>
-              <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight">Explore Categories</h2>
-              <p className="text-slate-500 mt-2">Vibrant visual anchors for every creative and physical pursuit</p>
-            </div>
-            <div className="hidden md:flex gap-2">
-              <button className="w-10 h-10 rounded-full border-2 border-slate-200 hover:border-[#3593A6] flex items-center justify-center text-slate-600 hover:text-[#3593A6] transition-all">
-                <span className="material-symbols-outlined text-lg">arrow_back</span>
-              </button>
-              <button className="w-10 h-10 rounded-full border-2 border-slate-200 hover:border-[#3593A6] flex items-center justify-center text-slate-600 hover:text-[#3593A6] transition-all">
-                <span className="material-symbols-outlined text-lg">arrow_forward</span>
-              </button>
-            </div>
+          <div className="mb-8">
+            <h2 className="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">Explore Categories</h2>
           </div>
           
-          <div className="overflow-x-auto custom-scrollbar -mx-4 px-4">
-            <div className="flex gap-6 pb-4 md:pb-0">
-              {/* Sports */}
-              <button onClick={() => { const token = localStorage.getItem('token'); if (!token) navigate('/login'); else navigate('/category/sports') }} className="flex-shrink-0 w-32 h-32 md:w-40 md:h-40 rounded-full bg-gradient-to-br from-teal-600 to-teal-700 flex items-center justify-center cursor-pointer group transition-all duration-300 hover:shadow-lg hover:scale-105">
-                <span className="material-symbols-outlined text-white text-5xl group-hover:scale-110 transition-transform">sports_basketball</span>
-              </button>
-              
-              {/* Festivals */}
-              <button onClick={() => { const token = localStorage.getItem('token'); if (!token) navigate('/login'); else navigate('/category/festivals') }} className="flex-shrink-0 w-32 h-32 md:w-40 md:h-40 rounded-full bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center cursor-pointer group transition-all duration-300 hover:shadow-lg hover:scale-105">
-                <span className="material-symbols-outlined text-white text-5xl group-hover:scale-110 transition-transform">celebration</span>
-              </button>
-              
-              {/* Cruise */}
-              <button onClick={() => { const token = localStorage.getItem('token'); if (!token) navigate('/login'); else navigate('/category/cruise') }} className="flex-shrink-0 w-32 h-32 md:w-40 md:h-40 rounded-full bg-gradient-to-br from-blue-700 to-blue-800 flex items-center justify-center cursor-pointer group transition-all duration-300 hover:shadow-lg hover:scale-105">
-                <span className="material-symbols-outlined text-white text-5xl group-hover:scale-110 transition-transform">directions_boat</span>
-              </button>
-              
-              {/* Photo */}
-              <button onClick={() => { const token = localStorage.getItem('token'); if (!token) navigate('/login'); else navigate('/category/photo') }} className="flex-shrink-0 w-32 h-32 md:w-40 md:h-40 rounded-full bg-gradient-to-br from-cyan-500 to-cyan-600 flex items-center justify-center cursor-pointer group transition-all duration-300 hover:shadow-lg hover:scale-105">
-                <span className="material-symbols-outlined text-white text-5xl group-hover:scale-110 transition-transform">camera</span>
-              </button>
-              
-              {/* Comedy */}
-              <button onClick={() => { const token = localStorage.getItem('token'); if (!token) navigate('/login'); else navigate('/category/comedy') }} className="flex-shrink-0 w-32 h-32 md:w-40 md:h-40 rounded-full bg-gradient-to-br from-purple-600 to-purple-700 flex items-center justify-center cursor-pointer group transition-all duration-300 hover:shadow-lg hover:scale-105">
-                <span className="material-symbols-outlined text-white text-5xl group-hover:scale-110 transition-transform">mood</span>
-              </button>
-              
-              {/* Art */}
-              <button onClick={() => { const token = localStorage.getItem('token'); if (!token) navigate('/login'); else navigate('/category/art') }} className="flex-shrink-0 w-32 h-32 md:w-40 md:h-40 rounded-full bg-gradient-to-br from-pink-600 to-pink-700 flex items-center justify-center cursor-pointer group transition-all duration-300 hover:shadow-lg hover:scale-105">
-                <span className="material-symbols-outlined text-white text-5xl group-hover:scale-110 transition-transform">palette</span>
-              </button>
-              
-              {/* Music */}
-              <button onClick={() => { const token = localStorage.getItem('token'); if (!token) navigate('/login'); else navigate('/category/music') }} className="flex-shrink-0 w-32 h-32 md:w-40 md:h-40 rounded-full bg-gradient-to-br from-blue-600 to-blue-700 flex items-center justify-center cursor-pointer group transition-all duration-300 hover:shadow-lg hover:scale-105">
-                <span className="material-symbols-outlined text-white text-5xl group-hover:scale-110 transition-transform">music_note</span>
-              </button>
-            </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+            {/* Sports */}
+            <button onClick={() => { const token = localStorage.getItem('token'); if (!token) navigate('/login'); else navigate('/category/sports') }} className="group cursor-pointer">
+              <div className="aspect-square rounded-2xl bg-[#2d7a8a] flex flex-col items-center justify-center p-4 transition-all duration-300 hover:shadow-xl hover:scale-[1.03] relative overflow-hidden">
+                <span className="material-symbols-outlined text-white text-8xl mb-auto mt-6 drop-shadow-lg">sports_basketball</span>
+                <div className="mt-auto mb-0 text-left w-full bg-[#1a5a66] -mx-4 px-4 py-3 rounded-b-2xl">
+                  <p className="text-white font-bold text-sm">Sports</p>
+                  <p className="text-white/70 text-[10px] uppercase tracking-wider">Arena Events</p>
+                </div>
+              </div>
+            </button>
+            
+            {/* Festivals */}
+            <button onClick={() => { const token = localStorage.getItem('token'); if (!token) navigate('/login'); else navigate('/category/festivals') }} className="group cursor-pointer">
+              <div className="aspect-square rounded-2xl bg-[#c45c3e] flex flex-col items-center justify-center p-4 transition-all duration-300 hover:shadow-xl hover:scale-[1.03] relative overflow-hidden">
+                <span className="material-symbols-outlined text-white text-8xl mb-auto mt-6 drop-shadow-lg">celebration</span>
+                <div className="mt-auto mb-0 text-left w-full bg-[#a04830] -mx-4 px-4 py-3 rounded-b-2xl">
+                  <p className="text-white font-bold text-sm">Festivals</p>
+                  <p className="text-white/70 text-[10px] uppercase tracking-wider">Global Culture</p>
+                </div>
+              </div>
+            </button>
+            
+            {/* Comedy */}
+            <button onClick={() => { const token = localStorage.getItem('token'); if (!token) navigate('/login'); else navigate('/category/comedy') }} className="group cursor-pointer">
+              <div className="aspect-square rounded-2xl bg-[#9b59b6] flex flex-col items-center justify-center p-4 transition-all duration-300 hover:shadow-xl hover:scale-[1.03] relative overflow-hidden">
+                <span className="material-symbols-outlined text-white text-8xl mb-auto mt-6 drop-shadow-lg">mic</span>
+                <div className="mt-auto mb-0 text-left w-full bg-[#7d4692] -mx-4 px-4 py-3 rounded-b-2xl">
+                  <p className="text-white font-bold text-sm">Comedy</p>
+                  <p className="text-white/70 text-[10px] uppercase tracking-wider">Stand-up Live</p>
+                </div>
+              </div>
+            </button>
+            
+            {/* Arts */}
+            <button onClick={() => { const token = localStorage.getItem('token'); if (!token) navigate('/login'); else navigate('/category/art') }} className="group cursor-pointer">
+              <div className="aspect-square rounded-2xl bg-[#3498db] flex flex-col items-center justify-center p-4 transition-all duration-300 hover:shadow-xl hover:scale-[1.03] relative overflow-hidden">
+                <span className="material-symbols-outlined text-white text-8xl mb-auto mt-6 drop-shadow-lg">palette</span>
+                <div className="mt-auto mb-0 text-left w-full bg-[#2980b9] -mx-4 px-4 py-3 rounded-b-2xl">
+                  <p className="text-white font-bold text-sm">Arts</p>
+                  <p className="text-white/70 text-[10px] uppercase tracking-wider">Exhibitions</p>
+                </div>
+              </div>
+            </button>
+            
+            {/* Music */}
+            <button onClick={() => { const token = localStorage.getItem('token'); if (!token) navigate('/login'); else navigate('/category/music') }} className="group cursor-pointer">
+              <div className="aspect-square rounded-2xl bg-[#e74c3c] flex flex-col items-center justify-center p-4 transition-all duration-300 hover:shadow-xl hover:scale-[1.03] relative overflow-hidden">
+                <span className="material-symbols-outlined text-white text-8xl mb-auto mt-6 drop-shadow-lg">music_note</span>
+                <div className="mt-auto mb-0 text-left w-full bg-[#c0392b] -mx-4 px-4 py-3 rounded-b-2xl">
+                  <p className="text-white font-bold text-sm">Music</p>
+                  <p className="text-white/70 text-[10px] uppercase tracking-wider">Live Concerts</p>
+                </div>
+              </div>
+            </button>
+            
+            {/* Theatre */}
+            <button onClick={() => { const token = localStorage.getItem('token'); if (!token) navigate('/login'); else navigate('/category/theatre') }} className="group cursor-pointer">
+              <div className="aspect-square rounded-2xl bg-[#8e44ad] flex flex-col items-center justify-center p-4 transition-all duration-300 hover:shadow-xl hover:scale-[1.03] relative overflow-hidden">
+                <span className="material-symbols-outlined text-white text-8xl mb-auto mt-6 drop-shadow-lg">theater_comedy</span>
+                <div className="mt-auto mb-0 text-left w-full bg-[#6c3483] -mx-4 px-4 py-3 rounded-b-2xl">
+                  <p className="text-white font-bold text-sm">Theatre</p>
+                  <p className="text-white/70 text-[10px] uppercase tracking-wider">Stage Shows</p>
+                </div>
+              </div>
+            </button>
           </div>
         </div>
       </section>
