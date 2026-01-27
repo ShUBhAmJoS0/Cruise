@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import EventDetailsModal from '../../components/EventDetailsModal';
+import NotificationDropdown from '../../components/NotificationDropdown';
 
 function EventRequests({ onNavigate, onLogout }) {
   const [allRequests, setAllRequests] = useState([]);
@@ -189,6 +190,9 @@ function EventRequests({ onNavigate, onLogout }) {
         <header className="h-16 flex items-center justify-between px-8 bg-white border-b border-[#e5e7eb] shrink-0">
           <div>
             <h2 className="text-lg font-semibold text-[#111418]">Event Hosting Requests</h2>
+          </div>
+          <div className="flex items-center gap-4">
+            <NotificationDropdown onNavigate={onNavigate} />
           </div>
         </header>
 

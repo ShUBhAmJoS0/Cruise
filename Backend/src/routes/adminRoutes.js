@@ -10,7 +10,8 @@ import {
   getEventAnalytics,
   getRevenueAnalytics,
   getNotifications,
-  markNotificationAsRead
+  markNotificationAsRead,
+  markAllNotificationsAsRead
 } from '../controller/adminController.js';
 
 const router = express.Router();
@@ -21,6 +22,7 @@ router.get('/dashboard-stats', getDashboardStats);
 // Notifications
 router.get('/notifications', getNotifications);
 router.put('/notifications/:id/read', markNotificationAsRead);
+router.put('/notifications/mark-all-read', markAllNotificationsAsRead);
 
 // Event requests management
 router.get('/event-requests', getAllEventRequests);

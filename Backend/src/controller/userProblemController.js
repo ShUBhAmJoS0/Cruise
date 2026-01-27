@@ -1,6 +1,7 @@
 
 import UserProblem from "../model/UserProblem.js";
 import User from "../model/User.js";
+import Notification from "../model/Notification.js";
 
 export const submitProblem = async (req, res) => {
     try {
@@ -16,6 +17,14 @@ export const submitProblem = async (req, res) => {
             subject,
             message,
             reportedBy: req.user ? req.user.id : null // req.user comes from authentication middleware if available
+        });
+
+        // Create notification for admin
+        await Notification.create({
+            message: `New user problem reported: ${subject || 'No subject'} from ${name || email}`,
+            type: 'UserProblem',
+            link: '/admin/user-problems',
+            isRead: false
         });
 
         res.status(201).json({

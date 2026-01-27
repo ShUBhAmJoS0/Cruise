@@ -313,3 +313,16 @@ export const markNotificationAsRead = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
+export const markAllNotificationsAsRead = async (req, res) => {
+  try {
+    await Notification.update(
+      { isRead: true },
+      { where: { isRead: false } }
+    );
+    res.status(200).json({ success: true, message: "All notifications marked as read" });
+  } catch (error) {
+    console.error('Error marking all notifications as read:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
