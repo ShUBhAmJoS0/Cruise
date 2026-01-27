@@ -81,19 +81,23 @@ const MerchExpanded = ({ data}) => (
     </div>
   </div>
 );
-const Stat = ({ title, value, icon }) => (
-  <div className="bg-white/95 p-4 rounded-2xl shadow-sm border border-gray-200/70 flex items-center gap-4">
-    <div className="p-3 rounded-xl bg-[#EFF7FA] text-[#1F6D7E] border border-[#D6E7EE]">
-      {icon}
-    </div>
-    <div className="min-w-0">
-      <p className="text-[0.7rem] uppercase tracking-[0.12em] text-gray-500 mb-1">
-        {title}
-      </p>
-      <h3 className="text-xl font-semibold text-gray-900 truncate">{value}</h3>
-    </div>
-  </div>
-);
+ const Stat = ({ title, value, icon, cardClass = "", iconClass = "" }) => (
+   <div
+     className={`p-4 rounded-2xl shadow-sm border flex items-center gap-4 ${cardClass}`}
+   >
+     <div
+       className={`p-3 rounded-xl border shadow-sm ${iconClass}`}
+     >
+       {icon}
+     </div>
+     <div className="min-w-0">
+       <p className="text-[0.7rem] uppercase tracking-[0.12em] text-gray-500 mb-1">
+         {title}
+       </p>
+       <h3 className="text-xl font-semibold text-gray-900 truncate">{value}</h3>
+     </div>
+   </div>
+ );
 
 export function ViewMerchandiseTable() {
     const[merchData,setGetItems]=useState([]);
@@ -197,23 +201,35 @@ export function ViewMerchandiseTable() {
         </div>
       </div>
 
-      {/* Stats row */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
-        <Stat title="Merch items" value={merchData.length} icon={<Shirt className="w-5 h-5" />} />
+       {/* Stats row */}
+       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+         <Stat
+           title="Merch items"
+           value={merchData.length}
+           icon={<Shirt className="w-5 h-5" />}
+           cardClass="bg-[#EFF7FF] border-[#D6E7EE]"
+           iconClass="bg-white text-[#1F6D7E] border-[#D6E7EE]"
+         />
         <Stat
           title="Total revenue"
           value={`Rs ${totalRevenue}`}
           icon={<Users className="w-5 h-5" />}
+           cardClass="bg-[#ECFDF3] border-[#BBF7D0]"
+           iconClass="bg-white text-[#166534] border-[#BBF7D0]"
         />
         <Stat
           title="Estimated profit"
           value={`Rs ${totalProfit}`}
           icon={<DollarSign className="w-5 h-5" />}
+           cardClass="bg-[#FFFBEB] border-[#FDE68A]"
+           iconClass="bg-white text-[#92400E] border-[#FDE68A]"
         />
         <Stat
           title="Total units ordered"
           value={totalOrders}
           icon={<ShoppingCart className="w-5 h-5" />}
+           cardClass="bg-[#FEF2F2] border-[#FECACA]"
+           iconClass="bg-white text-[#991B1B] border-[#FECACA]"
         />
       </div>
 
