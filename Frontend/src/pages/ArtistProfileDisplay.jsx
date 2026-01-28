@@ -24,7 +24,8 @@ import {
   Plus,
   User,
   ThumbsUp,
-  X
+  X,
+  Images
 } from "lucide-react";
 
 const ArtistProfile = () => {
@@ -461,15 +462,60 @@ const fetchFollowers = async () => {
                   {artist?.about ? (
                     <div className="prose prose-lg max-w-none text-slate-700 leading-relaxed">
                       {artist.about.split('\n').map((paragraph, index) => (
-                        <p key={index} className="mb-4">{paragraph}</p>
+                        <p key={index} className="mb-8">{paragraph}</p>
                       ))}
                     </div>
                   ) : (
-                    <div className="text-center py-12">
+                    <div className="text-center py-12 mb-8">
                       <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
                         <User className="w-10 h-10 text-slate-400" />
                       </div>
                       <p className="text-slate-500 text-lg">No bio available yet.</p>
+                    </div>
+                  )}
+
+                  {/* Media Gallery */}
+                  {artist?.mediaImages && artist.mediaImages.length > 0 && (
+                    <div className="border-t border-slate-200 pt-8">
+                      <div className="flex items-center gap-3 mb-6">
+                        <div className="w-12 h-12 bg-gradient-to-r from-[#3593A6] to-[#2d7a8a] rounded-2xl flex items-center justify-center">
+                          <Images className="w-6 h-6 text-white" />
+                        </div>
+                        <div>
+                          <h3 className="text-xl font-bold text-slate-800">Media Gallery</h3>
+                          <p className="text-slate-600">Explore {artist?.name}'s creative work</p>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                        {artist.mediaImages.map((image, index) => (
+                          <div
+                            key={index}
+                            className="group relative aspect-square overflow-hidden rounded-2xl bg-slate-100 cursor-pointer hover:shadow-xl transition-all duration-300"
+                            onClick={() => {
+                              // Open image in modal or lightbox
+                              window.open(`http://localhost:5000/${image}`, '_blank');
+                            }}
+                          >
+                            <img
+                              src={`http://localhost:5000/${image}`}
+                              alt={`Gallery ${index + 1}`}
+                              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                            />
+                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
+                              <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                <Eye className="w-8 h-8 text-white drop-shadow-lg" />
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className="mt-4 text-center">
+                        <p className="text-sm text-slate-500">
+                          Click on any image to view in full size
+                        </p>
+                      </div>
                     </div>
                   )}
                 </div>

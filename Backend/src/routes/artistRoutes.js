@@ -31,7 +31,7 @@ router.put("/addmerch/:id",upload.fields([
 
   
 router.put("/updateProfile",upload.fields([
-  { name: 'profilePic', maxCount: 1 },{name:"coverPic",maxCount:1}]),artistOnly,updateUser)
+  { name: 'profilePic', maxCount: 1 },{name:"coverPic",maxCount:1},{ name: 'mediaImages', maxCount: 10 }]),artistOnly,updateUser)
     router.get("/allmerch/details",artistOnly,getproductbuyers)
     router.get("/allevents/details",artistOnly,getEventbookings)
   router.get("/all",AttendeeOnly,getallArtists)

@@ -122,6 +122,27 @@ const updateUser = async (req, res) => {
     if (req.files.coverPic?.[0]) {
       coverimage = req.files.coverPic[0].path.replace(/\\/g, '/');
     }
+
+    // Handle media images array
+    let mediaImages = [];
+
+    // Parse existing media JSON from frontend (if any)
+    if (body.existingMediaImages) {
+      try {
+        mediaImages = JSON.parse(body.existingMediaImages);
+      } catch (err) {
+        mediaImages = [];
+      }
+    }
+
+    // Append newly uploaded files from Multer
+    if (req.files?.mediaImages) {
+      const uploaded = req.files.mediaImages.map(f =>
+        f.path.replace(/\\/g, '/')
+      );
+      mediaImages = [...mediaImages, ...uploaded];
+    }
+
     const user = await User.findOne({ where: { id: uid } })
     if (!user) {
       return res.status(500).send({ message: "the user does not exist" })
@@ -134,12 +155,13 @@ const updateUser = async (req, res) => {
       social: body.sociallink,
       coverImage: coverimage,
       profileImage: imageUrl,
-      about: body.about
+      about: body.about,
+      mediaImages: mediaImages
 
     }
 
     )
-    res.status(200).send({ message: "Saved profile sucessfully" })
+    res.status(200).send({ message: "Saved profile sucessfully", mediaImages: mediaImages })
   }
   catch (error) {
     res.status(500).send({ message: error.message })
