@@ -112,7 +112,7 @@ export const getproductbuyers = async(req,res)=>{
   console.log("api hit")
   try {
     const userId = req.user.id;
-    const productbuys = await Product.findAll({ where: { createdBy: userId}, include: [ { model: OrderItem, include: [ { model: Order, include: [{ model: User, attributes: ["name"] }] } ] } ] });
+    const productbuys = await Product.findAll({ where: { createdBy: userId}, include: [ { model: OrderItem, include: [ { model: Order, where: { status: "Confirmed" }, include: [{ model: User, attributes: ["name"] }] } ] } ] });
     res.status(200).send({data:productbuys,message:"fetched all merch buyers sucessfully"});
   } catch (error) {
     console.log(error.message)
