@@ -1,4 +1,3 @@
-// backend/src/model/Booking.js
 import { DataTypes } from "sequelize";
 import sequelize from "../Database/db.js";
 import Event from "./Event.js";

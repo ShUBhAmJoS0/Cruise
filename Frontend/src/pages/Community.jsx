@@ -135,9 +135,6 @@ export default function Community() {
     loadPosts();
   }, []);
 
-  // ========================================
-  // LOAD CURRENT USER from backend
-  // ========================================
   const loadCurrentUser = async () => {
     try {
       const res = await api.get("/api/community/auth/me");
@@ -145,13 +142,10 @@ export default function Community() {
       console.log("Current user loaded:", res.data); // Debug log
     } catch (err) {
       console.error("LOAD USER ERROR:", err);
-      // If user is not authenticated, you might want to redirect to login
+
     }
   };
 
-  // ========================================
-  // LOAD ALL POSTS
-  // ========================================
   const loadPosts = async () => {
     setIsLoading(true);
     try {
@@ -165,9 +159,6 @@ export default function Community() {
     }
   };
 
-  // ========================================
-  // CREATE NEW POST
-  // ========================================
   const handleCreatePost = async (content, image) => {
     try {
       const formData = new FormData();
@@ -186,9 +177,6 @@ export default function Community() {
     }
   };
 
-  // ========================================
-  // EDIT EXISTING POST
-  // ========================================
   const handleEditPost = async (content, image) => {
     if (!editingPost) return;
     
@@ -210,9 +198,6 @@ export default function Community() {
     }
   };
 
-  // ========================================
-  // DELETE POST
-  // ========================================
   const handleDeletePost = async (postId) => {
     if (!window.confirm("Are you sure you want to delete this post?")) return;
     
@@ -225,9 +210,6 @@ export default function Community() {
     }
   };
 
-  // ========================================
-  // TOGGLE LIKE
-  // ========================================
   const handleLike = async (postId) => {
     try {
       await api.post(`/api/community/${postId}/like`);
@@ -252,9 +234,6 @@ export default function Community() {
     }
   };
 
-  // ========================================
-  // ADD COMMENT
-  // ========================================
   const handleComment = async (postId, content) => {
     try {
       const response = await api.post(`/api/community/${postId}/comment`, {
@@ -287,9 +266,6 @@ export default function Community() {
     }
   };
 
-  // ========================================
-  // TOGGLE REPOST
-  // ========================================
   const handleRepost = async (postId) => {
     try {
       await api.post(`/api/community/${postId}/repost`);
@@ -314,17 +290,11 @@ export default function Community() {
     }
   };
 
-  // ========================================
-  // OPEN EDIT MODAL
-  // ========================================
   const openEditModal = (post) => {
     setEditingPost(post);
     setShowModal(true);
   };
 
-  // ========================================
-  // CLOSE MODAL
-  // ========================================
   const closeModal = () => {
     setShowModal(false);
     setEditingPost(null);
@@ -338,7 +308,7 @@ export default function Community() {
           <h1 className="text-4xl font-bold text-gray-800 mb-2">Community</h1>
           <p className="text-gray-600">Share your thoughts and connect with others</p>
           
-          {/* Debug: Show current user info */}
+         
           {currentUser && (
             <p className="text-sm text-gray-500 mt-2">
               Logged in as: {currentUser.name} (ID: {currentUser.id})
