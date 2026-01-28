@@ -37,7 +37,7 @@ const merchColumns = [
     right: true,
   },
 ];
-const MerchExpanded = ({ data}) => (
+const MerchExpanded = ({ data,handleMarkAsComplete, completingOrders}) => (
 
   <div className="bg-[#F4FAFB] p-6 rounded-2xl mx-4 mb-5 shadow-inner border border-[#D6E7EE]/70">
     <div className="flex items-center justify-between mb-4">
@@ -66,15 +66,29 @@ const MerchExpanded = ({ data}) => (
             <p className="font-semibold text-[#1F6D7E] text-sm">
               Rs. {b.totalPrice}
             </p>
-            <span
-              className={`text-[0.7rem] px-3 py-1 rounded-full border ${
-                b.Order.status === "Shipped"
-                  ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-                  : "bg-amber-50 text-amber-700 border-amber-200"
-              }`}
-            >
-              {b.Order?.status}
-            </span>
+            <div className="flex items-center gap-2">
+              <span
+                className={`text-[0.7rem] px-3 py-1 rounded-full border ${
+                  b.Order.status === "Completed"
+                    ? "bg-green-50 text-green-700 border-green-200"
+                    : b.Order.status === "Shipped"
+                    ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                    : "bg-amber-50 text-amber-700 border-amber-200"
+                }`}
+              >
+                {b.Order?.status}
+              </span>
+              {(b.Order.status === "Confirmed" || b.Order.status === "Shipped") && (
+                <button
+                  onClick={() => handleMarkAsComplete(b.Order.id)}
+                  disabled={completingOrders.has(b.Order.id)}
+                  className="text-[0.65rem] px-2 py-1 bg-[#3593A6] text-white rounded-md hover:bg-[#2d7a8a] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  title="Mark as Complete"
+                >
+                  {completingOrders.has(b.Order.id) ? "..." : "✓ Complete"}
+                </button>
+              )}
+            </div>
           </div>
         </div>
       ))}
@@ -101,6 +115,7 @@ const MerchExpanded = ({ data}) => (
 
 export function ViewMerchandiseTable() {
     const[merchData,setGetItems]=useState([]);
+    const [completingOrders, setCompletingOrders] = useState(new Set());
     const getMerchItems = async () => {
     try {
       const res = await api.get("/artist/allmerch/details");
@@ -115,6 +130,28 @@ export function ViewMerchandiseTable() {
   useEffect(() => {
   getMerchItems();
   }, []);
+
+  const handleMarkAsComplete = async (orderId) => {
+    if (!confirm("Are you sure you want to mark this order as completed?")) return;
+
+    setCompletingOrders(prev => new Set([...prev, orderId]));
+
+    try {
+      await api.put(`/api/order/complete/${orderId}`);
+      alert("Order marked as completed!");
+      // Refresh the data
+      getMerchItems();
+    } catch (error) {
+      console.error("Failed to mark order as complete:", error);
+      alert("Failed to update order status. Please try again.");
+    } finally {
+      setCompletingOrders(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(orderId);
+        return newSet;
+      });
+    }
+  };
 
   const totalRevenue = merchData.reduce(
     (productAcc, product) =>
@@ -253,7 +290,13 @@ export function ViewMerchandiseTable() {
               columns={merchColumns}
               data={merchData}
               expandableRows
-              expandableRowsComponent={MerchExpanded}
+              expandableRowsComponent={(props) => (
+                <MerchExpanded 
+                  {...props} 
+                  handleMarkAsComplete={handleMarkAsComplete}
+                  completingOrders={completingOrders}
+                />
+              )}
               pagination
               highlightOnHover
               customStyles={customStyles}

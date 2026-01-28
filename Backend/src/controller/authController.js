@@ -79,14 +79,18 @@ export const getUser = async (req, res) => {
 
     const user = await User.findOne({
       where: { firebase_uid: firebaseUid },
-      attributes: ["id", "name", "email", "bio", "about", "profileImage", "coverImage", "social", "userType"],
+      attributes: ["id", "name", "email", "bio", "about", "profileImage", "coverImage", "social", "userType", "mediaImages"],
     });
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    console.log(user);
-    return res.json({ user, message: "user fetched sucessfully" });
+    // Ensure mediaImages is always an array
+    const userData = user.toJSON();
+    userData.mediaImages = userData.mediaImages || [];
+
+    console.log(userData);
+    return res.json({ user: userData, message: "user fetched sucessfully" });
   } catch (error) {
     console.error("getUser error:", error);
     return res.status(500).json({ message: "Server error" });

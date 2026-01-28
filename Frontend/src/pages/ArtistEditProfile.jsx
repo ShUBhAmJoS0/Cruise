@@ -111,7 +111,7 @@ function ArtistEditProfile() {
         email: data.email,
         profileImage: profilePic ? preview : prev.profileImage,
         coverImage: coverPic ? coverpreview : prev.coverImage,
-        mediaImages: updatedMediaImages // ✅ Use response data
+        mediaImages: updatedMediaImages 
       }));
   
       alert("Profile updated successfully! 🎉");
@@ -138,15 +138,24 @@ function ArtistEditProfile() {
           sociallink: getprofile.data.user.social || "",
         });
         console.log(getprofile.data.about)
+        console.log("User data from API:", getprofile.data.user);
+        console.log("Media images from API:", getprofile.data.user.mediaImages);
         setPreview(getprofile.data.user.profileImage);
         setCoverpreview(getprofile.data.user.coverImage);
-        setExistingMediaImages(getprofile.data.user.mediaImages || []);
+        const mediaImages = getprofile.data.user.mediaImages || [];
+        console.log("Setting existingMediaImages:", mediaImages);
+        setExistingMediaImages(mediaImages);
       } catch (e) {
         console.log(e);
       }
     };
     getProfiledetail();
   }, [reset]);
+
+  // Debug: Log when existingMediaImages changes
+  useEffect(() => {
+    console.log("existingMediaImages changed:", existingMediaImages);
+  }, [existingMediaImages]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#e8f4f6] via-white to-[#d4eef3] flex items-center justify-center p-6 md:p-10 ml-[20%]">

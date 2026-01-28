@@ -83,7 +83,7 @@ const updateUserProfile = async(req, res) => {
     // Update user in database
     await user.update(updateData);
     
-    res.status(200).send({ message: "Profile saved successfully"  ,mediaImages: updateData.mediaImages || user.mediaImages});
+    res.status(200).send({ message: "Profile saved successfully"  , mediaImages: mediaImages });
   } catch (error) {
     console.error("User profile update error:", error);
     res.status(500).send({ message: error.message });

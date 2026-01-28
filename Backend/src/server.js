@@ -46,6 +46,7 @@ app.use("/event", eventRoutes);
 app.use("/api/booking", bookingRoutes);
 app.use("/artist", artistRoutes);
 app.use("/merch", orderRoutes);
+app.use("/api/order", orderRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/orderhistory", orderHistoryRoutes);
