@@ -25,7 +25,6 @@ export function Layout({ children }) {
             <div className="flex-1">
                 {children}
             </div>
-            <Footer />
         </div>
     );
 }

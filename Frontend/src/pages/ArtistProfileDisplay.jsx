@@ -21,18 +21,18 @@ const ArtistProfile = () => {
 
   const navigate = useNavigate();
 
-    const fetchArtist = async () => {
-      try {
-        const res = await api.get(`/artist/profile/${artistId}`);
-        console.log(res.data.data);
-    setFollowersCount(res.data.data.followersCount);
-        setArtist(res.data.data.artist);
-        setIsFollowing(res.data.data.isFollowing);
+  const fetchArtist = async () => {
+    try {
+      const res = await api.get(`/artist/profile/${artistId}`);
+      console.log(res.data.data);
+      setFollowersCount(res.data.data.followersCount);
+      setArtist(res.data.data.artist);
+      setIsFollowing(res.data.data.isFollowing);
 
-      } catch (err) {
-        console.error("Failed to fetch artist", err);
-      }
-    };
+    } catch (err) {
+      console.error("Failed to fetch artist", err);
+    }
+  };
 
   useEffect(() => {
     fetchArtist();
@@ -59,8 +59,8 @@ const ArtistProfile = () => {
 
   const fetchReviews = async () => {
     try {
-  const res = await api.get(`/api/reviews/artist/${artistId}`);
-  console.log(res.data.data, "fetched sucessfully all reviews");
+      const res = await api.get(`/api/reviews/artist/${artistId}`);
+      console.log(res.data.data, "fetched sucessfully all reviews");
       setReviews(res.data.data);
     } catch (error) {
       console.log(error.message)
@@ -119,11 +119,11 @@ const ArtistProfile = () => {
     return num;
   };
 
-const fetchFollowers = async () => {
+  const fetchFollowers = async () => {
     try {
       const response = await api.get(`/artist/followers/${artistId}`);
       setFollowers(response.data.followers);
-      setFollowersCount(response.data.count); 
+      setFollowersCount(response.data.count);
       setShowFollowers(true);
     } catch (err) {
       console.error("Failed to fetch followers", err);
@@ -139,7 +139,7 @@ const fetchFollowers = async () => {
       } else {
         await api.post(`/artist/follow/${artist.id}`);
         setIsFollowing(true);
-       fetchArtist()
+        fetchArtist()
       }
     } catch (err) {
       console.error("Follow toggle failed", err);
@@ -160,7 +160,7 @@ const fetchFollowers = async () => {
 
   const handleSubmitReview = async (e) => {
     e.preventDefault();
-    
+
     if (!reviewComment.trim()) {
       alert("Please write a review");
       return;
@@ -172,10 +172,10 @@ const fetchFollowers = async () => {
         artistId: artistId,
         comment: reviewComment,
       });
-      
+
       setReviewComment("");
       alert("Review posted successfully!");
-      
+
       // Refresh reviews
       fetchReviews();
     } catch (err) {
@@ -216,7 +216,7 @@ const fetchFollowers = async () => {
               <h2 className="text-xl font-bold text-gray-800">
                 Followers ({followersCount})
               </h2>
-              <button 
+              <button
                 onClick={() => setShowFollowers(false)}
                 className="text-gray-400 hover:text-gray-600 text-2xl w-8 h-8 flex items-center justify-center"
               >
@@ -229,9 +229,9 @@ const fetchFollowers = async () => {
               ) : (
                 followers.map(follower => (
                   <div key={follower.id} className="flex items-center gap-3 hover:bg-gray-50 p-3 rounded-lg transition-colors">
-                    <img 
-                      src={follower.profileImage || '/default-avatar.png'} 
-                      alt={follower.name} 
+                    <img
+                      src={follower.profileImage || '/default-avatar.png'}
+                      alt={follower.name}
                       className="w-12 h-12 rounded-full object-cover"
                     />
                     <div className="flex-1">
@@ -272,8 +272,8 @@ const fetchFollowers = async () => {
           <button
             onClick={handleFollowToggle}
             className={`px-4 h-10 rounded-md font-semibold transition ${isFollowing
-                ? "bg-gray-300 text-gray-800 hover:bg-gray-400"
-                : "bg-[#3593A6] text-white hover:bg-[#2c7f8f]"
+              ? "bg-gray-300 text-gray-800 hover:bg-gray-400"
+              : "bg-[#3593A6] text-white hover:bg-[#2c7f8f]"
               }`}
           >
             {isFollowing ? "Following" : "Follow"}
@@ -288,8 +288,8 @@ const fetchFollowers = async () => {
             key={tab}
             onClick={() => setActiveTab(tab)}
             className={`pb-3 capitalize ${activeTab === tab
-                ? "border-b-2 border-[#3593A6] text-[#3593A6]"
-                : "text-gray-500"
+              ? "border-b-2 border-[#3593A6] text-[#3593A6]"
+              : "text-gray-500"
               }`
             }
           >
@@ -463,7 +463,6 @@ const fetchFollowers = async () => {
         )}
       </div>
 
-      <Footer />
     </div>
   );
 };

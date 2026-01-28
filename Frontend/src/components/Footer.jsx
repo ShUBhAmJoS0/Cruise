@@ -53,11 +53,11 @@ const Footer = () => {
     return (
         <footer className="bg-[#1a2c5b] w-full relative">
             <ToastContainer position="bottom-right" autoClose={3000} />
-            
+
             {/* Main Footer Content */}
             <div className="px-4 md:px-8 py-16 max-w-7xl mx-auto">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-12">
-                    
+
                     {/* Left Column - Logo & About */}
                     <div className="flex flex-col gap-6">
                         <div className="flex items-center gap-2">
@@ -78,8 +78,8 @@ const Footer = () => {
                     <div className="flex flex-col gap-6">
                         <p className="text-sm font-bold text-white uppercase tracking-wider">Support</p>
                         <div className="flex flex-col gap-2">
-                            <button onClick={() => navigate('/')} className="text-gray-300 hover:text-[#3593A6] text-sm transition duration-300 text-left">Help Center</button>
-                            <button onClick={() => navigate('/')} className="text-gray-300 hover:text-[#3593A6] text-sm transition duration-300 text-left">Contact Us</button>
+                            <button onClick={() => navigate('/about')} className="text-gray-300 hover:text-[#3593A6] text-sm transition duration-300 text-left">Help Center</button>
+                            <button onClick={() => navigate('/contact')} className="text-gray-300 hover:text-[#3593A6] text-sm transition duration-300 text-left">Contact Us</button>
                             <button onClick={() => navigate('/')} className="text-gray-300 hover:text-[#3593A6] text-sm transition duration-300 text-left">Terms of Service</button>
                             <button onClick={() => navigate('/')} className="text-gray-300 hover:text-[#3593A6] text-sm transition duration-300 text-left">Privacy Policy</button>
                         </div>

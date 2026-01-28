@@ -30,6 +30,7 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminLogin from "./pages/admin/AdminLogin";
 import UserEditProfile from "./pages/UserEditProfile";
 import CommunityGuidelines from "./pages/CommunityGuidelines";
+import Contact from "./pages/Contact";
 import { Toaster } from "react-hot-toast";
 
 function AppRoutes() {
@@ -56,6 +57,7 @@ function AppRoutes() {
         <Route path="/event/:id" element={<ProtectedRoute allowedRoles={["Attendee"]}><Bookingpage /></ProtectedRoute>} />
         <Route path="/searchartists" element={<ProtectedRoute allowedRoles={["Attendee"]}><FindArtists></FindArtists></ProtectedRoute>} />
         <Route path="/about" element={<ProtectedRoute allowedRoles={["Attendee"]}><About /></ProtectedRoute>} />
+        <Route path="/contact" element={<Contact />} />
         <Route path="/cart" element={<ProtectedRoute allowedRoles={["Attendee"]}><CartPage /></ProtectedRoute>} />
         <Route path="/checkout" element={<ProtectedRoute allowedRoles={["Attendee"]}><CheckoutPage /></ProtectedRoute>} />
         <Route path="/receipt" element={<ProtectedRoute allowedRoles={["Attendee"]}><ReceiptPage /></ProtectedRoute>} />
