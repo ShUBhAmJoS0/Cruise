@@ -6,16 +6,16 @@ dotenv.config();
 //register User
 const registerUser = async (req, res) => {
   try {
-        const { id_token, email, name, userType } = req.body;
+    const { id_token, email, name, userType } = req.body;
 
     // Verify Firebase ID Token
     const decodedToken = await admin.auth().verifyIdToken(id_token);
-const firebase_uid = decodedToken.uid;
+    const firebase_uid = decodedToken.uid;
     // Check if user exists in Postgres
-    let user = await User.findOne({ where: {firebase_uid} });
-   
-    if(!user){
-          let existingUser = await User.findOne({ where: { email } });
+    let user = await User.findOne({ where: { firebase_uid } });
+
+    if (!user) {
+      let existingUser = await User.findOne({ where: { email } });
 
       if (existingUser) {
         // Link googleId to existing user
@@ -23,35 +23,36 @@ const firebase_uid = decodedToken.uid;
         await existingUser.save();
         return res.status(200).json({ message: "Google account linked", user: existingUser });
       }
-  
+
       user = await User.create({
         firebase_uid,
         email,
         name,
         userType,
       });
-    res.status(200).json({
-      message: "Signup successful",
-      user: {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        userType: user.userType,
-      },
-    });
-  }}
-   catch (error) {
-    console.log("firebaseSignup error:", error.message,error);
+      res.status(200).json({
+        message: "Signup successful",
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          userType: user.userType,
+        },
+      });
+    }
+  }
+  catch (error) {
+    console.log("firebaseSignup error:", error.message, error);
     res.status(500).json({ message: "Server error" });
   }
 }
 //login//
 const loginUser = async (req, res) => {
-try {
+  try {
     const { id_token } = req.body;
 
     const decodedToken = await admin.auth().verifyIdToken(id_token);
-const firebase_uid = decodedToken.uid;
+    const firebase_uid = decodedToken.uid;
 
     let user = await User.findOne({ where: { firebase_uid } });
 
@@ -74,18 +75,18 @@ const firebase_uid = decodedToken.uid;
 };
 export const getUser = async (req, res) => {
   try {
-    const firebaseUid = req.user.firebase_uid; 
-    
+    const firebaseUid = req.user.firebase_uid;
+
     const user = await User.findOne({
       where: { firebase_uid: firebaseUid },
-      attributes: ["id", "name", "email", "bio","about","profileImage","coverImage","social","userType"], 
+      attributes: ["id", "name", "email", "bio", "about", "profileImage", "coverImage", "social", "userType"],
     });
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    console.log(user)
-    return res.json({user,message:"user fetched sucessfully"}); 
+    console.log(user);
+    return res.json({ user, message: "user fetched sucessfully" });
   } catch (error) {
     console.error("getUser error:", error);
     return res.status(500).json({ message: "Server error" });
@@ -99,50 +100,50 @@ const updateFirebaseEmail = async (uid, newEmail) => {
     console.log("Firebase email updated successfully");
   } catch (error) {
     console.error("Error updating Firebase email:", error);
-    throw error; 
+    throw error;
   }
 };
-const updateUser= async(req,res)=>{
+const updateUser = async (req, res) => {
   console.log("api hit")
-    try{
-        const uid = req.user.id
-        const fid = req.user.firebase_uid
-const body = req.body
-console.log(body)
-if(!body.username){
-  return  res.status(401).send({message:"Cannot leave name empty"})
+  try {
+    const uid = req.user.id
+    const fid = req.user.firebase_uid
+    const body = req.body
+    console.log(body)
+    if (!body.username) {
+      return res.status(401).send({ message: "Cannot leave name empty" })
 
-}
-  let imageUrl = body.profileImage; 
+    }
+    let imageUrl = body.profileImage;
     if (req.files.profilePic?.[0]) {
       imageUrl = req.files.profilePic[0].path.replace(/\\/g, '/');
     }
-      let coverimage= body.coverImage; 
+    let coverimage = body.coverImage;
     if (req.files.coverPic?.[0]) {
       coverimage = req.files.coverPic[0].path.replace(/\\/g, '/');
     }
-const user = await User.findOne({where:{id:uid}})
-if(!user){
-        return res.status(500).send({message:"the user does not exist"})
-}
- await updateFirebaseEmail(fid,body.email.trim() );
-await user.update({
-  name:body.username,
-  email:body.email,
-  bio:body.bio ,
-  social:body.sociallink ,
-  coverImage:coverimage ,
-  profileImage:imageUrl,
-  about:body.about
+    const user = await User.findOne({ where: { id: uid } })
+    if (!user) {
+      return res.status(500).send({ message: "the user does not exist" })
+    }
+    await updateFirebaseEmail(fid, body.email.trim());
+    await user.update({
+      name: body.username,
+      email: body.email,
+      bio: body.bio,
+      social: body.sociallink,
+      coverImage: coverimage,
+      profileImage: imageUrl,
+      about: body.about
 
+    }
+
+    )
+    res.status(200).send({ message: "Saved profile sucessfully" })
+  }
+  catch (error) {
+    res.status(500).send({ message: error.message })
+  }
 }
 
-)
-res.status(200).send({message:"Saved profile sucessfully"})
-}
-catch(error){
-res.status(500).send({message:error.message})
-}
-}
-
-export { loginUser, registerUser,updateUser};
+export { loginUser, registerUser, updateUser };
