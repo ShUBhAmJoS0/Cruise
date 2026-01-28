@@ -31,7 +31,7 @@ export const AddEvent = async (req, res) => {
 
     if (!body.title || !body.description || !body.location || !body.date ||
       !body.time || !body.category || !prices || !quantity) {
-      return res.status(400).json({ message: "All required fields must be filled" });
+      return res.status(500).json({ message: "All required fields must be filled" });
     }
 
 

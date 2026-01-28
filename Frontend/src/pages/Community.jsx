@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import PostCard from "./PostCard";
 import api from "../api/axios";
+import toast from "react-hot-toast";
 
 function CreatePostModal({ onClose, onSubmit, editPost = null }) {
   const [content, setContent] = useState(editPost?.content || "");
@@ -173,7 +174,7 @@ export default function Community() {
       setShowModal(false);
     } catch (err) {
       console.error("CREATE POST ERROR:", err);
-      alert("Failed to create post. Please try again.");
+      toast.error("Failed to create post. Please try again.");
     }
   };
 
@@ -194,7 +195,7 @@ export default function Community() {
       setEditingPost(null);
     } catch (err) {
       console.error("EDIT POST ERROR:", err);
-      alert("Failed to edit post. Please try again.");
+      toast.error("Failed to edit post. Please try again.");
     }
   };
 
@@ -206,7 +207,7 @@ export default function Community() {
       setPosts(prevPosts => prevPosts.filter(post => post.id !== postId));
     } catch (err) {
       console.error("DELETE POST ERROR:", err);
-      alert("Failed to delete post. Please try again.");
+      toast.error("Failed to delete post. Please try again.");
     }
   };
 

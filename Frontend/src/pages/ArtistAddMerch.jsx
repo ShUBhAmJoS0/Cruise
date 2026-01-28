@@ -36,13 +36,13 @@ function AddMerch() {
       const res = await api.post("/artist/addmerch", formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
-      toast(res.data.message, "success");
+      toast.success(res.data.message);
       reset();
       setSelectedImage(null);
       setPreview("");
       getMerchItems();
     } catch (error) {
-      toast(error.response?.data?.message || "Failed to add product", "error");
+      toast.error(error.response?.data?.message || "Failed to add product", "error");
       console.log(error.message);
     }
   };
@@ -94,12 +94,12 @@ function AddMerch() {
       if (image) formData.append("image", image);
       try {
         await api.put(`/artist/addmerch/${item.productId}`, formData);
-        toast("Updated successfully", "success");
+        toast.success("Updated successfully");
         refresh();
         close();
       } catch (error) {
         console.log(error);
-       toast("Failed to update", "error");
+       toast.error("Failed to update", "error");
       }
     };
 
@@ -164,11 +164,11 @@ function AddMerch() {
     try {
       const res = await api.delete(`/artist/addmerch/${id}`)
       console.log(deleteProduct)
-      toast(res.data.message, "success")
+      toast.success(res.data.message, "success")
       getMerchItems()
     } catch(error) {
       console.log(error)
-      toast(error.response?.data?.message || "Failed to delete product", "error")
+      toast.error(error.response?.data?.message || "Failed to delete product", "error")
     }
   }
 

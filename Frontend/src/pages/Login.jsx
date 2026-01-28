@@ -4,6 +4,7 @@ import api from "../api/axios";
 import { auth, provider, isMockMode, mockSignInWithEmailAndPassword } from "../firebase.js";
 import { signInWithPopup } from "firebase/auth";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import toast from "react-hot-toast";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -15,7 +16,7 @@ export default function Login() {
     try {
 
       if (!email || !password) {
-        alert("Cannot leave any fields empty !")
+        toast.error("Cannot leave any fields empty !")
         return;
       }
       let firebaseUser;
@@ -37,14 +38,14 @@ export default function Login() {
 
       const role = res.data.user.userType
       console.log(role)
-      alert("Login successful!");
+      toast.success("Login successful!");
       if (role === "Admin") navigate("/admin");
       else if (role === "Artist") navigate("/artist/Request");
       else navigate("/events");
     }
     catch (error) {
       console.log(error)
-      alert(error.response?.data?.message || "Invalid credentials");
+      toast.error(error.response?.data?.message || "Invalid credentials");
     }
   };
 
@@ -57,13 +58,13 @@ export default function Login() {
       console.log("userId", result.user.uid)
 
       const res = await api.post("/auth/signup", { id_token: idToken, name: result.user.displayName, email: result.user.email, userType: "Attendee" })
-      alert("Logged in as " + result.user.displayName);
+      toast.success("Logged in as " + result.user.displayName);
       navigate("/events");
 
       // You can redirect or store user info here
     } catch (error) {
       console.error(error);
-      alert("Login failed");
+      toast.error("Login failed");
     }
   };
 

@@ -138,12 +138,12 @@ export function ViewMerchandiseTable() {
 
     try {
       await api.put(`/api/order/complete/${orderId}`);
-      alert("Order marked as completed!");
+      toast.success("Order marked as completed!");
       // Refresh the data
       getMerchItems();
     } catch (error) {
       console.error("Failed to mark order as complete:", error);
-      alert("Failed to update order status. Please try again.");
+      toast.error("Failed to update order status. Please try again.");
     } finally {
       setCompletingOrders(prev => {
         const newSet = new Set(prev);

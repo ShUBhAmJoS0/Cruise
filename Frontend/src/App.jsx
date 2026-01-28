@@ -31,6 +31,7 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminLogin from "./pages/admin/AdminLogin";
 import UserEditProfile from "./pages/UserEditProfile";
 import { Toaster } from "react-hot-toast";
+import Fetchuserreviews from "./pages/Fetchuserreviews";
 
 function AppRoutes() {
   const location = useLocation();
@@ -69,6 +70,7 @@ function AppRoutes() {
         <Route path="/artist/EditProfile" element={<ProtectedRoute allowedRoles={["Artist"]}><ArtistEditProfile></ArtistEditProfile></ProtectedRoute>} />
         <Route path="/artist/viewevent" element={<ProtectedRoute allowedRoles={["Artist"]}><ArtistViewEvents></ArtistViewEvents></ProtectedRoute>}/>
         <Route path="/artist/viewmerch" element={<ProtectedRoute allowedRoles={["Artist"]}><ViewMerchandiseTable/></ProtectedRoute>}/>
+        <Route path="/artist/fetchreviews" element={<ProtectedRoute allowedRoles={["Artist"]}><Fetchuserreviews/></ProtectedRoute>}/>
       </Routes>
     </Layout>
   ) : (
@@ -103,8 +105,6 @@ function App() {
       color: 'black',
       borderRadius:"12px"
     },
-
- 
     success: {
       duration: 3000,
       iconTheme: {

@@ -13,7 +13,7 @@ export default function ArtistViewEvents() {
       console.log(res.data.data)
       setEvents(res.data.data );
     } catch (error) {
-      alert("Failed to load events");
+      console.log("Failed to load events");
     }
   };
   useEffect(() => {

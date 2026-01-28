@@ -44,7 +44,7 @@ router.put("/updateProfile",upload.fields([
     router.post("/follow/:id",AttendeeOnly,followUser)
      router.post("/unfollow/:id",AttendeeOnly,unfollowUser)
      router.get("/followers/:id",AttendeeOnly,getFollowers)
-router.get("/analytics",artistOnly,getArtistAnalytics)
+router.get("/analytics",getArtistAnalytics)
 export default router
 
 

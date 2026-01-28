@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import api from "../api/axios";
 import { auth } from "../firebase";
+import toast from "react-hot-toast";
 
 
 async function fetchEvent(eventId) {
@@ -18,7 +19,7 @@ async function fetchEvent(eventId) {
   return res.data;
 
 }
-//Sliding images function
+
 function ImageSlider({ images }) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -172,8 +173,12 @@ export default function BookingPage() {
         event_id: eventId,
         card_number: cardNumber,
       });
-      alert("Booking Confirmed!");
-    } finally {
+      toast.success("Booking Confirmed!");
+    } 
+    catch(e){
+      toast.error(error.response?.data?.message)
+    }
+      finally {
       setLoading(false);
     }
   };

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import api from "../api/axios";
 import { ClipboardList, Calendar, Package, ShoppingBag, CheckCircle, DollarSign, TrendingUp, Star, Award, Gift, X, Trash2, Eye, MapPin, CreditCard, Truck, User, Tag, BarChart3, Clock, Zap } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-
+import toast from "react-hot-toast";
 // Order Details Modal Component
 
 
@@ -392,10 +392,11 @@ export default function OrderHistory() {
 
     try {
       await api.delete(`/api/orderhistory/${orderId}`);
+      toast.success("Order cancelled sucessfully")
       await loadOrders();
     } catch (err) {
       console.error("DELETE ORDER ERROR:", err);
-      alert("Failed to delete order. Please try again.");
+      toast.error("Failed to delete order. Please try again.");
     }
   };
 

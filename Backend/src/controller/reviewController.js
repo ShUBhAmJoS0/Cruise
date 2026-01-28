@@ -41,6 +41,42 @@ export const getArtistReviews = async (req, res) => {
   }
 };
 
+export const getAllReviews = async (req, res) => {
+  try {
+    const artistId = req.user?.id;
+
+    if (!artistId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const reviews = await Review.findAll({
+      where: { artistId },
+      include: [
+        {
+          model: User,
+          as: "reviewer",
+          attributes: ["id", "name", "email", "profileImage", "bio"]
+        },
+        {
+          model: User,
+          as: "artist",
+          attributes: ["id", "name", "email", "profileImage", "bio", "social", "about"]
+        }
+      ],
+      order: [["createdAt", "DESC"]]
+    });
+
+    res.json({
+      data: reviews,
+      count: reviews.length,
+      message: "Artist reviews fetched successfully"
+    });
+  } catch (err) {
+    console.error("Get artist reviews error:", err);
+    res.status(500).json({ message: err.message });
+  }
+};
+
 export const deleteReview = async (req, res) => {
   try {
     const { reviewId } = req.params;

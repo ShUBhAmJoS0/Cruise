@@ -48,11 +48,11 @@ function ArtistEditProfile() {
     const files = Array.from(e.target.files);
     const validFiles = files.filter(file => {
       if (!['image/jpeg', 'image/png', 'image/webp', 'image/gif'].includes(file.type)) {
-        alert(`${file.name} is not a valid image file`);
+        toast.error(`${file.name} is not a valid image file`);
         return false;
       }
       if (file.size > 5 * 1024 * 1024) {
-        alert(`${file.name} is too large. Max size is 5MB`);
+        toast.error(`${file.name} is too large. Max size is 5MB`);
         return false;
       }
       return true;
@@ -114,12 +114,12 @@ function ArtistEditProfile() {
         mediaImages: updatedMediaImages 
       }));
   
-      alert("Profile updated successfully! 🎉");
+      toast.success("Profile updated successfully! 🎉");
   
     } catch (e) {
       console.error("Update error:", e);
       const errorMessage = e?.response?.data?.message || "Error updating profile. Please try again.";
-      alert(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
       setUploadProgress(0);
