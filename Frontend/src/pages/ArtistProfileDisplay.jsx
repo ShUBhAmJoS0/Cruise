@@ -26,7 +26,8 @@ import {
   ThumbsUp,
   X,
   Images,
-  Quote
+  Quote,
+  Crown
 } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -97,11 +98,12 @@ const ArtistProfile = () => {
       console.log(error.message)
     }
   }
-  // useEffect(() => {
-  //   if (activeTab === "reviews") {
-  //     fetchReviews();
-  //   }
-  // }, [activeTab]);
+  const getImageUrl = (pathOrBlob) => {
+    if (!pathOrBlob) return "/images/defaultprofilepic.png";
+    if (pathOrBlob.startsWith("http") || pathOrBlob.startsWith("blob:")) return pathOrBlob;
+    return `http://localhost:5000/${pathOrBlob}`;
+  };
+
 
   useEffect(() => {
     const fetchGigs = async () => {
@@ -216,6 +218,15 @@ const fetchFollowers = async () => {
     } finally {
       setSubmittingReview(false);
     }
+  };
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
   };
 
 
@@ -751,129 +762,128 @@ const fetchFollowers = async () => {
                     </form>
                   </div>
 
-                  {/* Reviews List */}
-                  <div className="bg-white rounded-3xl shadow-xl border border-slate-100 p-8">
-                    <div className="flex items-center justify-between mb-8">
-                      <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 bg-gradient-to-r from-[#3593A6] to-[#2d7a8a] rounded-2xl flex items-center justify-center">
-                          <Star className="w-6 h-6 text-white" />
-                        </div>
-                        <div>
-                          <h2 className="text-2xl font-bold text-slate-800">Fan Reviews</h2>
-                          <p className="text-slate-600">What fans are saying about {artist?.name}</p>
-                        </div>
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {reviews.map((review) => (
+              <div
+                key={review.id}
+                className="bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden hover:shadow-2xl transition-all duration-300"
+              >
+                {/* Review Header */}
+                <div className="bg-gradient-to-r from-[#3593A6]/10 to-[#2d7a8a]/10 p-6 border-b border-slate-100">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 bg-[#3593A6] rounded-full flex items-center justify-center">
+                        <Quote className="w-6 h-6 text-white" />
                       </div>
-                      <div className="text-right">
-                        <div className="text-2xl font-bold text-[#3593A6]">{reviews.length}</div>
-                        <div className="text-sm text-slate-500">Total Reviews</div>
+                      <div>
+                        <h3 className="font-bold text-slate-800">Fan Review</h3>
+                        <p className="text-sm text-slate-500">{formatDate(review.createdAt)}</p>
                       </div>
                     </div>
-
-                    {reviews.length === 0 ? (
-                      <div className="text-center py-16">
-                        <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                          <MessageSquare className="w-10 h-10 text-slate-400" />
-                        </div>
-                        <h3 className="text-xl font-bold text-slate-700 mb-2">No reviews yet</h3>
-                        <p className="text-slate-500">Be the first to share your thoughts about this artist!</p>
-                      </div>
-                    ) : (
-                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        {reviews.map((review) => (
-                          <div
-                            key={review.id}
-                            className="bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden hover:shadow-2xl transition-all duration-300"
-                          >
-                            {/* Review Header */}
-                            <div className="bg-gradient-to-r from-[#3593A6]/10 to-[#2d7a8a]/10 p-6 border-b border-slate-100">
-                              <div className="flex items-center justify-between mb-4">
-                                <div className="flex items-center gap-3">
-                                  <div className="w-12 h-12 bg-[#3593A6] rounded-full flex items-center justify-center">
-                                    <Quote className="w-6 h-6 text-white" />
-                                  </div>
-                                  <div>
-                                    <h3 className="font-bold text-slate-800">Fan Review</h3>
-                                    <p className="text-sm text-slate-500">{new Date(review.createdAt).toLocaleDateString('en-US', {
-                                      year: 'numeric',
-                                      month: 'short',
-                                      day: 'numeric',
-                                      hour: '2-digit',
-                                      minute: '2-digit'
-                                    })}</p>
-                                  </div>
-                                </div>
-                                <div className="flex items-center gap-1">
-                                  {[...Array(5)].map((_, i) => (
-                                    <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                                  ))}
-                                </div>
-                              </div>
-                            </div>
-
-                            {/* Review Content */}
-                            <div className="p-6">
-                              {/* Reviewer Info */}
-                              <div className="flex items-center gap-4 mb-6 p-4 bg-slate-50 rounded-2xl">
-                                <img
-                                  src={review.reviewer?.profileImage ? `http://localhost:5000/${review.reviewer.profileImage}` : "/images/defaultprofilepic.png"}
-                                  alt={review.reviewer?.name}
-                                  className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-md"
-                                />
-                                <div className="flex-1">
-                                  <div className="flex items-center gap-2 mb-1">
-                                    <h4 className="font-bold text-slate-800">{review.reviewer?.name}</h4>
-                                    <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
-                                    <span className="text-sm text-slate-500">Verified Fan</span>
-                                  </div>
-                                  <p className="text-sm text-slate-600">{review.reviewer?.email}</p>
-                                </div>
-                                <div className="text-right">
-                                  <div className="text-xs text-slate-400 mb-1">Review #{review.id}</div>
-                                  <div className="flex items-center gap-1 text-emerald-600">
-                                    <ThumbsUp className="w-3 h-3" />
-                                    <span className="text-xs font-medium">Helpful</span>
-                                  </div>
-                                </div>
-                              </div>
-
-                              {/* Review Text */}
-                              <div className="mb-6">
-                                <blockquote className="text-slate-700 leading-relaxed text-lg italic border-l-4 border-[#3593A6] pl-4">
-                                  "{review.comment}"
-                                </blockquote>
-                              </div>
-
-                              {/* Review Stats */}
-                              <div className="border-t border-slate-100 pt-6">
-                                <div className="flex items-center gap-4 text-sm text-slate-500">
-                                  <div className="flex items-center gap-1">
-                                    <Clock className="w-4 h-4" />
-                                    <span>{Math.ceil(review.comment.length / 50)} min read</span>
-                                  </div>
-                                  <div className="flex items-center gap-1">
-                                    <MessageSquare className="w-4 h-4" />
-                                    <span>{review.comment.length} chars</span>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-
-                            {/* Review Footer */}
-                            <div className="bg-slate-50 px-6 py-4 border-t border-slate-100">
-                              <div className="flex items-center justify-end gap-2">
-                                <button className="p-2 hover:bg-slate-200 rounded-xl transition-colors">
-                                  <Heart className="w-4 h-4 text-slate-400 hover:text-red-500" />
-                                </button>
-                                <button className="p-2 hover:bg-slate-200 rounded-xl transition-colors">
-                                  <ThumbsUp className="w-4 h-4 text-slate-400 hover:text-[#3593A6]" />
-                                </button>
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
+                    <div className="flex items-center gap-1">
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                      ))}
+                    </div>
                   </div>
+                </div>
+
+                {/* Review Content */}
+                <div className="p-6">
+                  {/* Reviewer Info */}
+                  <div className="flex items-center gap-4 mb-6 p-4 bg-slate-50 rounded-2xl">
+                    <img
+                      src={getImageUrl(review.reviewer?.profileImage)}
+                      alt={review.reviewer?.name}
+                      className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-md"
+                    />
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <h4 className="font-bold text-slate-800">{review.reviewer?.name}</h4>
+                        <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
+                        <span className="text-sm text-slate-500">Verified Fan</span>
+                      </div>
+                      <p className="text-sm text-slate-600">{review.reviewer?.email}</p>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-xs text-slate-400 mb-1">Review #{review.id}</div>
+                      <div className="flex items-center gap-1 text-emerald-600">
+                        <ThumbsUp className="w-3 h-3" />
+                        <span className="text-xs font-medium">Helpful</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Review Text */}
+                  <div className="mb-6">
+                    <blockquote className="text-slate-700 leading-relaxed text-lg italic border-l-4 border-[#3593A6] pl-4">
+                      "{review.comment}"
+                    </blockquote>
+                  </div>
+
+                  {/* Artist Info */}
+                  <div className="border-t border-slate-100 pt-6">
+                    <div className="flex items-center gap-3 mb-3">
+                      <Crown className="w-5 h-5 text-yellow-500" />
+                      <span className="font-semibold text-slate-800">Reviewed Artist</span>
+                    </div>
+
+                    <div className="flex items-center gap-4 p-4 bg-gradient-to-r from-yellow-50 to-orange-50 rounded-2xl border border-yellow-100">
+                      <img
+                        src={getImageUrl(review.artist?.profileImage)}
+                        alt={review.artist?.name}
+                        className="w-14 h-14 rounded-full object-cover border-2 border-white shadow-md"
+                      />
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <h5 className="font-bold text-slate-800 text-lg">{review.artist?.name}</h5>
+                          <Award className="w-4 h-4 text-yellow-500" />
+                        </div>
+                        <p className="text-sm text-slate-600 line-clamp-2 mb-2">
+                          {review.artist?.bio || "Passionate artist creating amazing experiences"}
+                        </p>
+                        {review.artist?.social && (
+                          <a
+                            href={review.artist.social}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 text-sm text-[#3593A6] hover:text-[#2d7a8a] font-medium transition-colors"
+                          >
+                            <Sparkles className="w-3 h-3" />
+                            View Profile
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Review Footer */}
+                <div className="bg-slate-50 px-6 py-4 border-t border-slate-100">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4 text-sm text-slate-500">
+                      <div className="flex items-center gap-1">
+                        <Clock className="w-4 h-4" />
+                        <span>{Math.ceil(review.comment.length / 50)} min read</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <MessageSquare className="w-4 h-4" />
+                        <span>{review.comment.length} chars</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button className="p-2 hover:bg-slate-200 rounded-xl transition-colors">
+                        <Heart className="w-4 h-4 text-slate-400 hover:text-red-500" />
+                      </button>
+                      <button className="p-2 hover:bg-slate-200 rounded-xl transition-colors">
+                        <ThumbsUp className="w-4 h-4 text-slate-400 hover:text-[#3593A6]" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
                 </div>
               )}
             </div>

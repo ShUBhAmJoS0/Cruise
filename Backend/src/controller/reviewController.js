@@ -31,7 +31,11 @@ export const getArtistReviews = async (req, res) => {
     const { artistId } = req.params;
     const reviews = await Review.findAll({
       where: { artistId },
-      include: [{ model: User, as: "reviewer", attributes: ["id", "name", "profileImage"] }],
+      include: [{ model: User, as: "reviewer", attributes: ["id", "name", "profileImage"], },{
+        model: User,
+        as: "artist",
+        attributes: ["id", "name", "email", "profileImage", "bio", "social", "about"]
+      }],
       order: [["createdAt", "DESC"]]
     });
 

@@ -323,45 +323,6 @@ const Fetchuserreviews = () => {
 
           {/* My Review Analytics */}
           <div className="mt-12 bg-white rounded-3xl shadow-xl border border-slate-100 p-8">
-            <div className="text-center mb-8">
-              <h3 className="text-2xl font-bold text-slate-800 mb-2">My Review Analytics</h3>
-              <p className="text-slate-600">Insights into how fans perceive your work</p>
-            </div>
-
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
-              <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl border border-blue-200">
-                <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <Users className="w-6 h-6 text-white" />
-                </div>
-                <div className="text-2xl font-bold text-blue-700 mb-1">{stats.uniqueReviewers}</div>
-                <div className="text-sm text-blue-600">Fan Supporters</div>
-              </div>
-
-              <div className="text-center p-4 bg-gradient-to-br from-purple-50 to-purple-100 rounded-2xl border border-purple-200">
-                <div className="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <Star className="w-6 h-6 text-white" />
-                </div>
-                <div className="text-2xl font-bold text-purple-700 mb-1">{stats.recentReviews || 0}</div>
-                <div className="text-sm text-purple-600">Recent Reviews</div>
-              </div>
-
-              <div className="text-center p-4 bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-2xl border border-emerald-200">
-                <div className="w-12 h-12 bg-emerald-500 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <MessageSquare className="w-6 h-6 text-white" />
-                </div>
-                <div className="text-2xl font-bold text-emerald-700 mb-1">{stats.avgLength || 0}</div>
-                <div className="text-sm text-emerald-600">Avg. Length</div>
-              </div>
-
-              <div className="text-center p-4 bg-gradient-to-br from-amber-50 to-amber-100 rounded-2xl border border-amber-200">
-                <div className="w-12 h-12 bg-amber-500 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <Heart className="w-6 h-6 text-white" />
-                </div>
-                <div className="text-2xl font-bold text-amber-700 mb-1">{stats.totalReviews}</div>
-                <div className="text-sm text-amber-600">Total Love</div>
-              </div>
-            </div>
-
             {/* Additional Analytics */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="bg-slate-50 rounded-2xl p-6 border border-slate-200">
