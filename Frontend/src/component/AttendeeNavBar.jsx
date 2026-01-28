@@ -11,7 +11,6 @@ export function AttendeeNavBar({ logout, user, dbuser }) {
   const isActive = (path) => location.pathname === path;
 
   const navItems = [
-    { name: "Home", path: "/landing" },
     { name: "ExploreEvents", path: "/events" },
     { name: "Shop", path: "/merchandise" },
     { name: "Community", path: "/community" },
@@ -35,8 +34,8 @@ export function AttendeeNavBar({ logout, user, dbuser }) {
                 to={item.path}
                 style={{ color: primaryColor }}
                 className={`relative py-1 px-1 transition-all ${isActive(item.path)
-                    ? "after:block after:absolute after:-bottom-2 after:left-0 after:w-full after:h-1 after:bg-[#3593A6]"
-                    : ""
+                  ? "after:block after:absolute after:-bottom-2 after:left-0 after:w-full after:h-1 after:bg-[#3593A6]"
+                  : ""
                   }`}
               >
                 {item.name}

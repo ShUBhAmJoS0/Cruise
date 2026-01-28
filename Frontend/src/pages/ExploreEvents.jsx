@@ -6,6 +6,51 @@ import { useAuth } from '../context/AuthContext';
 
 const primaryColor = '#3593A6';
 
+// Mock trending events data from landing page
+const mockTrendingEvents = [
+  {
+    id: 'mock-1',
+    title: 'Taylor Swift Comes Nepal',
+    category: 'Music',
+    date: '2026-12-24',
+    time: '7:00 PM',
+    location: 'Dharahara, Sundhara',
+    profileImage: 'https://ca-times.brightspotcdn.com/dims4/default/f3116da/2147483647/strip/true/crop/5616x3744+0+0/resize/1200x800!/quality/75/?url=https%3A%2F%2Fcalifornia-times-brightspot.s3.amazonaws.com%2Fb9%2F47%2F3c51991c44b798e0beda7e4b85f5%2Ftaylor-swift-eras-tour-opener-glendale-ariz-07236.jpg',
+    prices: { Standard: 4500 }
+  },
+  {
+    id: 'mock-2',
+    title: 'Abhishek Upamanyu TOXIC',
+    category: 'Comedy',
+    date: '2026-12-15',
+    time: '8:00 PM',
+    location: 'Comedy Arena, NYC',
+    profileImage: 'https://i.ytimg.com/vi/c7QYEedjb_o/maxresdefault.jpg',
+    prices: { Standard: 1500 }
+  },
+  {
+    id: 'mock-3',
+    title: 'Nepal Vs India',
+    category: 'Sports',
+    date: '2026-02-05',
+    time: '3:00 PM',
+    location: 'Wankade, Mumbai',
+    profileImage: 'https://imgs.search.brave.com/dhUQqiXE67ta1MsgHaBI_7CT2ZcdSgzZptn52r-qdc4/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pbWcx/LmhzY2ljZG4uY29t/L2ltYWdlL3VwbG9h/ZC9mX2F1dG8sdF9k/c193Xzk2MCxxXzUw/L2xzY2kvZGIvUElD/VFVSRVMvQ01TLzM4/MTAwMC8zODEwNDMu/anBn',
+    prices: { Standard: 2900 }
+  },
+  {
+    id: 'mock-4',
+    title: 'Tech X Softwarica',
+    category: 'Art',
+    date: '2026-01-12',
+    time: '10:00 AM',
+    location: 'Dillibazar, Kathmandu',
+    profileImage: 'https://mir-s3-cdn-cf.behance.net/projects/808/1f6927232447599.Y3JvcCwzODM1LDMwMDAsMzcwLDA.png',
+    prices: { Standard: 0 }
+  }
+];
+
+
 const ExploreEvents = () => {
   const navigate = useNavigate();
   const { logout } = useAuth();
@@ -190,7 +235,7 @@ const ExploreEvents = () => {
             return eventDate.getTime() === today.getTime();
           });
 
-          setTrendingEvents(todayEvents);
+          setTrendingEvents(todayEvents.length > 0 ? todayEvents : mockTrendingEvents);
           console.log('All events:', eventData);
           console.log('Today events:', todayEvents);
         } else {
@@ -598,19 +643,20 @@ const ExploreEvents = () => {
         <div className="flex-1 sm:ml-[380px] p-4 md:p-6 lg:p-10 bg-slate-50 min-h-screen">
 
           {/* Hero Banner with Countdown */}
-          <section className="relative w-full rounded-[2.5rem] overflow-hidden bg-[#0a0f18] text-white shadow-2xl mb-12">
+          <section className="relative w-full rounded-[2rem] overflow-hidden bg-[#0a0f18] text-white shadow-2xl mb-12" style={{ maxHeight: '420px' }}>
             {/* Background Image/Overlay */}
-            <div className="absolute inset-0 opacity-40">
+            <div className="absolute inset-0">
               <img
-                src={soonestEvent ? `http://localhost:5000/${soonestEvent.profileImage}` : "https://images.unsplash.com/photo-1492684223066-81342ee5ff30"}
-                className="w-full h-full object-cover"
-                alt="Banner Background"
+                src={soonestEvent?.profileImage ? `http://localhost:5000/${soonestEvent.profileImage}` : "https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80"}
+                onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80"; }}
+                className="w-full h-full object-cover blur-[12px] scale-110 brightness-110"
+                alt=""
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0a0f18] via-[#0a0f18]/60 to-transparent"></div>
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0a0f18]/95 via-[#0a0f18]/75 to-[#0a0f18]/50"></div>
             </div>
 
             {soonestEvent && (
-              <div className="relative z-10 p-8 md:p-16 flex flex-col items-center">
+              <div className="relative z-10 p-6 md:p-10 flex flex-col items-center">
                 {/* Event Metadata */}
                 <div className="flex flex-wrap justify-center items-center gap-4 md:gap-8 mb-8">
                   <div className="flex items-center gap-2 text-xs md:text-sm font-bold uppercase tracking-widest text-slate-300">
@@ -630,12 +676,12 @@ const ExploreEvents = () => {
                 </div>
 
                 {/* Title */}
-                <h1 className="text-4xl md:text-7xl font-black text-center mb-10 tracking-tight leading-tight uppercase">
+                <h1 className="text-3xl md:text-5xl font-black text-center mb-6 tracking-tight leading-tight uppercase">
                   {soonestEvent.title}
                 </h1>
 
                 {/* Countdown */}
-                <div className="flex gap-3 md:gap-5 mb-14">
+                <div className="flex gap-3 md:gap-4 mb-8">
                   {[
                     { label: 'Days', value: countdown.days },
                     { label: 'Hours', value: countdown.hours },
@@ -643,9 +689,9 @@ const ExploreEvents = () => {
                     { label: 'Sec', value: countdown.secs }
                   ].map((item, i) => (
                     <div key={i} className="flex flex-col items-center">
-                      <div className="w-16 h-20 md:w-24 md:h-28 bg-[#0a0f18]/80 backdrop-blur-xl border-2 border-slate-800 rounded-2xl flex items-center justify-center shadow-2xl relative group overflow-hidden">
+                      <div className="w-14 h-16 md:w-20 md:h-24 bg-[#0a0f18]/80 backdrop-blur-xl border-2 border-slate-800 rounded-xl flex items-center justify-center shadow-2xl relative group overflow-hidden">
                         <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-50"></div>
-                        <span className="text-2xl md:text-5xl font-black text-white relative z-10 drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">
+                        <span className="text-xl md:text-4xl font-black text-white relative z-10 drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">
                           {String(item.value).padStart(2, '0')}
                         </span>
                       </div>
@@ -655,16 +701,16 @@ const ExploreEvents = () => {
                 </div>
 
                 {/* CTA Buttons */}
-                <div className="flex flex-col sm:flex-row gap-4 w-full max-w-md">
+                <div className="flex flex-col sm:flex-row gap-3 w-full max-w-md">
                   <button
                     onClick={() => navigate(`/event/${soonestEvent.id}`)}
-                    className="flex-1 py-4 border-2 border-white text-white font-black rounded-2xl hover:bg-white hover:text-slate-900 transition-all uppercase tracking-widest text-sm"
+                    className="flex-1 py-3 border-2 border-white text-white font-black rounded-xl hover:bg-white hover:text-slate-900 transition-all uppercase tracking-widest text-xs"
                   >
                     View Details
                   </button>
                   <button
                     onClick={() => navigate(`/event/${soonestEvent.id}`)}
-                    className="flex-1 py-4 bg-[#3593A6] text-white font-black rounded-2xl shadow-xl shadow-[#3593A6]/30 hover:shadow-2xl hover:bg-[#2d7a8a] transition-all uppercase tracking-widest text-sm border-2 border-[#3593A6]"
+                    className="flex-1 py-3 bg-[#3593A6] text-white font-black rounded-xl shadow-xl shadow-[#3593A6]/30 hover:shadow-2xl hover:bg-[#2d7a8a] transition-all uppercase tracking-widest text-xs border-2 border-[#3593A6]"
                   >
                     Buy Ticket
                   </button>
@@ -673,8 +719,8 @@ const ExploreEvents = () => {
             )}
 
             {!soonestEvent && !loading && (
-              <div className="relative z-10 p-20 flex flex-col items-center justify-center">
-                <h1 className="text-4xl md:text-6xl font-black text-center mb-4 tracking-tight uppercase">
+              <div className="relative z-10 p-10 flex flex-col items-center justify-center">
+                <h1 className="text-3xl md:text-5xl font-black text-center mb-4 tracking-tight uppercase">
                   No Upcoming Events
                 </h1>
                 <p className="text-slate-400 font-bold uppercase tracking-widest">Check back later for more cruises</p>
@@ -827,7 +873,7 @@ const ExploreEvents = () => {
                       <div className="relative h-64 overflow-hidden">
                         <img
                           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                          src={`http://localhost:5000/${event.profileImage}`}
+                          src={event.profileImage?.startsWith('http') ? event.profileImage : `http://localhost:5000/${event.profileImage}`}
                           alt={event.title}
                         />
                         <div className="absolute top-4 left-4 bg-[#3593A6] text-white text-[10px] font-black px-3 py-1.5 rounded-lg uppercase tracking-widest border border-white/10">
