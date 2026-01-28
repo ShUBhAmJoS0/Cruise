@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import api from "../api/axios";
-import { auth } from "../firbase";
+import { auth } from "../firebase";
 
 export default function MyBookings() {
   const [bookings, setBookings] = useState([]);

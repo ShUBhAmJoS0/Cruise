@@ -1,14 +1,13 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { auth } from "../firbase.js";
-import { onAuthStateChanged } from "firebase/auth";
+import { auth, onAuthStateChanged, signOut } from "../firebase.js";
 import api from "../api/axios.js";
 
 export const AuthContext = createContext();
 
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);     
-  const [role, setRole] = useState(null);      
+  const [user, setUser] = useState(null);
+  const [role, setRole] = useState(null);
   const [loading, setLoading] = useState(true);
   const [dbuser, setDbuser] = useState(null);
 
@@ -18,7 +17,7 @@ export const AuthProvider = ({ children }) => {
         setUser(null);
         setRole(null);
         setDbuser(null);
-        setLoading(false);  
+        setLoading(false);
         return;
       }
 
@@ -26,28 +25,28 @@ export const AuthProvider = ({ children }) => {
       setUser(currentUser);
 
       try {
-        const token = await currentUser.getIdToken(true); 
+        const token = await currentUser.getIdToken(true);
         const res = await api.get("/auth/getuser", {
           headers: { Authorization: `Bearer ${token}` },
         });
         console.log(res);
 
-  
+
         if (res.data && res.data.user) {
           setRole(res.data.user.userType);
           setDbuser(res.data.user);
           console.log("Role set:", res.data.user.userType);
         } else {
-        
+
           throw new Error("User data not found in response");
         }
 
-        setLoading(false); 
+        setLoading(false);
       } catch (error) {
         console.error("Role fetch failed", error);
         setRole(null);
         setDbuser(null);
-        setLoading(false); 
+        setLoading(false);
       }
     });
 
@@ -77,7 +76,7 @@ export const AuthProvider = ({ children }) => {
   }, [user, role, loading]);
 
   const logout = async () => {
-    await auth.signOut();
+    await signOut(auth);
     setUser(null);
     setRole(null);
     setDbuser(null);
