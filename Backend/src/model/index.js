@@ -10,6 +10,10 @@ import Event from "./Event.js";
 import Review from "./review.js";
 import UserProblem from "./UserProblem.js";
 import Notification from "./Notification.js";
+import CommunityGuidelineModel from "./CommunityGuideline.js";
+import sequelize from "../Database/db.js";
+
+const CommunityGuideline = CommunityGuidelineModel(sequelize);
 
 
 Product.belongsTo(User, { foreignKey: "createdBy" });
@@ -17,6 +21,7 @@ Product.hasMany(OrderItem, { foreignKey: "productId" });
 User.hasMany(Product, { foreignKey: "createdBy" });
 OrderItem.belongsTo(Order, { foreignKey: "orderId" });
 OrderItem.belongsTo(Product, { foreignKey: "productId" });
+Order.hasMany(OrderItem, { foreignKey: "orderId" });
 OrderItem.belongsTo(User, { foreignKey: "artistId", as: "artist" });
 Order.belongsTo(User, { foreignKey: "userId" });
 CartItem.belongsTo(Product, { foreignKey: "productId" });
@@ -53,4 +58,4 @@ UserProblem.belongsTo(User, {
   as: "reporter"
 });
 
-export { User, Product, Order, OrderItem, CartItem, Follow, Booking, Event, Review, UserProblem, Notification };
+export { User, Product, Order, OrderItem, CartItem, Follow, Booking, Event, Review, UserProblem, Notification, CommunityGuideline };

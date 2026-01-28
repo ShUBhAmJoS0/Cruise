@@ -170,7 +170,7 @@ function FindArtists() {
             return (
               <div
                 key={artist.id}
-                className="bg-white rounded-xl shadow-lg overflow-hidden transform transition duration-300 hover:scale-105 hover:shadow-2xl"
+                className="bg-white rounded-3xl shadow-lg overflow-hidden transform transition duration-300 hover:scale-105 hover:shadow-2xl"
               >
                 <div className="relative">
                   <img

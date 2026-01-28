@@ -14,7 +14,7 @@ import AdminRoute from "./context/adminRoute";
 import { Layout } from "./component/NavBarLayout";
 import { AddMerch } from "./pages/ArtistAddMerch";
 import ArtistAnalytics from "./pages/ArtistDashboard";
-import ArtistProfile from "./pages/ArtistProfileDisplay";
+import ArtistProfile from "./pages/artistProfileDisplay";
 import ArtistEditProfile from "./pages/ArtistEditProfile";
 import FindArtists from "./pages/FindArtists";
 import About from "./pages/About";
@@ -28,12 +28,13 @@ import { ViewMerchandiseTable } from "./pages/viewmerchartist";
 import MyBookings from "./pages/MyBookings";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminLogin from "./pages/admin/AdminLogin";
-import CommunityGuidelines from "./pages/CommunityGuidelines";
 import UserEditProfile from "./pages/UserEditProfile";
+import CommunityGuidelines from "./pages/CommunityGuidelines";
+import { Toaster } from "react-hot-toast";
 
 function AppRoutes() {
   const location = useLocation();
-  const noNavPatterns = ["/", "/artist/profile/", "/admin", "/login", "/signup", "/forgotpassword"];
+  const noNavPatterns = ["/", "/artist/profile/", "/admin"];
   const showLayout = !noNavPatterns.some(path => {
     if (path === "/") {
       return location.pathname === "/";
@@ -44,7 +45,11 @@ function AppRoutes() {
     <Layout>
       <Routes>
         {/* public */}
+        <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
+        <Route path="/signup" element={<PublicRoute><Signup /></PublicRoute>} />
+        <Route path="/forgotpassword" element={<PublicRoute><ForgetPassword /></PublicRoute>} />
         <Route path="/communityguidelines" element={<CommunityGuidelines />} />
+
         {/* users */}
         <Route path="/events" element={<ProtectedRoute allowedRoles={["Attendee"]}><ExploreEvents /></ProtectedRoute>} />
         <Route path="/merchandise" element={<ProtectedRoute allowedRoles={["Attendee"]}><Merchandise></Merchandise></ProtectedRoute>} />
@@ -68,9 +73,6 @@ function AppRoutes() {
   ) : (
     <Routes>
       <Route path="/" element={<Landing />} />
-      <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
-      <Route path="/signup" element={<PublicRoute><Signup /></PublicRoute>} />
-      <Route path="/forgotpassword" element={<PublicRoute><ForgetPassword /></PublicRoute>} />
       <Route path="/artist/profile/:id" element={<ProtectedRoute allowedRoles={["Attendee"]}><ArtistProfile /></ProtectedRoute>} />
       <Route path="/admin/login" element={<AdminLogin />} />
       <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
@@ -83,7 +85,46 @@ function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
+        <Toaster
+          position="top-center"
+          reverseOrder={false}
+          gutter={8}
+          containerClassName=""
+          containerStyle={{}}
+          toasterId="default"
+          toastOptions={{
 
+            className: '',
+            duration: 5000,
+            removeDelay: 1000,
+            style: {
+              background: '#eafae1',
+              color: 'black',
+              borderRadius: "12px"
+            },
+
+
+            success: {
+              duration: 3000,
+              iconTheme: {
+                primary: 'green',
+                secondary: 'white',
+              },
+            },
+            error: {
+              duration: 3000,
+              iconTheme: {
+                primary: 'red',
+                secondary: 'white',
+              },
+              style: {
+                background: '#fad7d7',
+                color: 'black',
+                borderRadius: "12px"
+              },
+            }
+          }}
+        />
         <AppRoutes />
       </BrowserRouter>
     </AuthProvider>

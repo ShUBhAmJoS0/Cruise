@@ -34,7 +34,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static('uploads'));
 
 app.use("/api/communityguidelines", communityGuidelinesRoutes);
-
 // Admin routes BEFORE auth middleware (uses separate admin auth)
 app.use("/api/admin", adminRoutes);
 app.use("/api/user-problems", userProblemRoutes);
