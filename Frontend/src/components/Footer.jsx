@@ -51,7 +51,7 @@ const Footer = () => {
     };
 
     return (
-        <footer className="bg-[#1a2c5b] w-full relative">
+        <footer className="bg-[#1a2c5b] w-full">
             <ToastContainer position="bottom-right" autoClose={3000} />
             
             {/* Main Footer Content */}
