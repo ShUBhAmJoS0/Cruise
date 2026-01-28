@@ -35,9 +35,9 @@ export function AttendeeNavBar({ logout, user, dbuser }) {
         </button>
 
         {/* Cruise Logo - Centered on mobile/tablet, left-aligned on desktop */}
-        <div className="font-bold text-2xl lg:text-3xl whitespace-nowrap lg:block" style={{ color: primaryColor }}>
-          Cruise
-        </div>
+        <Link to="/events" className="flex items-center justify-center lg:block">
+          <img src="/images/cruise logo.png" className="h-10 lg:h-12 w-auto" alt="Cruise Logo" />
+        </Link>
 
         {/* Desktop Navigation */}
         <div className="hidden lg:flex flex-nowrap gap-3 lg:gap-6 text-sm lg:text-lg font-bold absolute left-1/2 transform -translate-x-1/2 -ml-14">
