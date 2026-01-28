@@ -30,6 +30,7 @@ import MyBookings from "./pages/MyBookings";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminLogin from "./pages/admin/AdminLogin";
 import UserEditProfile from "./pages/UserEditProfile";
+import { Toaster } from "react-hot-toast";
 
 function AppRoutes() {
   const location = useLocation();
@@ -85,7 +86,46 @@ function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
-    
+      <Toaster
+  position="top-center"
+  reverseOrder={false}
+  gutter={8}
+  containerClassName=""
+  containerStyle={{}}
+  toasterId="default"
+  toastOptions={{
+
+    className: '',
+    duration: 5000,
+    removeDelay: 1000,
+    style: {
+      background: '#eafae1',
+      color: 'black',
+      borderRadius:"12px"
+    },
+
+ 
+    success: {
+      duration: 3000,
+      iconTheme: {
+        primary: 'green',
+        secondary: 'white',
+      },
+    },
+    error:{
+        duration: 3000,
+      iconTheme: {
+        primary: 'red',
+        secondary: 'white',
+      },
+          style: {
+      background: '#fad7d7',
+      color: 'black',
+      borderRadius:"12px"
+    },
+    }
+  }}
+/>
             <AppRoutes />
       </BrowserRouter>
     </AuthProvider>

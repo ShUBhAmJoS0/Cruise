@@ -288,112 +288,168 @@ function ArtistEventRequestPage() {
     }
   };
 
+  const totalEvents = requestEvent.length;
+  const completedEvents = requestEvent.filter(item => item.status === "completed").length;
+  const pendingEvents = requestEvent.filter(item => item.status === "pending").length;
+
   return (
-    <div className="ml-[20%] bg-[#F5F5F5] flex flex-col p-2 md:p-10 overflow-y-auto min-h-screen">
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-gradient-to-br from-[#93CAD5] to-[#3593A6] p-6 rounded-2xl shadow-lg text-white transform hover:scale-105 transition">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm opacity-90 mb-1">Total events</p>
-              <p className="text-3xl font-bold">{requestEvent.length}</p>
-            </div>
-            <div className="bg-white/20 p-4 rounded-xl">
-              <MapPin className="w-8 h-8" />
-            </div>
-          </div>
+    <div className="ml-[22%] bg-[#F3F6F8] flex flex-col px-4 md:px-10 py-6 md:py-8 overflow-y-auto min-h-screen">
+      {/* Page header */}
+      <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <p className="text-[0.72rem] font-semibold tracking-[0.16em] uppercase text-[#3593A6]/80 mb-2">
+            Event requests
+          </p>
+          <h1 className="text-[2rem] md:text-[2.1rem] font-semibold tracking-tight text-gray-900 leading-tight">
+            Design, submit & track your events
+          </h1>
+          <p className="text-sm text-gray-500 mt-2 max-w-xl">
+            Plan new shows, send them for review and keep an eye on what&apos;s pending or completed.
+          </p>
         </div>
-
-        <div className="bg-gradient-to-br from-[#a2de79] to-[#7bc963] p-6 rounded-2xl shadow-lg text-white transform hover:scale-105 transition">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm opacity-90 mb-1">Completed</p>
-              <p className="text-3xl font-bold">{requestEvent.filter(item => item.status === "completed").length}</p>
-            </div>
-            <div className="bg-white/20 p-4 rounded-xl">
-              <CheckCircle2 className="w-8 h-8" />
-            </div>
+        <div className="flex flex-col items-start md:items-end gap-3">
+          <div className="inline-flex items-center gap-2 bg-white/90 border border-gray-200 rounded-full px-3 py-1 shadow-sm">
+            <span className="h-2 w-2 rounded-full bg-emerald-400" />
+            <span className="text-[0.7rem] text-gray-600">
+              {totalEvents} total events in your pipeline
+            </span>
           </div>
-        </div>
-
-        <div className="bg-gradient-to-br from-[#e07a7d] to-[#d65659] p-6 rounded-2xl shadow-lg text-white transform hover:scale-105 transition">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm opacity-90 mb-1">Pending</p>
-              <p className="text-3xl font-bold">{requestEvent.filter(item => item.status === "pending").length}</p>
-            </div>
-            <div className="bg-white/20 p-4 rounded-xl">
-              <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-              </svg>
-            </div>
+          <div className="flex flex-wrap gap-2 text-[0.7rem] text-gray-500">
+            <span className="px-2 py-1 rounded-full bg-[#F0F9FF] text-[#0369A1] border border-[#BAE6FD]">
+              Completed · <span className="font-semibold">{completedEvents}</span>
+            </span>
+            <span className="px-2 py-1 rounded-full bg-[#FFFBEB] text-[#92400E] border border-[#FDE68A]">
+              Pending · <span className="font-semibold">{pendingEvents}</span>
+            </span>
           </div>
         </div>
       </div>
 
-      <div className="mb-8">
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-9">
+        <div className="bg-white/95 border border-gray-200/80 rounded-2xl shadow-sm px-5 py-4 flex items-center justify-between">
+          <div>
+            <p className="text-[0.7rem] font-medium uppercase tracking-[0.16em] text-gray-500">
+              Total events
+            </p>
+            <p className="text-3xl font-semibold tracking-tight text-gray-900 mt-1">
+              {totalEvents}
+            </p>
+            <p className="text-[0.7rem] text-gray-500 mt-1">
+              All requests you&apos;ve submitted.
+            </p>
+          </div>
+          <div className="h-10 w-10 rounded-xl bg-[#EFF7FA] text-[#1F6D7E] border border-[#D6E7EE] flex items-center justify-center">
+            <MapPin className="w-5 h-5" />
+          </div>
+        </div>
+
+        <div className="bg-[#ECFDF3] border border-[#BBF7D0] rounded-2xl shadow-sm px-5 py-4 flex items-center justify-between">
+          <div>
+            <p className="text-[0.7rem] font-medium uppercase tracking-[0.16em] text-[#166534]">
+              Completed
+            </p>
+            <p className="text-3xl font-semibold tracking-tight text-gray-900 mt-1">
+              {completedEvents}
+            </p>
+            <p className="text-[0.7rem] text-[#166534]/80 mt-1">
+              Events that are fully wrapped up.
+            </p>
+          </div>
+          <div className="h-10 w-10 rounded-xl bg-white text-[#15803D] border border-[#BBF7D0] flex items-center justify-center">
+            <CheckCircle2 className="w-5 h-5" />
+          </div>
+        </div>
+
+        <div className="bg-[#FEF2F2] border border-[#FECACA] rounded-2xl shadow-sm px-5 py-4 flex items-center justify-between">
+          <div>
+            <p className="text-[0.7rem] font-medium uppercase tracking-[0.16em] text-[#991B1B]">
+              Pending
+            </p>
+            <p className="text-3xl font-semibold tracking-tight text-gray-900 mt-1">
+              {pendingEvents}
+            </p>
+            <p className="text-[0.7rem] text-[#991B1B]/80 mt-1">
+              Awaiting approval or confirmation.
+            </p>
+          </div>
+          <div className="h-10 w-10 rounded-xl bg-white text-[#B91C1C] border border-[#FECACA] flex items-center justify-center">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div className="mb-7">
         <div className="flex items-center gap-4 mb-2">
-          <div className="bg-[#3593A6] p-3 rounded-xl">
-            <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="bg-[#EFF7FA] p-3 rounded-xl border border-[#D6E7EE]">
+            <svg className="w-6 h-6 text-[#3593A6]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
           </div>
-          <h2 className="font-bold text-gray-800 text-3xl">Add New Event</h2>
+          <div>
+            <h2 className="font-semibold text-gray-900 text-xl md:text-2xl tracking-tight">
+              Add new event request
+            </h2>
+            <p className="text-xs md:text-sm text-gray-500 mt-1">
+              Share the essentials of your next show and attach visuals to help it stand out.
+            </p>
+          </div>
         </div>
-        <p className="text-gray-600 ml-16">Create and manage your event requests</p>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="w-full bg-white rounded-3xl shadow-xl p-8 mb-10 border border-gray-100">
+      <form onSubmit={handleSubmit(onSubmit)} className="w-full bg-white/95 rounded-3xl shadow-sm p-6 md:p-8 mb-10 border border-gray-200/80">
         <div className="mb-8">
-          <div className="flex items-center gap-3 mb-6">
+          <div className="flex items-center gap-3 mb-4">
             <div className="w-1 h-8 bg-[#3593A6] rounded-full"></div>
-            <h3 className="text-xl font-bold text-gray-800">Event Details</h3>
+            <h3 className="text-lg md:text-xl font-semibold text-gray-900 tracking-tight">Event details</h3>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div className="flex flex-col">
-              <label className="text-sm font-semibold text-gray-700 mb-2">Event Name</label>
+              <label className="text-xs font-medium text-gray-600 mb-2">Event name</label>
               <input
                 type="text"
-                className="h-[55px] border-2 border-gray-200 rounded-xl p-4 focus:border-[#93CAD5] focus:outline-none transition"
-                placeholder="Enter event title"
+                className="h-[50px] border border-gray-200 rounded-xl px-3.5 text-sm bg-gray-50/60 focus:border-[#3593A6] focus:ring-2 focus:ring-[#93CAD5]/40 focus:outline-none transition"
+                placeholder="Late-night showcase, gallery, street show…"
                 {...register("EventTitle")}
               />
             </div>
             
             <div className="flex flex-col">
-              <label className="text-sm font-semibold text-gray-700 mb-2">Event Location</label>
+              <label className="text-xs font-medium text-gray-600 mb-2">Event location</label>
               <input
                 type="text"
-                className="h-[55px] border-2 border-gray-200 rounded-xl p-4 focus:border-[#93CAD5] focus:outline-none transition"
-                placeholder="Enter event location"
+                className="h-[50px] border border-gray-200 rounded-xl px-3.5 text-sm bg-gray-50/60 focus:border-[#3593A6] focus:ring-2 focus:ring-[#93CAD5]/40 focus:outline-none transition"
+                placeholder="City, venue or space"
                 {...register("EventLocation")}
               />
             </div>
             
             <div className="flex flex-col">
-              <label className="text-sm font-semibold text-gray-700 mb-2">Event Date</label>
+              <label className="text-xs font-medium text-gray-600 mb-2">Event date</label>
               <input
                 type="date"
-                className="h-[55px] border-2 border-gray-200 rounded-xl p-4 focus:border-[#93CAD5] focus:outline-none transition"
+                className="h-[50px] border border-gray-200 rounded-xl px-3.5 text-sm bg-gray-50/60 focus:border-[#3593A6] focus:ring-2 focus:ring-[#93CAD5]/40 focus:outline-none transition"
                 {...register("EventDate")}
               />
             </div>
             
             <div className="flex flex-col">
-              <label className="text-sm font-semibold text-gray-700 mb-2">Event Time</label>
+              <label className="text-xs font-medium text-gray-600 mb-2">Event time</label>
               <input
                 type="time"
-                className="h-[55px] border-2 border-gray-200 rounded-xl p-4 focus:border-[#93CAD5] focus:outline-none transition"
+                className="h-[50px] border border-gray-200 rounded-xl px-3.5 text-sm bg-gray-50/60 focus:border-[#3593A6] focus:ring-2 focus:ring-[#93CAD5]/40 focus:outline-none transition"
                 {...register("EventTime")}
               />
             </div>
           </div>
           
           <div className="flex flex-col mt-6">
-            <label className="text-sm font-semibold text-gray-700 mb-2">Event Description</label>
+            <label className="text-xs font-medium text-gray-600 mb-2">Event description</label>
             <textarea
-              className="min-h-[100px] border-2 border-gray-200 rounded-xl p-4 focus:border-[#93CAD5] focus:outline-none transition resize-none"
+              className="min-h-[110px] border border-gray-200 rounded-xl px-3.5 py-3 text-sm bg-gray-50/60 focus:border-[#3593A6] focus:ring-2 focus:ring-[#93CAD5]/40 focus:outline-none transition resize-none"
               placeholder="Describe the event in detail..."
               rows="4"
               {...register("eventDes")}
@@ -402,16 +458,16 @@ function ArtistEventRequestPage() {
         </div>
 
         <div className="mb-8">
-          <div className="flex items-center gap-3 mb-6">
+          <div className="flex items-center gap-3 mb-4">
             <div className="w-1 h-8 bg-[#3593A6] rounded-full"></div>
-            <h3 className="text-xl font-bold text-gray-800">Event Category</h3>
+            <h3 className="text-lg md:text-xl font-semibold text-gray-900 tracking-tight">Event category</h3>
           </div>
           
           <Controller
             name="selected"
             control={control}
             render={({ field }) => (
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
                 {[
                   { id: "family", label: "Family", icon: <Users2 className="text-[#5ba3b0]"/> },
                   { id: "art", label: "Art", icon: <Brush className="text-[#5ba3b0]"/> },
@@ -421,18 +477,18 @@ function ArtistEventRequestPage() {
                   <button
                     key={cat.id}
                     type="button"
-                    className={`h-24 border-2 rounded-2xl flex flex-col items-center justify-center gap-2 transition-all transform hover:scale-105 ${
+                    className={`h-24 border rounded-2xl flex flex-col items-center justify-center gap-2 transition-all hover:-translate-y-[2px] ${
                       selectedCategory === cat.id 
-                        ? "border-[#3593A6] bg-[#93CAD5]/20 shadow-lg" 
-                        : "border-gray-200 hover:border-[#93CAD5]"
+                        ? "border-[#3593A6] bg-[#EFF7FA] shadow-sm" 
+                        : "border-gray-200 hover:border-[#93CAD5] bg-white"
                     }`}
                     onClick={() => {
                       field.onChange(cat.id);
                       setValue("Category", cat.label);
                     }}
                   >
-                    <span className="text-3xl">{cat.icon}</span>
-                    <span className="font-semibold text-gray-700">{cat.label}</span>
+                    <span className="text-2xl">{cat.icon}</span>
+                    <span className="font-medium text-gray-800 text-sm">{cat.label}</span>
                   </button>
                 ))}
               </div>
@@ -441,38 +497,38 @@ function ArtistEventRequestPage() {
         </div>
 
         <div className="mb-8">
-          <div className="flex items-center gap-3 mb-6">
+          <div className="flex items-center gap-3 mb-4">
             <div className="w-1 h-8 bg-[#3593A6] rounded-full"></div>
-            <h3 className="text-xl font-bold text-gray-800">Ticket Information</h3>
+            <h3 className="text-lg md:text-xl font-semibold text-gray-900 tracking-tight">Ticket information</h3>
           </div>
           
-          <div className="bg-[#F8F9FA] rounded-2xl p-6 border-2 border-gray-100">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="bg-[#F8FAFC] rounded-2xl p-5 md:p-6 border border-gray-200/60">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
               {["Standard", "Student", "VIP"].map((type) => (
-                <div key={type} className="bg-white rounded-xl p-5 border-2 border-gray-200 hover:border-[#93CAD5] transition">
+                <div key={type} className="bg-white/95 rounded-xl p-4 md:p-5 border border-gray-200 hover:border-[#93CAD5] transition shadow-sm">
                   <div className="flex items-center gap-2 mb-4">
-                    <div className="bg-[#93CAD5] w-2 h-2 rounded-full"></div>
-                    <h4 className="font-bold text-gray-800">{type} Ticket</h4>
+                    <div className="bg-[#93CAD5]/80 w-2 h-2 rounded-full"></div>
+                    <h4 className="font-semibold text-gray-900 text-sm">{type} ticket</h4>
                   </div>
                   
                   <div className="space-y-3">
                     <div className="flex flex-col">
-                      <label className="text-xs font-semibold text-gray-600 mb-1">Price ($)</label>
+                      <label className="text-[0.7rem] font-medium text-gray-600 mb-1">Price ($)</label>
                       <input
                         type="number"
                         min="0"
-                        className="h-11 border-2 border-gray-200 rounded-lg px-3 text-center focus:border-[#93CAD5] focus:outline-none transition"
+                        className="h-10 border border-gray-200 rounded-lg px-3 text-sm text-center bg-gray-50/60 focus:border-[#3593A6] focus:ring-2 focus:ring-[#93CAD5]/40 focus:outline-none transition"
                         placeholder="0.00"
                         {...register(`Price.${type}`)}
                       />
                     </div>
                     
                     <div className="flex flex-col">
-                      <label className="text-xs font-semibold text-gray-600 mb-1">Quantity</label>
+                      <label className="text-[0.7rem] font-medium text-gray-600 mb-1">Quantity</label>
                       <input
                         type="number"
                         min="0"
-                        className="h-11 border-2 border-gray-200 rounded-lg px-3 text-center focus:border-[#93CAD5] focus:outline-none transition"
+                        className="h-10 border border-gray-200 rounded-lg px-3 text-sm text-center bg-gray-50/60 focus:border-[#3593A6] focus:ring-2 focus:ring-[#93CAD5]/40 focus:outline-none transition"
                         placeholder="0"
                         {...register(`Quantity.${type}`)}
                       />
@@ -485,14 +541,14 @@ function ArtistEventRequestPage() {
         </div>
 
         <div className="mb-8">
-          <div className="flex items-center gap-3 mb-6">
+          <div className="flex items-center gap-3 mb-4">
             <div className="w-1 h-8 bg-[#3593A6] rounded-full"></div>
-            <h3 className="text-xl font-bold text-gray-800">Cover Image</h3>
+            <h3 className="text-lg md:text-xl font-semibold text-gray-900 tracking-tight">Cover image</h3>
           </div>
           
-          <div className="bg-[#F8F9FA] rounded-2xl p-6 border-2 border-dashed border-gray-300">
+          <div className="bg-[#F8FAFC] rounded-2xl p-5 md:p-6 border border-dashed border-gray-300">
             <div className="flex flex-col md:flex-row items-center gap-6">
-              <div className="w-40 h-40 rounded-2xl overflow-hidden bg-white border-2 border-gray-200 flex items-center justify-center">
+              <div className="w-40 h-40 rounded-2xl overflow-hidden bg-white border border-gray-200 flex items-center justify-center shadow-sm">
                 {selectedImage ? (
                   <img src={imagePreviewUrl} alt="Preview" className="w-full h-full object-cover" />
                 ) : (
@@ -503,11 +559,11 @@ function ArtistEventRequestPage() {
               </div>
               
               <div className="flex-1 flex flex-col gap-3">
-                <p className="text-sm text-gray-600">Upload a cover image for your event (PNG, JPG)</p>
-                <div className="flex gap-3">
+                <p className="text-xs md:text-sm text-gray-600">Upload a cover image for your event (PNG, JPG). This is what fans will see first.</p>
+                <div className="flex flex-wrap gap-3">
                   <label
                     htmlFor="image-upload"
-                    className="bg-[#3593A6] text-white px-6 py-3 rounded-xl font-semibold hover:bg-[#93CAD5] transition cursor-pointer"
+                    className="bg-[#1F6D7E] text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-[#1a5c6a] transition cursor-pointer shadow-sm"
                   >
                     Choose Image
                   </label>
@@ -525,7 +581,7 @@ function ArtistEventRequestPage() {
                         setSelectedImage(null);
                         setImagePreviewUrl(null);
                       }}
-                      className="px-6 py-3 text-red-600 border-2 border-red-600 rounded-xl font-semibold hover:bg-red-50 transition"
+                      className="px-5 py-2.5 text-sm text-red-600 border border-red-300 rounded-xl font-semibold hover:bg-red-50 transition"
                     >
                       Remove
                     </button>
@@ -537,16 +593,16 @@ function ArtistEventRequestPage() {
         </div>
 
         <div className="mb-8">
-          <div className="flex items-center gap-3 mb-6">
+          <div className="flex items-center gap-3 mb-4">
             <div className="w-1 h-8 bg-[#3593A6] rounded-full"></div>
-            <h3 className="text-xl font-bold text-gray-800">Event Gallery</h3>
+            <h3 className="text-lg md:text-xl font-semibold text-gray-900 tracking-tight">Event gallery</h3>
           </div>
           
-          <div className="bg-[#F8F9FA] rounded-2xl p-6 border-2 border-dashed border-gray-300">
+          <div className="bg-[#F8FAFC] rounded-2xl p-5 md:p-6 border border-dashed border-gray-300">
             <div className="flex flex-col gap-4">
               <label
                 htmlFor="image-uploads"
-                className="bg-[#3593A6] text-white px-6 py-3 rounded-xl font-semibold hover:bg-[#93CAD5] transition cursor-pointer w-fit"
+                className="bg-[#1F6D7E] text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-[#1a5c6a] transition cursor-pointer w-fit shadow-sm"
               >
                 + Add Images
               </label>
@@ -561,10 +617,10 @@ function ArtistEventRequestPage() {
               
               {selectedImages.length > 0 && (
                 <div className="mt-4">
-                  <p className="font-semibold text-gray-700 mb-3">Selected Images ({selectedImages.length})</p>
+                  <p className="font-semibold text-gray-700 mb-3 text-sm">Selected images ({selectedImages.length})</p>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     {selectedImages.map((file, index) => (
-                      <div key={index} className="flex items-center justify-between bg-white p-4 rounded-xl border-2 border-gray-200">
+                      <div key={index} className="flex items-center justify-between bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
                         <div className="flex items-center gap-3">
                           <div className="bg-[#93CAD5]/20 p-2 rounded-lg">
                             <svg className="w-5 h-5 text-[#3593A6]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -593,47 +649,59 @@ function ArtistEventRequestPage() {
 
         <button
           type="submit"
-          className="w-full border-2 border-[#3593A6] text-[#3593A6] py-5 rounded-2xl text-lg font-bold hover:bg-[#93CAD5] hover:text-white transition hover:shadow-xl transform hover:scale-[1.02]"
+          className="w-full mt-2 h-[50px] inline-flex items-center justify-center gap-2 bg-[#1F6D7E] text-white text-sm font-semibold rounded-2xl shadow-sm hover:shadow-md hover:bg-[#1a5c6a] active:bg-[#164f5c] transition-colors"
         >
-          Submit Event Request
+          Submit event request
         </button>
       </form>
 
-      <div className="w-full bg-white rounded-3xl shadow-xl p-8 border border-gray-100">
-        <div className="flex items-center gap-4 mb-6">
-          <div className="bg-[#3593A6] p-3 rounded-xl">
-            <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div className="w-full bg-white/95 rounded-3xl shadow-sm p-6 md:p-8 border border-gray-200/80">
+        <div className="flex items-center gap-4 mb-5">
+          <div className="bg-[#EFF7FA] p-3 rounded-xl border border-[#D6E7EE]">
+            <svg className="w-6 h-6 text-[#3593A6]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
             </svg>
           </div>
-          <h2 className="text-2xl font-bold text-gray-800">Manage Added Events</h2>
+          <div>
+            <h2 className="text-xl md:text-2xl font-semibold text-gray-900 tracking-tight">
+              Manage added events
+            </h2>
+            <p className="text-xs md:text-sm text-gray-500 mt-1">
+              Edit details, update galleries or remove requests that are no longer needed.
+            </p>
+          </div>
         </div>
 
         <div className="space-y-4">
           {requestEvent.length === 0 ? (
-            <div className="text-center py-12 bg-[#F8F9FA] rounded-2xl">
+            <div className="text-center py-12 bg-[#F8FAFC] rounded-2xl border border-dashed border-gray-300">
               <svg className="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
               </svg>
-              <p className="text-gray-500 font-semibold">No events requested yet</p>
-              <p className="text-gray-400 text-sm mt-2">Your event requests will appear here</p>
+              <p className="text-gray-600 font-semibold">No events requested yet</p>
+              <p className="text-gray-400 text-sm mt-2">Your event requests will appear here.</p>
             </div>
           ) : (
             requestEvent.map((events) => (
-              <div key={events.id} className="flex flex-col md:flex-row items-center justify-between bg-[#F8F9FA] p-5 rounded-2xl border-2 border-gray-200 hover:border-[#93CAD5] transition">
-                <div className="flex items-center gap-4 mb-4 md:mb-0">
+              <div key={events.id} className="flex flex-col md:flex-row items-center justify-between bg-[#F8FAFC] p-4 md:p-5 rounded-2xl border border-gray-200 hover:border-[#93CAD5] transition shadow-sm gap-4">
+                <div className="flex items-center gap-4 w-full md:w-auto">
                   <img 
                     src={`http://localhost:5000/${events.profileImage}`} 
                     className="w-16 h-16 rounded-xl object-cover border-2 border-white shadow-md"
                     alt={events.title}
                   />
-                  <div>
-                    <h3 className="font-bold text-gray-800">{events.title}</h3>
-                    <p className="text-sm text-gray-500">Event Request</p>
+                  <div className="min-w-0">
+                    <h3 className="font-semibold text-gray-900 truncate">{events.title}</h3>
+                    <p className="text-xs text-gray-500 mt-0.5">
+                      {events.location} · {events.date?.split("T")[0]} · {events.time}
+                    </p>
+                    <p className="text-[0.7rem] text-gray-400 mt-0.5 uppercase tracking-[0.16em]">
+                      Event request
+                    </p>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-3 w-full md:w-auto justify-end">
                   <span className={`px-5 py-2 rounded-xl text-sm font-bold ${
                     events.status === 'pending' ? 'bg-yellow-100 text-yellow-700 border-2 border-yellow-300' :
                     events.status === 'approved' ? 'bg-green-100 text-green-700 border-2 border-green-300' :
@@ -645,14 +713,14 @@ function ArtistEventRequestPage() {
                   <button
                     onClick={() => handleEditClick(events)}
                     type="button"
-                    className="px-5 py-2 text-white bg-green-400 rounded-xl font-semibold hover:bg-green-500 transition"
+                    className="px-4 py-2 text-xs md:text-sm text-white bg-[#1F6D7E] rounded-xl font-semibold hover:bg-[#1a5c6a] transition shadow-sm"
                   >
                     Edit
                   </button>
                   <button
                     onClick={() => handleDeleteEvent(events.id)}
                     type="button"
-                    className="px-5 py-2 text-white bg-red-500 rounded-xl font-semibold hover:bg-red-600 transition"
+                    className="px-4 py-2 text-xs md:text-sm text-white bg-red-500 rounded-xl font-semibold hover:bg-red-600 transition shadow-sm"
                   >
                     Remove
                   </button>

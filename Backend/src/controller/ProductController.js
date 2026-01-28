@@ -173,7 +173,10 @@ export const getAllMerch = async (req, res) => {
       console.log("not found")
       return res.status(200).json({ data:[],message: "No merch found" });
     }
-
+    return res.status(200).json({
+      data: allmerch,
+      message:  "Merch fetched successfully"
+    });
 
   } catch (e) {
     console.error(e);
