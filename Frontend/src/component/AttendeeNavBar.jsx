@@ -20,7 +20,7 @@ export function AttendeeNavBar({ logout, user, dbuser }) {
   ];
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-1 bg-white shadow-lg">
+    <nav className="fixed top-0 left-0 right-0 z-[100] bg-white shadow-lg">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between py-4 px-4 md:px-10 gap-4">
 
         <div className="flex  justify-center items-center gap-4 md:gap-70">
@@ -34,11 +34,10 @@ export function AttendeeNavBar({ logout, user, dbuser }) {
                 key={item.name}
                 to={item.path}
                 style={{ color: primaryColor }}
-                className={`relative py-1 px-1 transition-all ${
-                  isActive(item.path)
+                className={`relative py-1 px-1 transition-all ${isActive(item.path)
                     ? "after:block after:absolute after:-bottom-2 after:left-0 after:w-full after:h-1 after:bg-[#3593A6]"
                     : ""
-                }`}
+                  }`}
               >
                 {item.name}
               </Link>
@@ -48,7 +47,7 @@ export function AttendeeNavBar({ logout, user, dbuser }) {
 
         {/* Right: Search + Profile */}
         <div className="flex items-center gap-4 w-full md:w-auto">
-    
+
 
           <div className="w-10 h-10 rounded-full flex mr-2 border-2 border-white shadow-md shrink-0 overflow-hidden">
             <img

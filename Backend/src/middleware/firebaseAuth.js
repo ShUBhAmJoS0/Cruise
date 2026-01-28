@@ -1,13 +1,13 @@
-import {admin} from "../Config/firebaseAdmin.js"
+import { admin } from "../Config/firebaseAdmin.js"
 import User from "../model/User.js";
 
-const authToken= async (req, res, next) => {
+const authToken = async (req, res, next) => {
 
 
   try {
-          if (req.path === "/auth/login" || req.path=="/auth/signup") {
-    return next();
-  }
+    if (req.path === "/auth/login" || req.path == "/auth/signup") {
+      return next();
+    }
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -19,7 +19,7 @@ const authToken= async (req, res, next) => {
     const token = authHeader.split(" ")[1];
 
     const decodedToken = await admin.auth().verifyIdToken(token);
-const user = await User.findOne({
+    const user = await User.findOne({
       where: { firebase_uid: decodedToken.uid }
     });
 
@@ -28,7 +28,7 @@ const user = await User.findOne({
     }
 
     req.user = {
-       id: user.id,
+      id: user.id,
       firebase_uid: decodedToken.uid,
       role: user.userType
     };

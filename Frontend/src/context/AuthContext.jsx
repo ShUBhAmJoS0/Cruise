@@ -44,8 +44,19 @@ export const AuthProvider = ({ children }) => {
         setLoading(false);
       } catch (error) {
         console.error("Role fetch failed", error);
-        setRole(null);
-        setDbuser(null);
+        // If getting role/user fails, we might still be logged in to Firebase but our backend is unreachable or token invalid.
+        // We shouldn't blindly kill the user session unless it's a 401/403.
+        // For now, let's allow the user state to persist so ProtectedRoute doesn't redirect immediately.
+        // But if we strictly need role, we might need a "roleLoading" state.
+
+        // Retrying logic or handling specific error codes would be better.
+        // If we can't get the user role, we can't let them into role-protected routes.
+        if (error.response && error.response.status === 404) {
+          // User doesn't exist in DB - maybe sign out?
+          setUser(null);
+          setRole(null);
+          setDbuser(null);
+        }
         setLoading(false);
       }
     });
