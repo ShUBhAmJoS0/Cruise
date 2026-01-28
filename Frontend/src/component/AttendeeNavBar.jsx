@@ -142,6 +142,16 @@ export function AttendeeNavBar({ logout, user, dbuser }) {
               >
                 My Order History
               </button>
+                <button
+                className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setProfileDropdown(false);
+                  navigate("/cart");
+                }}
+              >
+                My Cart
+              </button>
               <button
                 className="w-full text-left px-4 py-2 hover:bg-gray-100 text-red-600 rounded-b-xl"
                 onClick={(e) => {
@@ -207,6 +217,16 @@ export function AttendeeNavBar({ logout, user, dbuser }) {
                 }}
               >
                 My Order History
+              </button>
+                       <button
+                className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setProfileDropdown(false);
+                  navigate("/cart");
+                }}
+              >
+                My Cart
               </button>
               <button
                 className="w-full text-left px-4 py-2 hover:bg-gray-100 text-red-600 rounded-b-xl"
