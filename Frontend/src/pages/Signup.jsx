@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { auth, isMockMode, mockCreateUserWithEmailAndPassword, mockUpdateProfile } from "../firebase.js";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { useAuth } from "../context/AuthContext.jsx";
+import toast from "react-hot-toast";
 
 
 export default function Signup() {
@@ -19,11 +20,11 @@ export default function Signup() {
   const { setRole, setUser, setDbuser } = useAuth();
   const signupUser = async () => {
     if (!name || !email || !password || !retype) {
-      alert("All fields are required");
+      toast.error("All fields are required");
       return;
     }
     if (!User) {
-      alert("Usertype must be selected");
+      toast.error("Usertype must be selected");
       return;
     }
     try {
@@ -49,7 +50,7 @@ export default function Signup() {
 
 
       if (!res.data?.user) {
-        alert("Something went wrong. Try again.");
+        toast.error("Something went wrong. Try again.");
         return;
       }
       setUser(firebaseUser)
@@ -57,7 +58,7 @@ export default function Signup() {
       setRole(res.data.user.userType);
       setDbuser(res.data.user)
 
-      alert("Signup successful!");
+      toast.success("Signup successful!");
       const role = res.data.user.userType
       console.log(role)
       if (role === "Admin") navigate("/admin");
@@ -76,7 +77,7 @@ export default function Signup() {
         errorMessage = error.message;
       }
 
-      alert(errorMessage);
+      toast.error(errorMessage);
     }
 
   };

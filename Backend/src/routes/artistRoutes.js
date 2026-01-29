@@ -31,7 +31,7 @@ router.put("/addmerch/:id",upload.fields([
 
   
 router.put("/updateProfile",upload.fields([
-  { name: 'profilePic', maxCount: 1 },{name:"coverPic",maxCount:1}]),artistOnly,updateUser)
+  { name: 'profilePic', maxCount: 1 },{name:"coverPic",maxCount:1},{ name: 'mediaImages', maxCount: 10 }]),artistOnly,updateUser)
     router.get("/allmerch/details",artistOnly,getproductbuyers)
     router.get("/allevents/details",artistOnly,getEventbookings)
   router.get("/all",AttendeeOnly,getallArtists)
@@ -44,7 +44,7 @@ router.put("/updateProfile",upload.fields([
     router.post("/follow/:id",AttendeeOnly,followUser)
      router.post("/unfollow/:id",AttendeeOnly,unfollowUser)
      router.get("/followers/:id",AttendeeOnly,getFollowers)
-router.get("/analytics",artistOnly,getArtistAnalytics)
+router.get("/analytics",getArtistAnalytics)
 export default router
 
 

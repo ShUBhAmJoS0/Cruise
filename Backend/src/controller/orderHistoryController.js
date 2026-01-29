@@ -1,250 +1,170 @@
-import sequelize from "../Database/db.js";
-import { DataTypes } from "sequelize";
-import OrderHistoryModel from "../model/OrderHistory.js";
-import OrderHistoryItemModel from "../model/OrderHistoryItem.js";
+import Order from "../model/Order.js";
+import OrderHistory from "../model/OrderHistory.js";
+import OrderItem from "../model/OrderItems.js";
+import { Product } from "../model/Product.js";
+import User from "../model/User.js";
 
-// Initialize models
-const OrderHistory = OrderHistoryModel(sequelize, DataTypes);
-const OrderHistoryItem = OrderHistoryItemModel(sequelize, DataTypes);
+export const getOrderHistory = async (req, res) => {
+  console.log("getting order history api");
 
-// Set up associations (only once here)
-OrderHistory.hasMany(OrderHistoryItem, {
-  foreignKey: "orderHistoryId",
-  as: "items",
-});
-OrderHistoryItem.belongsTo(OrderHistory, {
-  foreignKey: "orderHistoryId",
-  as: "orderHistory",
-});
-
-// Generate unique order ID
-const generateOrderId = () => {
-  const timestamp = Date.now().toString(36);
-  const random = Math.random().toString(36).substring(2, 7);
-  return `ORD-${timestamp}-${random}`.toUpperCase();
-};
-
-// Get all orders for a user
-export const getUserOrders = async (req, res) => {
   try {
-    const { userId } = req.params;
+    const userId = req.user?.id;
 
-    const orders = await OrderHistory.findAll({
+    if (!userId) {
+      return res.status(401).json({ error: "User not authenticated" });
+    }
+
+    const orders = await Order.findAll({
       where: { userId },
+      order: [["createdAt", "DESC"]],
       include: [
         {
-          model: OrderHistoryItem,
-          as: "items",
+          model: User,
+          attributes: ["id", "name", "email"],
+        },
+        {
+          model: OrderItem,
+          as: 'OrderItems', 
+          include: [
+            {
+              model: Product,
+              as: 'product', 
+            },
+          ],
         },
       ],
-      order: [["createdAt", "DESC"]],
     });
+
+ 
+    console.log("Orders found:", orders.length);
+    if (orders.length > 0) {
+      console.log("First order OrderItems:", orders[0].OrderItems?.length || 0);
+      if (orders[0].OrderItems && orders[0].OrderItems.length > 0) {
+        console.log("First OrderItem product:", orders[0].OrderItems[0].product ? "exists" : "missing");
+      }
+    }
 
     res.status(200).json({
       success: true,
       count: orders.length,
-      data: orders,
+      orders,
     });
+
   } catch (error) {
-    console.error("GET USER ORDERS ERROR:", error);
-    res.status(500).json({
-      success: false,
-      message: "Failed to fetch orders",
-      error: error.message,
-    });
+    console.error("GET ORDER HISTORY ERROR:", error);
+    res.status(500).json({ error: error.message });
   }
 };
 
-// Get single order details
 export const getOrderById = async (req, res) => {
+  console.log("getting order by id")
   try {
-    const { orderId } = req.params;
+    const { id } = req.params;
+    const userId = req.user?.id;
 
-    const order = await OrderHistory.findOne({
-      where: { orderId },
+    if (!userId) {
+      return res.status(401).json({ error: "User not authenticated" });
+    }
+
+    const order = await Order.findOne({
+      where: { id, userId },
       include: [
         {
-          model: OrderHistoryItem,
-          as: "items",
+          model: User,
+          attributes: ["id", "name", "email"],
+        },
+        {
+          model: OrderItem,
+          as: 'OrderItems',
+          include: [
+            {
+              model: Product,
+              as: 'product',
+            },
+          ],
         },
       ],
     });
 
     if (!order) {
-      return res.status(404).json({
-        success: false,
-        message: "Order not found",
-      });
+      return res.status(404).json({ error: "Order not found" });
     }
 
-    res.status(200).json({
-      success: true,
-      data: order,
-    });
+    res.json(order);
   } catch (error) {
     console.error("GET ORDER ERROR:", error);
-    res.status(500).json({
-      success: false,
-      message: "Failed to fetch order",
-      error: error.message,
-    });
+    res.status(500).json({ error: error.message });
   }
 };
 
-// Create new order
-export const createOrder = async (req, res) => {
-  try {
-    const {
-      userId,
-      items,
-      totalAmount,
-      paymentMethod,
-      shippingAddress,
-    } = req.body;
 
-    // Validate required fields
-    if (!userId || !items || !totalAmount || !paymentMethod || !shippingAddress) {
-      return res.status(400).json({
-        success: false,
-        message: "Missing required fields",
-      });
+export const deleteOrder = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user?.id;
+
+    if (!userId) {
+      return res.status(401).json({ error: "User not authenticated" });
     }
 
-    // Generate unique order ID
-    const orderId = generateOrderId();
-
-    // Calculate estimated delivery (7 days from now)
-    const estimatedDelivery = new Date();
-    estimatedDelivery.setDate(estimatedDelivery.getDate() + 7);
-
-    // Create order
-    const order = await OrderHistory.create({
-      orderId,
-      userId,
-      totalAmount,
-      paymentMethod,
-      shippingAddress,
-      status: "pending",
-      paymentStatus: "pending",
-      estimatedDelivery,
+    const order = await Order.findOne({
+      where: { id, userId },
     });
-
-    // Create order items
-    const orderItems = items.map((item) => ({
-      orderHistoryId: order.id,
-      productName: item.productName,
-      productImage: item.productImage,
-      quantity: item.quantity,
-      price: item.price,
-      subtotal: item.quantity * item.price,
-    }));
-
-    await OrderHistoryItem.bulkCreate(orderItems);
-
-    // Fetch complete order with items
-    const completeOrder = await OrderHistory.findOne({
-      where: { id: order.id },
-      include: [
-        {
-          model: OrderHistoryItem,
-          as: "items",
-        },
-      ],
-    });
-
-    res.status(201).json({
-      success: true,
-      message: "Order created successfully",
-      data: completeOrder,
-    });
-  } catch (error) {
-    console.error("CREATE ORDER ERROR:", error);
-    res.status(500).json({
-      success: false,
-      message: "Failed to create order",
-      error: error.message,
-    });
-  }
-};
-
-// Update order status
-export const updateOrderStatus = async (req, res) => {
-  try {
-    const { orderId } = req.params;
-    const { status, trackingNumber } = req.body;
-
-    const order = await OrderHistory.findOne({ where: { orderId } });
 
     if (!order) {
-      return res.status(404).json({
-        success: false,
-        message: "Order not found",
+      return res.status(404).json({ error: "Order not found" });
+    }
+    if (order.status === "Completed") {
+      return res.status(400).json({ 
+        error: "Cannot cancel completed order" 
       });
     }
 
-    // Update order
-    const updateData = { status };
-    
-    if (trackingNumber) {
-      updateData.trackingNumber = trackingNumber;
+    if (order.status === "Cancelled") {
+      return res.status(400).json({ 
+        error: "Order is already cancelled" 
+      });
     }
+    order.status = "Cancelled";
+    await order.save();
 
-    if (status === "delivered") {
-      updateData.deliveredAt = new Date();
-    }
-
-    await order.update(updateData);
-
-    res.status(200).json({
+    res.json({
       success: true,
-      message: "Order status updated successfully",
-      data: order,
+      message: "Order deleted successfully"
     });
   } catch (error) {
-    console.error("UPDATE ORDER STATUS ERROR:", error);
-    res.status(500).json({
-      success: false,
-      message: "Failed to update order status",
-      error: error.message,
-    });
+    console.error("DELETE ORDER ERROR:", error);
+    res.status(500).json({ error: error.message });
   }
 };
 
-// Cancel order
-export const cancelOrder = async (req, res) => {
+export const getOrderStats = async (req, res) => {
   try {
-    const { orderId } = req.params;
+    const userId = req.user?.id;
 
-    const order = await OrderHistory.findOne({ where: { orderId } });
-
-    if (!order) {
-      return res.status(404).json({
-        success: false,
-        message: "Order not found",
-      });
+    if (!userId) {
+      return res.status(401).json({ error: "User not authenticated" });
     }
 
-    // Check if order can be cancelled
-    if (["shipped", "delivered"].includes(order.status)) {
-      return res.status(400).json({
-        success: false,
-        message: "Cannot cancel order that is already shipped or delivered",
-      });
-    }
+    const totalOrders = await Order.count({
+      where: { userId },
+    });
 
-    await order.update({ status: "cancelled" });
+    const confirmedOrders = await Order.count({
+      where: { userId, status: "Confirmed" },
+    });
 
-    res.status(200).json({
-      success: true,
-      message: "Order cancelled successfully",
-      data: order,
+    const totalSpent = await Order.sum("totalPrice", {
+      where: { userId },
+    });
+
+    res.json({
+      totalOrders,
+      confirmedOrders,
+      totalSpent: totalSpent || 0,
     });
   } catch (error) {
-    console.error("CANCEL ORDER ERROR:", error);
-    res.status(500).json({
-      success: false,
-      message: "Failed to cancel order",
-      error: error.message,
-    });
+    console.error("GET ORDER STATS ERROR:", error);
+    res.status(500).json({ error: error.message });
   }
 };

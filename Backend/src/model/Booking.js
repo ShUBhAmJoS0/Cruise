@@ -1,4 +1,3 @@
-// backend/src/model/Booking.js
 import { DataTypes } from "sequelize";
 import sequelize from "../Database/db.js";
 import Event from "./Event.js";
@@ -11,6 +10,12 @@ const Booking = sequelize.define(
       type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
+    },
+    ticketCode: {
+      type: DataTypes.STRING(50),
+      allowNull: true,
+      unique: true,
+      field: "ticket_code",
     },
     eventName: {
       type: DataTypes.STRING(255),
@@ -48,15 +53,15 @@ const Booking = sequelize.define(
       defaultValue: "success",
       field: "payment_status",
     },
-    createdBy:{
-      type:DataTypes.INTEGER,
-      allowNull:false,
-      references:{
-        model:User,
-        key:"id"
+    createdBy: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: User,
+        key: "id"
       }
     },
-    EventId:{
+    EventId: {
       type: DataTypes.INTEGER,
       allowNull: true,
       references: {

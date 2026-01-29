@@ -3,21 +3,22 @@ import { useState } from "react";
 import { auth, isMockMode } from "../firebase.js";
 import { sendPasswordResetEmail } from "firebase/auth";
 import { Link } from "react-router-dom";
+import toast from "react-hot-toast";
 export default function ForgetPassword() {
     const [email, setEmail] = useState("");
     const Resetbtn = async () => {
 
         if (!email) {
-            alert("please enter your email");
+            toast.error("please enter your email");
             return
         }
         try {
             if (isMockMode) {
                 console.log("Mock Password Reset for:", email);
-                alert("Mock Mode: Password reset link (simulated) sent!");
+                toast.success("Mock Mode: Password reset link (simulated) sent!");
             } else {
                 await sendPasswordResetEmail(auth, email);
-                alert("Password reset link sent!");
+               toast.success("Password reset link sent!");
             }
         }
         catch (e) {

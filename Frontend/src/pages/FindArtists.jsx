@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import api from "../api/axios"; // adjust your API path
 import { useNavigate } from "react-router-dom";
+import { Search } from "lucide-react";
 
 function FindArtists() {
   const [artists, setArtists] = useState([]);
   const [activeTab, setActiveTab] = useState("discover"); // "discover" or "following"
+  const [search, setSearch] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -37,10 +39,18 @@ function FindArtists() {
     }
   };
 
-  const followingArtists = artists.filter(artist => artist.isFollowing);
-  const discoverArtists = artists.filter(artist => !artist.isFollowing);
+  const followingArtists = artists.filter((artist) => artist.isFollowing);
+  const discoverArtists = artists.filter((artist) => !artist.isFollowing);
 
-  const displayedArtists = activeTab === "following" ? followingArtists : discoverArtists;
+  // Filter by search
+  const filteredFollowing = followingArtists.filter((a) =>
+    a.name.toLowerCase().includes(search.toLowerCase()),
+  );
+  const filteredDiscover = discoverArtists.filter((a) =>
+    a.name.toLowerCase().includes(search.toLowerCase()),
+  );
+  const displayedArtists =
+    activeTab === "following" ? filteredFollowing : filteredDiscover;
 
   if (!artists || artists.length === 0) {
     return (
@@ -49,15 +59,16 @@ function FindArtists() {
       </div>
     );
   }
-    const topFollowedArtists = [...discoverArtists]
+  const topFollowedArtists = [...discoverArtists]
     .sort((a, b) => b.followersCount - a.followersCount)
     .slice(0, 5);
 
   return (
     <div className="min-h-screen bg-gray-100 p-6 md:p-10 mt-20">
-      {/* Tabs */}
-      <div className="max-w-7xl mx-auto mb-8">
-        <div className="flex gap-4 border-b border-gray-300">
+      {/* Tabs + Search */}
+      <div className="max-w-7xl mx-auto mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        {/* Tabs on the left */}
+        <div className="flex gap-4 border-b border-gray-300 flex-grow md:flex-grow-0">
           <button
             onClick={() => setActiveTab("discover")}
             className={`px-6 py-3 font-semibold transition-all ${
@@ -85,65 +96,80 @@ function FindArtists() {
             </span>
           </button>
         </div>
+        {/* Search Bar on the right */}
+        <div className="flex items-center w-full md:w-72 relative md:ml-auto mb-2 md:mb-0 justify-end">
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+            <Search size={20} />
+          </span>
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search artists by name..."
+            className="pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#3593A6] bg-white text-gray-800 w-full shadow-sm"
+          />
+        </div>
       </div>
- {activeTab === "discover" && topFollowedArtists.length > 0 && (
-        <div className="max-w-7xl mx-auto mb-12">
-          <h2 className="text-2xl font-bold text-gray-800 mb-6">Top Followed Artists</h2>
-          <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide">
-            {topFollowedArtists.map((artist) => {
-              const actualIndex = artists.findIndex(a => a.id === artist.id);
-              
-              return (
-                <div
-                  key={artist.id}
-                  className="flex-shrink-0 w-48 group cursor-pointer"
-                  onClick={() => navigate(`/artist/profile/${artist.id}`)}
-                >
-                  <div className="relative">
-                    {/* Circular Profile Image - Spotify Style */}
-                    <div className="w-48 h-48 rounded-full overflow-hidden shadow-lg group-hover:shadow-2xl transition-shadow duration-300">
-                      <img
-                        src={
-                          
-                             `http://localhost:5000/${artist.profileImage}`
-                         
-                        }
-                        alt={artist.name}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                      />
-                    </div>
-                    
-                    {/* Overlay with buttons on hover */}
-                    <div className="absolute inset-0  bg-opacity-0 group-hover:bg-opacity-40 rounded-full transition-all duration-300 flex items-center justify-center">
-                      <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col gap-2">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleFollow(artist.id, actualIndex);
-                          }}
-                          className="px-4 py-2 bg-[#3593A6] text-white rounded-full font-semibold hover:bg-[#2c7f8f] transition shadow-lg"
-                        >
-                          Follow
-                        </button>
+      {activeTab === "discover" &&
+        topFollowedArtists.length > 0 &&
+        search === "" && (
+          <div className="max-w-7xl mx-auto mb-12">
+            <h2 className="text-2xl font-bold text-gray-800 mb-6">
+              Top Followed Artists
+            </h2>
+            <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide">
+              {topFollowedArtists.map((artist) => {
+                const actualIndex = artists.findIndex(
+                  (a) => a.id === artist.id,
+                );
+
+                return (
+                  <div
+                    key={artist.id}
+                    className="flex-shrink-0 w-48 group cursor-pointer"
+                    onClick={() => navigate(`/artist/profile/${artist.id}`)}
+                  >
+                    <div className="relative">
+                      {/* Circular Profile Image - Spotify Style */}
+                      <div className="w-48 h-48 rounded-full overflow-hidden shadow-lg group-hover:shadow-2xl transition-shadow duration-300">
+                        <img
+                          src={`http://localhost:5000/${artist.profileImage}`}
+                          alt={artist.name}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                        />
+                      </div>
+
+                      {/* Overlay with buttons on hover */}
+                      <div className="absolute inset-0  bg-opacity-0 group-hover:bg-opacity-40 rounded-full transition-all duration-300 flex items-center justify-center">
+                        <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col gap-2">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleFollow(artist.id, actualIndex);
+                            }}
+                            className="px-4 py-2 bg-[#3593A6] text-white rounded-full font-semibold hover:bg-[#2c7f8f] transition shadow-lg"
+                          >
+                            Follow
+                          </button>
+                        </div>
                       </div>
                     </div>
+
+                    {/* Artist Info */}
+                    <div className="mt-4 text-center">
+                      <h3 className="font-bold text-gray-800 text-lg truncate">
+                        {artist.name}
+                      </h3>
+                      <p className="text-sm text-gray-500 mt-1">
+                        {artist.followersCount.toLocaleString()} followers
+                      </p>
+                    </div>
                   </div>
-                  
-                  {/* Artist Info */}
-                  <div className="mt-4 text-center">
-                    <h3 className="font-bold text-gray-800 text-lg truncate">
-                      {artist.name}
-                    </h3>
-                    <p className="text-sm text-gray-500 mt-1">
-                      {artist.followersCount.toLocaleString()} followers
-                    </p>
-                  </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
-        </div>
-      )}
+        )}
       {/* Artists Grid */}
       {displayedArtists.length === 0 ? (
         <div className="text-center py-20">
@@ -151,8 +177,8 @@ function FindArtists() {
             {activeTab === "following" ? "👥" : "🎨"}
           </div>
           <h3 className="text-xl font-semibold text-gray-700 mb-2">
-            {activeTab === "following" 
-              ? "You're not following any artists yet" 
+            {activeTab === "following"
+              ? "You're not following any artists yet"
               : "No new artists to discover"}
           </h3>
           <p className="text-gray-500">
@@ -165,12 +191,12 @@ function FindArtists() {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
           {displayedArtists.map((artist, index) => {
             // Get the actual index in the full artists array for handleFollow
-            const actualIndex = artists.findIndex(a => a.id === artist.id);
-            
+            const actualIndex = artists.findIndex((a) => a.id === artist.id);
+
             return (
               <div
                 key={artist.id}
-                className="bg-white rounded-xl shadow-lg overflow-hidden transform transition duration-300 hover:scale-105 hover:shadow-2xl"
+                className="bg-white rounded-3xl shadow-lg overflow-hidden transform transition duration-300 hover:scale-105 hover:shadow-2xl"
               >
                 <div className="relative">
                   <img
@@ -199,10 +225,12 @@ function FindArtists() {
                   <p className="text-gray-500 text-sm mt-1 line-clamp-2">
                     {artist.bio || "No bio available"}
                   </p>
-                  
+
                   {/* Followers Count */}
                   <div className="mt-3 text-sm text-gray-600">
-                    <span className="font-semibold">{artist.followersCount}</span>{" "}
+                    <span className="font-semibold">
+                      {artist.followersCount}
+                    </span>{" "}
                     {artist.followersCount === 1 ? "follower" : "followers"}
                   </div>
 

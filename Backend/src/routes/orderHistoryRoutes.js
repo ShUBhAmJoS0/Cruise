@@ -1,12 +1,11 @@
 import express from "express";
-import { getUserOrders, getOrderById, createOrder, updateOrderStatus, cancelOrder, } from "../controller/orderHistoryController.js";
+import { getOrderHistory, getOrderById, deleteOrder, getOrderStats, } from "../controller/orderHistoryController.js";
 
 const router = express.Router();
 
-router.get("/user/:userId", getUserOrders);
-router.get("/:orderId", getOrderById);
-router.post("/", createOrder);
-router.put("/:orderId/status", updateOrderStatus);
-router.put("/:orderId/cancel", cancelOrder);
+router.get("/", getOrderHistory);
+router.get("/stats", getOrderStats);
+router.get("/:id", getOrderById);
+router.delete("/:id", deleteOrder);
 
 export default router;

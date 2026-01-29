@@ -4,6 +4,7 @@ import api from "../api/axios";
 import { auth, provider, isMockMode, mockSignInWithEmailAndPassword } from "../firebase.js";
 import { signInWithPopup } from "firebase/auth";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import toast from "react-hot-toast";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -11,13 +12,14 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showpassword, setShowpassword] = useState(false)
+
   const loginUser = async () => {
     try {
-
       if (!email || !password) {
-        alert("Cannot leave any fields empty !")
+        toast.error("Cannot leave any fields empty !")
         return;
       }
+
       let firebaseUser;
       if (isMockMode) {
         const userCredential = await mockSignInWithEmailAndPassword(auth, email, password);
@@ -29,7 +31,6 @@ export default function Login() {
 
       const idToken = await firebaseUser.getIdToken();
 
-
       const res = await api.post("/auth/login", {
         email: firebaseUser.email,
         id_token: idToken,
@@ -37,7 +38,7 @@ export default function Login() {
 
       const role = res.data.user.userType
       console.log(role)
-      alert("Login successful!");
+      toast.success("Login successful!");
       if (role === "Admin") navigate("/admin");
       else if (role === "Artist") navigate("/artist/Request");
       else navigate("/events");
@@ -45,9 +46,9 @@ export default function Login() {
     catch (error) {
       console.log(error)
       if (!error.response) {
-        alert("Backend Server is Unreachable. Please ensure the backend server is running.");
+        toast.error("Backend Server is Unreachable. Please ensure the backend server is running.");
       } else {
-        alert(error.response?.data?.message || "Invalid credentials");
+        toast.error(error.response?.data?.message || "Invalid credentials");
       }
     }
   };
@@ -61,13 +62,13 @@ export default function Login() {
       console.log("userId", result.user.uid)
 
       const res = await api.post("/auth/signup", { id_token: idToken, name: result.user.displayName, email: result.user.email, userType: "Attendee" })
-      alert("Logged in as " + result.user.displayName);
+      toast.success("Logged in as " + result.user.displayName);
       navigate("/events");
 
       // You can redirect or store user info here
     } catch (error) {
       console.error(error);
-      alert("Login failed");
+      toast.error("Login failed");
     }
   };
 
@@ -95,7 +96,7 @@ export default function Login() {
             <label className="text-black mt-4 mb-2">Email</label>
             <input
               type="email"
-              className="w-full h-[55px] border border-black rounded-md p-4"
+              className="w-full h-[55px] border border-black rounded-md p-4 placeholder:text-slate-300"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
@@ -107,7 +108,7 @@ export default function Login() {
             <label className="text-black mb-2">Password</label>
             <input
               type={showpassword ? "text" : "password"}
-              className="w-full h-[55px] border border-black rounded-md p-4"
+              className="w-full h-[55px] border border-black rounded-md p-4 placeholder:text-slate-300"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter your password"
@@ -130,7 +131,7 @@ export default function Login() {
 
           <Link
             to="/forgotpassword"
-            className="text-[#9C9090] font-semibold no-underline mt-2 self-end"
+            className="text-[#9C9090] font-semibold no-underline mt-2 self-end hover:text-slate-600 transition-colors"
           >
             Forgot Password?
           </Link>
@@ -138,7 +139,7 @@ export default function Login() {
 
           <button
             onClick={loginUser}
-            className="w-full h-[55px] rounded-[10px] bg-[#3593A6] text-white mt-5 flex items-center justify-center"
+            className="w-full h-[55px] rounded-[10px] bg-[#3593A6] text-white font-bold mt-5 flex items-center justify-center hover:bg-[#0a0f18] transition-all shadow-lg active:scale-95"
           >
             Login
           </button>
@@ -146,7 +147,7 @@ export default function Login() {
 
           <button
             onClick={googleLogin}
-            className="w-full h-[55px] rounded-[10px] bg-[#3593A6] text-white mt-4 flex items-center justify-center"
+            className="w-full h-[55px] rounded-[10px] bg-white border-2 border-slate-100 text-slate-800 font-bold mt-4 flex items-center justify-center hover:border-[#3593A6] transition-all shadow-sm active:scale-95"
           >
             <img
               className="w-[22px] h-[22px] mr-3"
@@ -157,9 +158,9 @@ export default function Login() {
           </button>
 
 
-          <div className="flex gap-2 mt-5">
-            <p>Don't have an account?</p>
-            <Link to="/signup" className="text-[#3593A6] font-semibold no-underline">
+          <div className="flex gap-2 mt-5 justify-center">
+            <p className="text-slate-500">Don't have an account?</p>
+            <Link to="/signup" className="text-[#3593A6] font-bold no-underline hover:underline">
               Sign Up
             </Link>
           </div>

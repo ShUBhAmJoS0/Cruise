@@ -79,14 +79,18 @@ export const getUser = async (req, res) => {
 
     const user = await User.findOne({
       where: { firebase_uid: firebaseUid },
-      attributes: ["id", "name", "email", "bio", "about", "profileImage", "coverImage", "social", "userType"],
+      attributes: ["id", "name", "email", "bio", "about", "profileImage", "coverImage", "social", "userType", "mediaImages"],
     });
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    console.log(user);
-    return res.json({ user, message: "user fetched sucessfully" });
+    // Ensure mediaImages is always an array
+    const userData = user.toJSON();
+    userData.mediaImages = userData.mediaImages || [];
+
+    console.log(userData);
+    return res.json({ user: userData, message: "user fetched sucessfully" });
   } catch (error) {
     console.error("getUser error:", error);
     return res.status(500).json({ message: "Server error" });
@@ -122,6 +126,27 @@ const updateUser = async (req, res) => {
     if (req.files.coverPic?.[0]) {
       coverimage = req.files.coverPic[0].path.replace(/\\/g, '/');
     }
+
+    // Handle media images array
+    let mediaImages = [];
+
+    // Parse existing media JSON from frontend (if any)
+    if (body.existingMediaImages) {
+      try {
+        mediaImages = JSON.parse(body.existingMediaImages);
+      } catch (err) {
+        mediaImages = [];
+      }
+    }
+
+    // Append newly uploaded files from Multer
+    if (req.files?.mediaImages) {
+      const uploaded = req.files.mediaImages.map(f =>
+        f.path.replace(/\\/g, '/')
+      );
+      mediaImages = [...mediaImages, ...uploaded];
+    }
+
     const user = await User.findOne({ where: { id: uid } })
     if (!user) {
       return res.status(500).send({ message: "the user does not exist" })
@@ -134,12 +159,13 @@ const updateUser = async (req, res) => {
       social: body.sociallink,
       coverImage: coverimage,
       profileImage: imageUrl,
-      about: body.about
+      about: body.about,
+      mediaImages: mediaImages
 
     }
 
     )
-    res.status(200).send({ message: "Saved profile sucessfully" })
+    res.status(200).send({ message: "Saved profile sucessfully", mediaImages: mediaImages })
   }
   catch (error) {
     res.status(500).send({ message: error.message })

@@ -15,6 +15,7 @@ import cartRoutes from "./routes/cartRoutes.js";
 import communityRoutes from "./routes/communityRoutes.js";
 import reviewRoutes from "./routes/reviewRoutes.js";
 import orderHistoryRoutes from "./routes/orderHistoryRoutes.js";
+import communityGuidelinesRoutes from "./routes/communityGuidelinesRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import userProblemRoutes from "./routes/userProblemRoutes.js";
 import "./model/index.js";
@@ -32,6 +33,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static('uploads'));
 
+app.use("/api/communityguidelines", communityGuidelinesRoutes);
 // Admin routes BEFORE auth middleware (uses separate admin auth)
 app.use("/api/admin", adminRoutes);
 app.use("/api/user-problems", userProblemRoutes);
@@ -48,6 +50,7 @@ app.use("/api/events", eventFilters);
 app.use("/api/booking", bookingRoutes);
 app.use("/artist", artistRoutes);
 app.use("/merch", orderRoutes);
+app.use("/api/order", orderRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/orderhistory", orderHistoryRoutes);

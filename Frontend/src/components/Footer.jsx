@@ -1,15 +1,20 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Footer = () => {
+    const navigate = useNavigate();
+
     return (
         <footer className="bg-[#0a0f18] text-slate-400 py-16 border-t border-slate-800">
             <div className="max-w-7xl mx-auto px-6 lg:px-8">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
                     {/* Brand Column */}
                     <div className="col-span-1 md:col-span-1">
-                        <Link to="/" className="text-2xl font-black text-white tracking-tight uppercase mb-6 block">
-                            CRUISE<span className="text-[#3593A6]">.</span>
+                        <Link to="/" className="flex items-center gap-2 mb-6">
+                            <img src="/images/cruise logo.png" alt="Cruise Logo" className="h-12 w-12 object-contain" />
+                            <span className="text-2xl font-black text-white tracking-tight uppercase">
+                                CRUISE<span className="text-[#3593A6]">.</span>
+                            </span>
                         </Link>
                         <p className="text-sm font-medium leading-relaxed mb-6">
                             Elevating exclusive nautical events to an art form. Join the community of thrill-seekers and wave-riders.
@@ -27,7 +32,7 @@ const Footer = () => {
                         </div>
                     </div>
 
-                    {/* Links Columns */}
+                    {/* Discovery Links */}
                     <div>
                         <h4 className="text-white font-bold uppercase tracking-widest text-xs mb-6">Discovery</h4>
                         <ul className="space-y-4 text-sm font-medium">
@@ -38,12 +43,13 @@ const Footer = () => {
                         </ul>
                     </div>
 
+                    {/* Support Links */}
                     <div>
-                        <h4 className="text-white font-bold uppercase tracking-widest text-xs mb-6">Company</h4>
+                        <h4 className="text-white font-bold uppercase tracking-widest text-xs mb-6">Support</h4>
                         <ul className="space-y-4 text-sm font-medium">
-                            <li><Link to="/about" className="hover:text-white transition-colors">About Us</Link></li>
-                            <li><Link to="/contact" className="hover:text-white transition-colors">Contact</Link></li>
-                            <li><Link to="/careers" className="hover:text-white transition-colors">Careers</Link></li>
+                            <li><Link to="/about" className="hover:text-white transition-colors">Help Center</Link></li>
+                            <li><Link to="/contact" className="hover:text-white transition-colors">Contact Us</Link></li>
+                            <li><Link to="/terms" className="hover:text-white transition-colors">Terms of Service</Link></li>
                             <li><Link to="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link></li>
                         </ul>
                     </div>
@@ -51,7 +57,7 @@ const Footer = () => {
                     {/* Report a Problem */}
                     <div>
                         <h4 className="text-white font-bold uppercase tracking-widest text-xs mb-6">Report a Problem</h4>
-                        <p className="text-sm mb-4">Encountered an issue? Let us know so we can fix it.</p>
+                        <p className="text-xs mb-4 leading-relaxed">Encountered an issue? Let us know so we can fix it.</p>
                         <form className="flex flex-col gap-3" onSubmit={async (e) => {
                             e.preventDefault();
                             const formData = new FormData(e.target);
@@ -82,23 +88,23 @@ const Footer = () => {
                                 type="text"
                                 placeholder="Your Name"
                                 required
-                                className="bg-slate-800 border-none rounded-xl px-4 py-3 text-white text-sm focus:ring-2 focus:ring-[#3593A6]"
+                                className="bg-slate-800 border-none rounded-xl px-4 py-3 text-white text-xs focus:ring-2 focus:ring-[#3593A6]"
                             />
                             <input
                                 name="email"
                                 type="email"
                                 placeholder="Email Address"
                                 required
-                                className="bg-slate-800 border-none rounded-xl px-4 py-3 text-white text-sm focus:ring-2 focus:ring-[#3593A6]"
+                                className="bg-slate-800 border-none rounded-xl px-4 py-3 text-white text-xs focus:ring-2 focus:ring-[#3593A6]"
                             />
                             <textarea
                                 name="problem"
                                 placeholder="Describe the problem..."
                                 required
                                 rows="2"
-                                className="bg-slate-800 border-none rounded-xl px-4 py-3 text-white text-sm focus:ring-2 focus:ring-[#3593A6] resize-none"
+                                className="bg-slate-800 border-none rounded-xl px-4 py-3 text-white text-xs focus:ring-2 focus:ring-[#3593A6] resize-none"
                             ></textarea>
-                            <button type="submit" className="bg-[#3593A6] text-white font-bold uppercase tracking-widest text-xs py-3 rounded-xl hover:bg-[#2d7a8a] transition-all">
+                            <button type="submit" className="bg-[#3593A6] text-white font-bold uppercase tracking-widest text-[10px] py-3 rounded-xl hover:bg-[#2d7a8a] transition-all">
                                 Submit Report
                             </button>
                         </form>

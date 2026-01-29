@@ -39,6 +39,26 @@ const updateUserProfile = async(req, res) => {
       console.log("Cover image path:", coverimage);
     }
 
+    // Handle media images array
+    let mediaImages = [];
+
+    // Parse existing media JSON from frontend (if any)
+    if (body.existingMediaImages) {
+      try {
+        mediaImages = JSON.parse(body.existingMediaImages);
+      } catch (err) {
+        mediaImages = [];
+      }
+    }
+    
+    // Append newly uploaded files from Multer
+    if (req.files?.mediaImages) {
+      const uploaded = req.files.mediaImages.map(f =>
+        f.path.replace(/\\/g, '/')
+      );
+      mediaImages = [...mediaImages, ...uploaded];
+    }
+    
     const user = await User.findOne({ where: { id: uid } });
     if (!user) {
       return res.status(500).send({ message: "The user does not exist" });
@@ -55,6 +75,7 @@ const updateUserProfile = async(req, res) => {
 
     if (imageUrl !== body.profileImage) updateData.profileImage = imageUrl;
     if (coverimage !== body.coverImage) updateData.coverImage = coverimage;
+    if (mediaImages.length > 0) updateData.mediaImages = mediaImages;
     if (body.bio) updateData.bio = body.bio;
     if (body.sociallink) updateData.social = body.sociallink;
     if (body.about) updateData.about = body.about;
@@ -62,7 +83,7 @@ const updateUserProfile = async(req, res) => {
     // Update user in database
     await user.update(updateData);
     
-    res.status(200).send({ message: "Profile saved successfully" });
+    res.status(200).send({ message: "Profile saved successfully"  , mediaImages: mediaImages });
   } catch (error) {
     console.error("User profile update error:", error);
     res.status(500).send({ message: error.message });
