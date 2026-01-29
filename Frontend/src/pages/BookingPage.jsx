@@ -4,8 +4,6 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../api/axios";
 import { auth } from "../firebase";
-import toast from "react-hot-toast";
-import TicketPopup from "../components/ticketpopup";
 import {
   Calendar,
   MapPin,
@@ -21,75 +19,16 @@ import {
   ShieldCheck,
   ArrowLeft
 } from "lucide-react";
+import toast from "react-hot-toast";
+import TicketPopup from "../components/ticketpopup";
 
 async function fetchEvent(eventId) {
   const id = parseInt(eventId, 10);
   if (Number.isNaN(id)) {
     throw new Error(`Invalid event id: ${eventId}`);
   }
-  console.log("Fetching event ID:", id);
-
   const res = await api.get(`/event/${id}`);
-  console.log(res.data);
   return res.data;
-}
-
-function ImageSlider({ images }) {
-  // Removed unused currentIndex and setCurrentIndex
-
-  const [startIndex, setStartIndex] = useState(0);
-  if (!images || images.length == 0) {
-    return null;
-  }
-  const visibleCount = 3;
-
-  const next = () => {
-    setStartIndex((prev) =>
-      prev + visibleCount >= images.length ? 0 : prev + visibleCount,
-    );
-  };
-
-  const prev = () => {
-    setStartIndex((prev) =>
-      prev - visibleCount < 0
-        ? images.length - visibleCount
-        : prev - visibleCount,
-    );
-  };
-
-  const visibleImages = images.slice(startIndex, startIndex + visibleCount);
-
-  return (
-    <div className="relative w-full px-6 py-4">
-      <div className="flex overflow-hidden space-x-2 h-32 md:h-60">
-        {visibleImages.map((img, i) => (
-          <div key={i} className="flex-1 rounded-md overflow-hidden">
-            <img
-              src={`http://localhost:5000/${img}`}
-              alt={`event-${i}`}
-              className="w-full h-full object-cover"
-            />
-          </div>
-        ))}
-      </div>
-
-      {/* Prev/Next buttons */}
-      <button
-        type="button"
-        onClick={prev}
-        className="absolute left-4 top-1/2 -translate-y-1/2 bg-black bg-opacity-40 text-white px-2 py-1 rounded-md"
-      >
-        ‹
-      </button>
-      <button
-        type="button"
-        onClick={next}
-        className="absolute right-4 top-1/2 -translate-y-1/2 bg-black bg-opacity-40 text-white px-2 py-1 rounded-md"
-      >
-        ›
-      </button>
-    </div>
-  );
 }
 
 async function createBooking(data, eventId) {
@@ -164,17 +103,20 @@ export default function BookingPage() {
   const [ticketType, setTicketType] = useState("VIP");
   const [quantity, setQuantity] = useState(1);
   const [paymentMethod, setPaymentMethod] = useState("ESEWA");
+  const [customerName, setCustomerName] = useState("");
+  const [billingAddress, setBillingAddress] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  const [showTicketPopup, setShowTicketPopup] = useState(false);
+  const [bookingData, setBookingData] = useState(null);
 
   useEffect(() => {
     const loadEvent = async () => {
       try {
         const data = await fetchEvent(eventId);
         setEvent(data);
-        setTicketType("VIP");
-        setQuantity(1);
-      }catch (e) {
+      } catch (e) {
         setError("Failed to load event details.");
       }
     };
@@ -226,6 +168,11 @@ export default function BookingPage() {
   });
 
   const handleSubmit = async () => {
+    if (!customerName || !billingAddress) {
+      toast.error("Please fill in your name and billing address.");
+      return;
+    }
+
     setLoading(true);
     try {
       const response = await createBooking({
@@ -233,12 +180,16 @@ export default function BookingPage() {
         quantity,
         payment_method: paymentMethod,
         event_id: eventId,
+        customer_name: customerName,
+        billing_address: billingAddress
       });
       setBookingData(response.booking);
       setShowTicketPopup(true);
       toast.success("Booking Confirmed!");
-    } catch {
-      toast.error("Booking failed");
+    } catch (e) {
+      toast.error("Booking failed. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -279,14 +230,14 @@ export default function BookingPage() {
             <section>
               <div className="flex justify-between items-end mb-8">
                 <h2 className="text-2xl font-black text-slate-900 tracking-tight">Select Ticket Type</h2>
-                <span className="text-sm font-bold text-slate-400 uppercase tracking-widest">Step 1 of 2</span>
+                <span className="text-sm font-bold text-slate-400 uppercase tracking-widest">Step 1 of 3</span>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <TicketCard
                   label="VIP"
                   description="Front row seating, artist meet-and-greet, and gift bag."
-                  price={ticketPrices["VIP"] || 2500}
+                  price={Number(ticketPrices["VIP"]) || 2500}
                   available={ticketCounts["VIP"] || 5}
                   icon={Gem}
                   limited={true}
@@ -296,7 +247,7 @@ export default function BookingPage() {
                 <TicketCard
                   label="Standard"
                   description="General admission access to the main gallery."
-                  price={ticketPrices["Standard"] || 1200}
+                  price={Number(ticketPrices["Standard"]) || 1200}
                   available={ticketCounts["Standard"] || "Unlimited"}
                   icon={Ticket}
                   active={ticketType === "Standard"}
@@ -305,7 +256,7 @@ export default function BookingPage() {
                 <TicketCard
                   label="Student"
                   description="Requires valid student identification at entry."
-                  price={ticketPrices["Student"] || 600}
+                  price={Number(ticketPrices["Student"]) || 600}
                   available={ticketCounts["Student"] || "Available"}
                   icon={GraduationCap}
                   active={ticketType === "Student"}
@@ -314,31 +265,60 @@ export default function BookingPage() {
               </div>
             </section>
 
-            {/* Quantity Selector */}
-            <section className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between">
-              <span className="font-bold text-slate-900">Quantity</span>
-              <div className="flex items-center gap-4 bg-slate-50 p-2 rounded-xl">
-                <button
-                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="w-10 h-10 flex items-center justify-center bg-white border border-slate-200 rounded-lg text-slate-600 hover:bg-[#3593A6] hover:text-white hover:border-[#3593A6] transition-all shadow-sm"
-                >
-                  <Minus size={18} />
-                </button>
-                <span className="text-xl font-black text-slate-900 min-w-[2rem] text-center">{quantity}</span>
-                <button
-                  onClick={() => setQuantity(quantity + 1)}
-                  className="w-10 h-10 flex items-center justify-center bg-white border border-slate-200 rounded-lg text-slate-600 hover:bg-[#3593A6] hover:text-white hover:border-[#3593A6] transition-all shadow-sm"
-                >
-                  <Plus size={18} />
-                </button>
+            {/* Step 2: Customer Information */}
+            <section className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm space-y-6">
+              <div className="flex justify-between items-end mb-2">
+                <h2 className="text-2xl font-black text-slate-900 tracking-tight">Customer Information</h2>
+                <span className="text-sm font-bold text-slate-400 uppercase tracking-widest">Step 2 of 3</span>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label className="text-sm font-black text-slate-700 uppercase tracking-widest">Full Name</label>
+                  <input
+                    type="text"
+                    value={customerName}
+                    onChange={(e) => setCustomerName(e.target.value)}
+                    placeholder="Enter your full name"
+                    className="w-full px-5 py-4 bg-slate-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-[#3593A6] focus:outline-none transition-all font-bold placeholder:text-slate-300"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-black text-slate-700 uppercase tracking-widest">Billing Address</label>
+                  <input
+                    type="text"
+                    value={billingAddress}
+                    onChange={(e) => setBillingAddress(e.target.value)}
+                    placeholder="e.g. Kathmandu, Nepal"
+                    className="w-full px-5 py-4 bg-slate-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-[#3593A6] focus:outline-none transition-all font-bold placeholder:text-slate-300"
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between pt-4 border-t border-slate-50">
+                <span className="font-bold text-slate-900">Quantity</span>
+                <div className="flex items-center gap-4 bg-slate-50 p-2 rounded-xl">
+                  <button
+                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                    className="w-10 h-10 flex items-center justify-center bg-white border border-slate-200 rounded-lg text-slate-600 hover:bg-[#3593A6] hover:text-white hover:border-[#3593A6] transition-all shadow-sm"
+                  >
+                    <Minus size={18} />
+                  </button>
+                  <span className="text-xl font-black text-slate-900 min-w-[2rem] text-center">{quantity}</span>
+                  <button
+                    onClick={() => setQuantity(quantity + 1)}
+                    className="w-10 h-10 flex items-center justify-center bg-white border border-slate-200 rounded-lg text-slate-600 hover:bg-[#3593A6] hover:text-white hover:border-[#3593A6] transition-all shadow-sm"
+                  >
+                    <Plus size={18} />
+                  </button>
+                </div>
               </div>
             </section>
 
-            {/* Step 2: Payment Method */}
+            {/* Step 3: Payment Method */}
             <section>
               <div className="flex justify-between items-end mb-8">
                 <h2 className="text-2xl font-black text-slate-900 tracking-tight">Payment Method</h2>
-                <span className="text-sm font-bold text-slate-400 uppercase tracking-widest">Step 2 of 2</span>
+                <span className="text-sm font-bold text-slate-400 uppercase tracking-widest">Step 3 of 3</span>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -359,16 +339,6 @@ export default function BookingPage() {
                 />
               </div>
             </section>
-
-            {/* Info Alert */}
-            <div className="bg-[#F0F9FA] border-2 border-[#CEE9ED] p-6 rounded-2xl flex gap-4 text-[#0F766E]">
-              <div className="bg-[#89BDC9] text-white p-1 rounded-full w-fit h-fit">
-                <Info size={16} />
-              </div>
-              <p className="text-sm font-medium leading-relaxed">
-                After clicking "Complete Booking", you will be redirected to the secure portal of your chosen provider to complete the payment.
-              </p>
-            </div>
 
           </div>
 
@@ -432,6 +402,13 @@ export default function BookingPage() {
           </aside>
         </div>
       </div>
+      {/* Success Popup */}
+      {showTicketPopup && bookingData && (
+        <TicketPopup
+          booking={bookingData}
+          onClose={() => setShowTicketPopup(false)}
+        />
+      )}
     </div>
   );
 }

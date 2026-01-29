@@ -12,13 +12,14 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showpassword, setShowpassword] = useState(false)
+
   const loginUser = async () => {
     try {
-
       if (!email || !password) {
         toast.error("Cannot leave any fields empty !")
         return;
       }
+
       let firebaseUser;
       if (isMockMode) {
         const userCredential = await mockSignInWithEmailAndPassword(auth, email, password);
@@ -29,7 +30,6 @@ export default function Login() {
       }
 
       const idToken = await firebaseUser.getIdToken();
-
 
       const res = await api.post("/auth/login", {
         email: firebaseUser.email,
@@ -92,7 +92,7 @@ export default function Login() {
             <label className="text-black mt-4 mb-2">Email</label>
             <input
               type="email"
-              className="w-full h-[55px] border border-black rounded-md p-4"
+              className="w-full h-[55px] border border-black rounded-md p-4 placeholder:text-slate-300"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
@@ -104,7 +104,7 @@ export default function Login() {
             <label className="text-black mb-2">Password</label>
             <input
               type={showpassword ? "text" : "password"}
-              className="w-full h-[55px] border border-black rounded-md p-4"
+              className="w-full h-[55px] border border-black rounded-md p-4 placeholder:text-slate-300"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter your password"
@@ -127,7 +127,7 @@ export default function Login() {
 
           <Link
             to="/forgotpassword"
-            className="text-[#9C9090] font-semibold no-underline mt-2 self-end"
+            className="text-[#9C9090] font-semibold no-underline mt-2 self-end hover:text-slate-600 transition-colors"
           >
             Forgot Password?
           </Link>
@@ -135,7 +135,7 @@ export default function Login() {
 
           <button
             onClick={loginUser}
-            className="w-full h-[55px] rounded-[10px] bg-[#3593A6] text-white mt-5 flex items-center justify-center"
+            className="w-full h-[55px] rounded-[10px] bg-[#3593A6] text-white font-bold mt-5 flex items-center justify-center hover:bg-[#0a0f18] transition-all shadow-lg active:scale-95"
           >
             Login
           </button>
@@ -143,7 +143,7 @@ export default function Login() {
 
           <button
             onClick={googleLogin}
-            className="w-full h-[55px] rounded-[10px] bg-[#3593A6] text-white mt-4 flex items-center justify-center"
+            className="w-full h-[55px] rounded-[10px] bg-white border-2 border-slate-100 text-slate-800 font-bold mt-4 flex items-center justify-center hover:border-[#3593A6] transition-all shadow-sm active:scale-95"
           >
             <img
               className="w-[22px] h-[22px] mr-3"
@@ -154,9 +154,9 @@ export default function Login() {
           </button>
 
 
-          <div className="flex gap-2 mt-5">
-            <p>Don't have an account?</p>
-            <Link to="/signup" className="text-[#3593A6] font-semibold no-underline">
+          <div className="flex gap-2 mt-5 justify-center">
+            <p className="text-slate-500">Don't have an account?</p>
+            <Link to="/signup" className="text-[#3593A6] font-bold no-underline hover:underline">
               Sign Up
             </Link>
           </div>

@@ -50,18 +50,18 @@ const ArtistProfile = () => {
 
   const navigate = useNavigate();
 
-  const fetchArtist = async () => {
-    try {
-      const res = await api.get(`/artist/profile/${artistId}`);
-      console.log(res.data.data);
-      setFollowersCount(res.data.data.followersCount);
-      setArtist(res.data.data.artist);
-      setIsFollowing(res.data.data.isFollowing);
+    const fetchArtist = async () => {
+      try {
+        const res = await api.get(`/artist/profile/${artistId}`);
+        console.log(res.data.data);
+    setFollowersCount(res.data.data.followersCount);
+        setArtist(res.data.data.artist);
+        setIsFollowing(res.data.data.isFollowing);
 
-    } catch (err) {
-      console.error("Failed to fetch artist", err);
-    }
-  };
+      } catch (err) {
+        console.error("Failed to fetch artist", err);
+      }
+    };
 
   useEffect(() => {
     fetchArtist();
@@ -91,8 +91,8 @@ const ArtistProfile = () => {
 
   const fetchReviews = async () => {
     try {
-      const res = await api.get(`/api/reviews/artist/${artistId}`);
-      console.log(res.data.data, "fetched sucessfully all reviews");
+  const res = await api.get(`/api/reviews/artist/${artistId}`);
+  console.log(res.data.data, "fetched sucessfully all reviews");
       setReviews(res.data.data);
     } catch (error) {
       console.log(error.message)
@@ -153,11 +153,11 @@ const ArtistProfile = () => {
     return num;
   };
 
-  const fetchFollowers = async () => {
+const fetchFollowers = async () => {
     try {
       const response = await api.get(`/artist/followers/${artistId}`);
       setFollowers(response.data.followers);
-      setFollowersCount(response.data.count);
+      setFollowersCount(response.data.count); 
       setShowFollowers(true);
     } catch (err) {
       console.error("Failed to fetch followers", err);
@@ -173,7 +173,7 @@ const ArtistProfile = () => {
       } else {
         await api.post(`/artist/follow/${artist.id}`);
         setIsFollowing(true);
-        fetchArtist()
+       fetchArtist()
       }
     } catch (err) {
       console.error("Follow toggle failed", err);
@@ -194,7 +194,7 @@ const ArtistProfile = () => {
 
   const handleSubmitReview = async (e) => {
     e.preventDefault();
-
+    
     if (!reviewComment.trim()) {
       toast.error("Please write a review");
       return;
@@ -206,7 +206,7 @@ const ArtistProfile = () => {
         artistId: artistId,
         comment: reviewComment,
       });
-
+      
       setReviewComment("");
       toast.success("Review posted successfully!");
       
@@ -937,10 +937,6 @@ const ArtistProfile = () => {
           </div>
         </div>
       )}
-
-
-
-    
 
       <Footer />
     </div>

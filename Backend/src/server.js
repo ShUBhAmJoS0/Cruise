@@ -47,6 +47,7 @@ app.use("/auth", authRoutes);
 app.use("/user", userRoutes);
 app.use("/api/community", communityRoutes);
 app.use("/api/events", eventFilters);
+app.use("/event", eventRoutes);
 app.use("/api/booking", bookingRoutes);
 app.use("/artist", artistRoutes);
 app.use("/merch", orderRoutes);

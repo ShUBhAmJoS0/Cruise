@@ -16,10 +16,8 @@ export function AttendeeNavBar({ logout, user, dbuser }) {
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
-        desktopDropdownRef.current &&
-        !desktopDropdownRef.current.contains(event.target) &&
-        mobileDropdownRef.current &&
-        !mobileDropdownRef.current.contains(event.target)
+        (desktopDropdownRef.current && !desktopDropdownRef.current.contains(event.target)) &&
+        (!mobileDropdownRef.current || !mobileDropdownRef.current.contains(event.target))
       ) {
         setProfileDropdown(false);
       }
@@ -48,132 +46,101 @@ export function AttendeeNavBar({ logout, user, dbuser }) {
         {/* Mobile Menu Button - Absolute left position on mobile/tablet */}
         <button
           onClick={() => setIsMenuOpen(!isMenuOpen)}
-          className="lg:hidden absolute left-4 flex flex-col gap-1"
+          className="lg:hidden flex flex-col gap-1.5 p-2"
         >
-          <span className="block w-6 h-0.5 bg-gray-800"></span>
-          <span className="block w-6 h-0.5 bg-gray-800"></span>
-          <span className="block w-6 h-0.5 bg-gray-800"></span>
+          <span className={`block w-6 h-0.5 bg-slate-800 transition-all ${isMenuOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
+          <span className={`block w-6 h-0.5 bg-slate-800 transition-all ${isMenuOpen ? 'opacity-0' : ''}`}></span>
+          <span className={`block w-6 h-0.5 bg-slate-800 transition-all ${isMenuOpen ? '-rotate-45 -translate-y-2' : ''}`}></span>
         </button>
 
-        {/* Cruise Logo - Centered on mobile/tablet, left-aligned on desktop */}
-        <Link
-          to="/events"
-          className="flex items-center justify-center lg:block"
-        >
-          <img
-            src="/images/cruise logo.png"
-            className="h-10 lg:h-12 w-auto"
-            alt="Cruise Logo"
-          />
+        {/* Logo */}
+        <Link to="/events" className="flex items-center shrink-0">
+          <img src="/images/cruise logo.png" alt="Cruise Logo" className="h-10 lg:h-12 w-auto" />
         </Link>
 
         {/* Desktop Navigation */}
-        <div className="hidden lg:flex flex-nowrap gap-3 lg:gap-6 text-sm lg:text-lg font-bold absolute left-1/2 transform -translate-x-1/2 -ml-14">
+        <div className="hidden lg:flex items-center gap-8 text-lg font-bold">
           {navItems.map((item) => (
             <Link
               key={item.name}
               to={item.path}
               style={{ color: primaryColor }}
-              className={`relative py-1 px-1 transition-all ${
-                isActive(item.path)
-                  ? "after:block after:absolute after:-bottom-2 after:left-0 after:w-full after:h-1 after:bg-[#3593A6]"
-                  : ""
-              }`}
+              className={`relative py-1 transition-all ${isActive(item.path)
+                ? "after:block after:absolute after:-bottom-2 after:left-0 after:w-full after:h-1 after:bg-[#3593A6]"
+                : "hover:opacity-70"
+                }`}
             >
               {item.name}
             </Link>
           ))}
         </div>
 
-        {/* Right: Search + Profile - Desktop */}
-        <div
-          className="hidden lg:flex items-center gap-2 lg:gap-4 lg:ml-auto relative"
-          ref={desktopDropdownRef}
-        >
+        {/* Desktop Profile / Right Side */}
+        <div className="hidden lg:flex items-center gap-4 relative" ref={desktopDropdownRef}>
           <div
-            className="w-10 h-10 rounded-full flex mr-2 border-2 border-white shadow-md shrink-0 overflow-hidden cursor-pointer relative"
-            onClick={() => setProfileDropdown((v) => !v)}
+            className="flex items-center gap-3 cursor-pointer group"
+            onClick={() => setProfileDropdown(!profileDropdown)}
           >
-            <img
-              src={
-                dbuser?.profileImage
-                  ? `http://localhost:5000/${dbuser.profileImage}`
-                  : "/images/defaultprofilepic.png"
-              }
-              alt="Profile"
-              className="w-full h-full object-cover"
-            />
+            <div className="w-10 h-10 rounded-full border-2 border-white shadow-md overflow-hidden group-hover:border-[#3593A6] transition-all">
+              <img
+                src={dbuser?.profileImage ? `http://localhost:5000/${dbuser.profileImage}` : "/images/defaultprofilepic.png"}
+                alt="Profile"
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <h3 className="text-black font-bold max-w-[150px] truncate">{dbuser?.name || user?.displayName}</h3>
+            <span className={`material-symbols-outlined transition-transform ${profileDropdown ? 'rotate-180' : ''}`}>expand_more</span>
           </div>
-          <h3
-            className="text-black hidden lg:block w-[200px] cursor-pointer"
-            onClick={() => setProfileDropdown((v) => !v)}
-          >
-            {dbuser?.name || user?.displayName}
-          </h3>
+
           {profileDropdown && (
-            <div className="absolute right-0 top-full mt-2 w-48 sm:w-56 bg-white border border-gray-200 rounded-xl shadow-lg z-50 animate-fadein">
-              <button
-                className="w-full text-left px-4 py-2 hover:bg-gray-100 rounded-t-xl"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setProfileDropdown(false);
-                  navigate("/userEditProfile");
-                }}
-              >
-                Edit Profile
-              </button>
-              <button
-                className="w-full text-left px-4 py-2 hover:bg-gray-100"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setProfileDropdown(false);
-                  navigate("/mybookings");
-                }}
-              >
-                My Bookings
-              </button>
-              <button
-                className="w-full text-left px-4 py-2 hover:bg-gray-100"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setProfileDropdown(false);
-                  navigate("/orderhistory");
-                }}
-              >
-                My Order History
-              </button>
+            <div className="absolute right-0 top-full mt-2 w-56 bg-white border border-slate-100 rounded-2xl shadow-2xl z-50 animate-fadein overflow-hidden">
+              <div className="p-2">
                 <button
-                className="w-full text-left px-4 py-2 hover:bg-gray-100"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setProfileDropdown(false);
-                  navigate("/cart");
-                }}
-              >
-                My Cart
-              </button>
-              <button
-                className="w-full text-left px-4 py-2 hover:bg-gray-100 text-red-600 rounded-b-xl"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setProfileDropdown(false);
-                  logout();
-                }}
-              >
-                Logout
-              </button>
+                  onClick={() => { setProfileDropdown(false); navigate("/userEditProfile"); }}
+                  className="w-full text-left px-4 py-3 hover:bg-slate-50 rounded-xl text-sm font-bold text-slate-700 transition-colors flex items-center gap-3"
+                >
+                  <span className="material-symbols-outlined text-lg">person</span>
+                  Edit Profile
+                </button>
+                <button
+                  onClick={() => { setProfileDropdown(false); navigate("/mybookings"); }}
+                  className="w-full text-left px-4 py-3 hover:bg-slate-50 rounded-xl text-sm font-bold text-slate-700 transition-colors flex items-center gap-3"
+                >
+                  <span className="material-symbols-outlined text-lg">confirmation_number</span>
+                  My Bookings
+                </button>
+                <button
+                  onClick={() => { setProfileDropdown(false); navigate("/orderhistory"); }}
+                  className="w-full text-left px-4 py-3 hover:bg-slate-50 rounded-xl text-sm font-bold text-slate-700 transition-colors flex items-center gap-3"
+                >
+                  <span className="material-symbols-outlined text-lg">history</span>
+                  Order History
+                </button>
+                <button
+                  onClick={() => { setProfileDropdown(false); navigate("/cart"); }}
+                  className="w-full text-left px-4 py-3 hover:bg-slate-50 rounded-xl text-sm font-bold text-slate-700 transition-colors flex items-center gap-3"
+                >
+                  <span className="material-symbols-outlined text-lg">shopping_cart</span>
+                  My Cart
+                </button>
+                <div className="h-px bg-slate-100 my-1 mx-2"></div>
+                <button
+                  onClick={() => { setProfileDropdown(false); logout(); }}
+                  className="w-full text-left px-4 py-3 hover:bg-red-50 rounded-xl text-sm font-bold text-red-600 transition-colors flex items-center gap-3"
+                >
+                  <span className="material-symbols-outlined text-lg">logout</span>
+                  Logout
+                </button>
+              </div>
             </div>
           )}
         </div>
 
-        {/* Mobile Profile - Fixed positioning */}
-        <div
-          className="lg:hidden absolute right-4 z-50"
-          ref={mobileDropdownRef}
-        >
+        {/* Mobile Profile Trigger (Always visible on right) */}
+        <div className="lg:hidden" ref={mobileDropdownRef}>
           <div
-            className="w-8 h-8 rounded-full flex border-2 border-white shadow-md shrink-0 overflow-hidden cursor-pointer"
-            onClick={() => setProfileDropdown((v) => !v)}
+            className="w-10 h-10 rounded-full border-2 border-white shadow-md overflow-hidden cursor-pointer"
+            onClick={() => setProfileDropdown(!profileDropdown)}
           >
             <img
               src={
@@ -277,7 +244,7 @@ export function AttendeeNavBar({ logout, user, dbuser }) {
           from { opacity: 0; transform: translateY(-10px); }
           to { opacity: 1; transform: translateY(0); }
         }
-        .animate-fadein { animation: fadein 0.18s ease; }
+        .animate-fadein { animation: fadein 0.2s ease-out forwards; }
       `}</style>
     </nav>
   );

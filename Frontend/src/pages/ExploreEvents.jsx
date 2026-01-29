@@ -19,7 +19,7 @@ const ExploreEvents = () => {
   // Search state
   const [searchQuery, setSearchQuery] = useState('');
   const [visibleUpcomingCount, setVisibleUpcomingCount] = useState(3);
-
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [activeFlyout, setActiveFlyout] = useState(null);
   const [countdown, setCountdown] = useState({ days: 0, hours: 0, mins: 0, secs: 0 });
   const [soonestEvent, setSoonestEvent] = useState(null);
@@ -152,10 +152,12 @@ const ExploreEvents = () => {
   };
 
   useEffect(() => {
+    console.log("fetching events")
     const fetchEvents = async () => {
       try {
         setLoading(true);
-        const response = await api.get('/event/');
+        const response = await api.get('/event');
+        console.log(response.data);
         if (response.data) {
           setUpcomingEvents(response.data);
           setTrendingEvents(filterTrending(response.data));
@@ -242,6 +244,10 @@ const ExploreEvents = () => {
         input[type="range"] { -webkit-appearance: none; appearance: none; background: transparent; }
         @keyframes fadeIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
         .animate-in { animation: fadeIn 0.3s ease-out forwards; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #cbd5e1; }
       `}</style>
 
       <main className="mt-20 flex flex-col sm:flex-row">
@@ -253,7 +259,7 @@ const ExploreEvents = () => {
             </div>
 
             <div className="relative">
-              <button onClick={() => setActiveFlyout(activeFlyout === 'type' ? null : 'type')} className={`w-full flex items-center gap-4 p-4 rounded-3xl transition-all duration-300 ${activeFlyout === 'type' ? 'bg-[#3593A6]/10' : 'hover:bg-slate-50'}`}>
+              <button onClick={() => setActiveFlyout(activeFlyout === 'type' ? null : 'type')} className={`w-full flex items-center gap-4 p-4 rounded-3xl transition-all duration-300 ${activeFlyout === 'type' ? 'bg-[#3593A6]/10 shadow-inner' : 'hover:bg-slate-50'}`}>
                 <div className="w-12 h-12 rounded-2xl bg-[#3593A6]/10 flex items-center justify-center text-[#3593A6]"><span className="material-symbols-outlined">category</span></div>
                 <div className="flex-1 text-left"><p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Type</p><p className="text-sm font-bold text-slate-900 truncate">{Object.entries(tempCategories).filter(([, v]) => v).map(([k]) => k).join(', ') || 'All Categories'}</p></div>
                 <span className="material-symbols-outlined text-slate-300 text-sm">arrow_forward_ios</span>
@@ -274,7 +280,7 @@ const ExploreEvents = () => {
             </div>
 
             <div className="relative">
-              <button onClick={() => setActiveFlyout(activeFlyout === 'date' ? null : 'date')} className={`w-full flex items-center gap-4 p-4 rounded-3xl transition-all duration-300 ${activeFlyout === 'date' ? 'bg-[#3593A6]/10' : 'hover:bg-slate-50'}`}>
+              <button onClick={() => setActiveFlyout(activeFlyout === 'date' ? null : 'date')} className={`w-full flex items-center gap-4 p-4 rounded-3xl transition-all duration-300 ${activeFlyout === 'date' ? 'bg-[#3593A6]/10 shadow-inner' : 'hover:bg-slate-50'}`}>
                 <div className="w-12 h-12 rounded-2xl bg-[#3593A6]/10 flex items-center justify-center text-[#3593A6]"><span className="material-symbols-outlined">calendar_today</span></div>
                 <div className="flex-1 text-left"><p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Date</p><p className="text-sm font-bold text-slate-900">{tempDate || 'Any dates'}</p></div>
                 <span className="material-symbols-outlined text-slate-300 text-sm">arrow_forward_ios</span>
@@ -299,7 +305,7 @@ const ExploreEvents = () => {
             </div>
 
             <div className="relative">
-              <button onClick={() => setActiveFlyout(activeFlyout === 'price' ? null : 'price')} className={`w-full flex items-center gap-4 p-4 rounded-3xl transition-all duration-300 ${activeFlyout === 'price' ? 'bg-[#3593A6]/10' : 'hover:bg-slate-50'}`}>
+              <button onClick={() => setActiveFlyout(activeFlyout === 'price' ? null : 'price')} className={`w-full flex items-center gap-4 p-4 rounded-3xl transition-all duration-300 ${activeFlyout === 'price' ? 'bg-[#3593A6]/10 shadow-inner' : 'hover:bg-slate-50'}`}>
                 <div className="w-12 h-12 rounded-2xl bg-[#3593A6]/10 flex items-center justify-center text-[#3593A6]"><span className="material-symbols-outlined">payments</span></div>
                 <div className="flex-1 text-left"><p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Price</p><p className="text-sm font-bold text-slate-900">${tempMinPrice} - ${tempMaxPrice === 500 ? '500+' : tempMaxPrice}</p></div>
                 <span className="material-symbols-outlined text-slate-300 text-sm">arrow_forward_ios</span>
@@ -319,27 +325,30 @@ const ExploreEvents = () => {
             </div>
 
             <div className="relative">
-              <button onClick={() => setActiveFlyout(activeFlyout === 'location' ? null : 'location')} className={`w-full flex items-center gap-4 p-4 rounded-3xl transition-all duration-300 ${activeFlyout === 'location' ? 'bg-[#3593A6]/10' : 'hover:bg-slate-50'}`}>
+              <button onClick={() => setActiveFlyout(activeFlyout === 'location' ? null : 'location')} className={`w-full flex items-center gap-4 p-4 rounded-3xl transition-all duration-300 ${activeFlyout === 'location' ? 'bg-[#3593A6]/10 shadow-inner' : 'hover:bg-slate-50'}`}>
                 <div className="w-12 h-12 rounded-2xl bg-[#3593A6]/10 flex items-center justify-center text-[#3593A6]"><span className="material-symbols-outlined">location_on</span></div>
                 <div className="flex-1 text-left"><p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Location</p><p className="text-sm font-bold text-slate-900 truncate">{tempLocation || 'Anywhere'}</p></div>
                 <span className="material-symbols-outlined text-slate-300 text-sm">arrow_forward_ios</span>
               </button>
               {activeFlyout === 'location' && (
-                <div className="absolute left-[105%] top-0 w-64 bg-white rounded-3xl shadow-2xl border border-slate-100 p-5 z-50 animate-in overflow-y-auto max-h-64">
-                  <button onClick={() => setTempLocation(null)} className={`w-full p-3 text-left rounded-2xl transition-colors ${!tempLocation ? 'bg-[#3593A6]/10 text-[#3593A6]' : 'text-slate-600 hover:bg-slate-50'}`}>Anywhere</button>
-                  {locations.map(loc => (
-                    <button key={loc} onClick={() => setTempLocation(loc)} className={`w-full p-3 text-left rounded-2xl transition-colors ${tempLocation === loc ? 'bg-[#3593A6]/10 text-[#3593A6]' : 'text-slate-600 hover:bg-slate-50'}`}>{loc}</button>
-                  ))}
+                <div className="absolute left-[105%] top-0 w-64 bg-white rounded-3xl shadow-2xl border border-slate-100 p-5 z-50 animate-in">
+                  <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Select Location</p>
+                  <div className="flex flex-col gap-1 max-h-64 overflow-y-auto custom-scrollbar">
+                    <button onClick={() => setTempLocation(null)} className={`flex items-center gap-3 p-3 rounded-2xl transition-colors ${!tempLocation ? 'bg-[#3593A6]/10 text-[#3593A6]' : 'text-slate-600 hover:bg-slate-50'}`}>Anywhere</button>
+                    {locations.map(loc => (
+                      <button key={loc} onClick={() => setTempLocation(loc)} className={`w-full p-3 text-left rounded-2xl transition-colors ${tempLocation === loc ? 'bg-[#3593A6]/10 text-[#3593A6]' : 'text-slate-600 hover:bg-slate-50'}`}>{loc}</button>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
 
-            <button onClick={() => { handleApplyFilters(); setActiveFlyout(null); }} className="w-full h-16 bg-[#3593A6] text-white rounded-3xl mt-4 shadow-xl hover:bg-[#0a0f18] transition-all flex items-center justify-center"><span className="material-symbols-outlined text-3xl">search</span></button>
+            <button onClick={() => { handleApplyFilters(); setActiveFlyout(null); }} className="w-full h-16 bg-[#3593A6] text-white rounded-3xl mt-4 shadow-xl shadow-[#3593A6]/30 hover:shadow-2xl hover:bg-[#0a0f18] transition-all flex items-center justify-center active:scale-95"><span className="material-symbols-outlined text-3xl">search</span></button>
           </div>
         </aside>
 
         <div className="flex-1 sm:ml-[380px] p-4 md:p-6 lg:p-10 bg-slate-50">
-          <section className="relative w-full rounded-[2rem] overflow-hidden bg-[#0a0f18] text-white shadow-2xl mb-12" style={{ maxHeight: '420px' }}>
+          <section className="relative w-full rounded-[2.5rem] overflow-hidden bg-[#0a0f18] text-white shadow-2xl mb-12" style={{ maxHeight: '420px' }}>
             <div className="absolute inset-0">
               <img src={soonestEvent?.profileImage ? `http://localhost:5000/${soonestEvent.profileImage}` : "https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?auto=format&fit=crop&w=1920&q=80"} onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?auto=format&fit=crop&w=1920&q=80"; }} className="w-full h-full object-cover blur-[12px] scale-110 brightness-110" alt="" />
               <div className="absolute inset-0 bg-gradient-to-t from-[#0a0f18]/95 via-[#0a0f18]/75 to-[#0a0f18]/50"></div>
@@ -383,7 +392,6 @@ const ExploreEvents = () => {
 
           {!loading && !error && (
             <>
-              {/* Upcoming Events Grid (3x3 default, show 3 initial) */}
               {filteredUpcomingEvents.length === 0 ? (
                 <p className="col-span-full py-20 text-center text-gray-500 italic bg-white rounded-[2.5rem] border border-slate-100 shadow-inner">No upcoming events available.</p>
               ) : (
@@ -403,7 +411,7 @@ const ExploreEvents = () => {
                           <div className="flex items-center gap-2 text-slate-500 font-bold"><span className="material-symbols-outlined text-[#3593A6] text-base">calendar_today</span><span className="text-[10px]">{new Date(event.date).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })} • {event.time || '8:00 PM'}</span></div>
                           <div className="flex items-center gap-2 text-slate-500 font-bold"><span className="material-symbols-outlined text-[#3593A6] text-base">location_on</span><span className="text-[10px] line-clamp-1">{event.location}</span></div>
                         </div>
-                        <div className="mt-auto pt-3 flex justify-between items-center">
+                        <div className="mt-auto pt-3 flex justify-between items-center border-t border-slate-50">
                           <div><p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">FROM</p><p className="text-xl font-black text-[#0a0f18]">${event.prices?.Standard || 0}</p></div>
                           <button onClick={() => navigate(`/event/${event.id}`)} className="flex items-center gap-1.5 px-5 py-2.5 bg-[#3593A6] text-white text-[9px] font-black rounded-lg hover:bg-[#0a0f18] transition-all uppercase tracking-widest shadow-xl active:scale-95">TICKETS <span className="material-symbols-outlined text-sm">arrow_forward</span></button>
                         </div>
@@ -444,20 +452,23 @@ const ExploreEvents = () => {
                       </div>
                       <button onClick={() => { setSearchQuery(''); handleClearAll(); }} className="group flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-[#3593A6] transition-colors">View All Events <span className="material-symbols-outlined text-lg group-hover:translate-x-1 transition-transform">arrow_right_alt</span></button>
                     </div>
+
                     {filteredTrendingEvents.length === 0 ? (
                       <p className="text-center text-gray-500 py-20 italic bg-white rounded-[2.5rem] border border-slate-100 shadow-inner">No trending events in the next 3 days.</p>
                     ) : (
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {filteredTrendingEvents.map((event, idx) => (
                           <div key={event.id || idx} className="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 group cursor-pointer h-full flex flex-col">
-                            <div className="relative h-48 overflow-hidden bg-slate-100"><img src={event.profileImage?.startsWith('http') ? event.profileImage : `http://localhost:5000/${event.profileImage}`} alt={event.title} className="w-full h-full object-cover group-hover:scale-125 transition-transform duration-700 rounded-2xl m-3 pr-6" /></div>
+                            <div className="relative h-48 overflow-hidden bg-slate-100">
+                              <img src={event.profileImage?.startsWith('http') ? event.profileImage : `http://localhost:5000/${event.profileImage}`} alt={event.title} className="w-full h-full object-cover group-hover:scale-125 transition-transform duration-700" />
+                            </div>
                             <div className="p-6 flex flex-col flex-1">
                               <h3 className="text-lg font-bold text-slate-900 mb-3 line-clamp-2">{event.title}</h3>
                               <div className="space-y-2 mb-4">
                                 <div className="flex items-center gap-2 text-slate-600 text-sm"><span className="material-symbols-outlined text-base">calendar_today</span><span>{new Date(event.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</span></div>
                                 <div className="flex items-center gap-2 text-slate-600 text-sm"><span className="material-symbols-outlined text-base">location_on</span><span className="line-clamp-1">{event.location}</span></div>
                               </div>
-                              <div className="mt-auto pt-4 flex justify-between items-center border-slate-100">
+                              <div className="mt-auto pt-4 flex justify-between items-center border-t border-slate-50">
                                 <span className="text-xl font-black text-slate-900">${event.prices?.Standard || 0}</span>
                                 <button onClick={() => navigate(`/event/${event.id}`)} className="px-5 py-2 bg-[#3593A6] text-white text-xs font-bold rounded-xl hover:bg-[#0a0f18] transition-colors uppercase tracking-widest">BOOK TICKET</button>
                               </div>
@@ -476,4 +487,5 @@ const ExploreEvents = () => {
     </>
   );
 };
+
 export default ExploreEvents;
