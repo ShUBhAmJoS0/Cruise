@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { ChevronDown, Menu, X } from "lucide-react";
+import { ChevronDown, File, Menu, Shirt, User, Users, X } from "lucide-react";
 
 export function ArtistNavbar({  logout, dbuser }) {
   const location = useLocation();
@@ -9,7 +9,6 @@ export function ArtistNavbar({  logout, dbuser }) {
   const [expandedMenu, setExpandedMenu] = useState("");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  // Return null if dbuser is not available yet
   if (!dbuser) {
     return null;
   }
@@ -131,7 +130,7 @@ export function ArtistNavbar({  logout, dbuser }) {
                   : "hover:bg-gray-100 text-gray-700 active:bg-gray-200"
               }`}
             >
-              <img src="/images/User.png" className="w-5 h-5 flex-shrink-0" />
+              <User className="w-5 h-5 flex-shrink-0" />
               <span className="font-medium text-sm sm:text-base">My Profile</span>
             </button>
           </Link>
@@ -148,7 +147,7 @@ export function ArtistNavbar({  logout, dbuser }) {
                   : "hover:bg-gray-100 text-gray-700 active:bg-gray-200"
               }`}
             >
-              <img src="/images/File text.png" className="w-5 h-5 flex-shrink-0" />
+              <File className="w-5 h-5 flex-shrink-0" />
               <span className="font-medium flex-1 text-left text-sm sm:text-base">Manage Events</span>
               <ChevronDown
                 size={16}
@@ -179,7 +178,7 @@ export function ArtistNavbar({  logout, dbuser }) {
                   : "hover:bg-gray-100 text-gray-700 active:bg-gray-200"
               }`}
             >
-              <img src="/images/Shopping bag.png" className="w-5 h-5 flex-shrink-0" />
+              <Shirt className="w-5 h-5 flex-shrink-0" />
               <span className="font-medium flex-1 text-left text-sm sm:text-base">Merchandise</span>
               <ChevronDown
                 size={16}
@@ -210,7 +209,7 @@ export function ArtistNavbar({  logout, dbuser }) {
                   : "hover:bg-gray-100 text-gray-700 active:bg-gray-200"
               }`}
             >
-              <img src="/images/User.png" className="w-5 h-5 flex-shrink-0" />
+              <Users className="w-5 h-5 flex-shrink-0" />
               <span className="font-medium text-sm sm:text-base">User reviews</span>
             </button>
           </Link>

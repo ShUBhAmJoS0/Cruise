@@ -9,7 +9,7 @@ export default function TicketPopup({ booking, onClose }) {
     if (ticketRef.current) {
       const canvas = await html2canvas(ticketRef.current, {
         scale: 2,
-        backgroundColor: "#3593A6",
+        backgroundColor: "#e1ecee",
       });
 
       const link = document.createElement("a");
@@ -44,7 +44,7 @@ export default function TicketPopup({ booking, onClose }) {
         {/* Downloadable Ticket */}
         <div
           ref={ticketRef}
-          className="bg-[#3593A6] rounded-2xl p-3 mb-4 min-h-[220px] max-h-[260px] flex flex-col justify-between border-2 border-[#256d7b]"
+          className="bg-[#e1ecee] rounded-2xl p-3 mb-20 min-h-[220px] max-h-[260px] flex flex-col justify-between border-2 border-[#256d7b]"
         >
           <div className="bg-white rounded-xl p-2 mb-2">
             <p className="text-[#256d7b] text-[10px] mb-0.5">Ticket Code</p>
@@ -53,22 +53,22 @@ export default function TicketPopup({ booking, onClose }) {
             </p>
           </div>
 
-          <div className="space-y-2 text-white text-xs">
+          <div className="space-y-2 text-[#2b2929] text-xs">
             <div>
-              <p className="text-[#e0e0e0] text-[10px] mb-0.5">Event</p>
+              <p className="text-[#2b2929] text-[10px] mb-0.5">Event</p>
               <p className="font-semibold text-xs">{booking.eventName}</p>
             </div>
 
             <div className="grid grid-cols-2 gap-2">
               <div>
-                <p className="text-[#e0e0e0] text-[10px] mb-0.5">Date</p>
+                <p className="text-[#2b2929] text-[10px] mb-0.5">Date</p>
                 <p className="text-xs font-medium flex items-center gap-1">
                   <Calendar className="w-3 h-3" />
                   {new Date(booking.eventDetails.date).toLocaleDateString()}
                 </p>
               </div>
               <div>
-                <p className="text-[#e0e0e0] text-[10px] mb-0.5">Time</p>
+                <p className="text-[#2b2929] text-[10px] mb-0.5">Time</p>
                 <p className="text-xs font-medium flex items-center gap-1">
                   <Clock className="w-3 h-3" />
                   {booking.eventDetails.time}
@@ -77,7 +77,7 @@ export default function TicketPopup({ booking, onClose }) {
             </div>
 
             <div>
-              <p className="text-[#e0e0e0] text-[10px] mb-0.5">Location</p>
+              <p className="text-[#2b2929] text-[10px] mb-0.5">Location</p>
               <p className="text-xs font-medium flex items-center gap-1">
                 <MapPin className="w-3 h-3" />
                 {booking.eventDetails.location}
@@ -86,26 +86,21 @@ export default function TicketPopup({ booking, onClose }) {
 
             <div className="grid grid-cols-2 gap-2 pt-2 border-t border-[#e0e0e0]">
               <div>
-                <p className="text-[#e0e0e0] text-[10px] mb-0.5">Ticket Type</p>
+                <p className="text-[#2b2929] text-[10px] mb-0.5">Ticket Type</p>
                 <p className="font-semibold text-xs">{booking.ticketType}</p>
               </div>
               <div>
-                <p className="text-[#e0e0e0] text-[10px] mb-0.5">Quantity</p>
+                <p className="text-[#2b2929] text-[10px] mb-0.5">Quantity</p>
                 <p className="font-semibold text-xs">{booking.quantity}</p>
               </div>
             </div>
 
             <div className="pt-2 border-t border-[#e0e0e0]">
-              <p className="text-[#e0e0e0] text-[10px] mb-0.5">Total Paid</p>
+              <p className="text-[#2b2929] text-[10px] mb-0.5 mt-5">Total Paid</p>
               <p className="text-lg font-bold">Rs. {booking.totalPrice}</p>
             </div>
           </div>
 
-          <div className="mt-2 pt-2 border-t border-[#e0e0e0] text-center">
-            <p className="text-[#e0e0e0] text-[10px]">
-              Purchased by {booking.customerName}
-            </p>
-          </div>
         </div>
 
         <div className="flex gap-3">
