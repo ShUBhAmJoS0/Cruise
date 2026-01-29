@@ -1,11 +1,26 @@
 // src/pages/BookingPage.jsx
 
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import api from "../api/axios";
 import { auth } from "../firebase";
 import toast from "react-hot-toast";
 import TicketPopup from "../components/ticketpopup";
+import {
+  Calendar,
+  MapPin,
+  Clock,
+  Minus,
+  Plus,
+  ChevronRight,
+  Info,
+  Ticket,
+  Gem,
+  GraduationCap,
+  CreditCard,
+  ShieldCheck,
+  ArrowLeft
+} from "lucide-react";
 
 async function fetchEvent(eventId) {
   const id = parseInt(eventId, 10);
@@ -89,36 +104,68 @@ async function createBooking(data, eventId) {
   return res.data;
 }
 
-const TicketButton = ({ label, desc, des, qunt, active, onClick }) => {
+const TicketCard = ({ id, label, description, price, available, icon: Icon, limited, active, onClick }) => {
   return (
-    <button
-      type="button"
+    <div
       onClick={onClick}
-      className={`flex-1 border rounded-md p-3 md:p-9 text-left text-sm shadow-md
-      ${active ? "border-teal-500 bg-teal-50" : "border-gray-300 bg-white"}`}
+      className={`relative flex flex-col p-6 rounded-2xl border-2 transition-all cursor-pointer ${active ? "border-[#3593A6] bg-[#F0F9FA]" : "border-slate-100 bg-white hover:border-slate-200"
+        }`}
     >
-      <div className="font-semibold">{label}</div>
-      <div className="text-xs text-gray-500 mt-1">{desc}</div>
-      <div className="text-xs text-gray-500 mt-1">Price: {des}</div>
-      <div className="text-xs text-gray-500 mt-1">Available: {qunt}</div>
-    </button>
+      <div className="flex justify-between items-start mb-6">
+        <div className={`p-3 rounded-xl ${active ? "bg-[#3593A6] text-white" : "bg-slate-100 text-slate-500"}`}>
+          <Icon size={24} />
+        </div>
+        {limited && (
+          <span className="px-2 py-1 bg-[#F0F9FA] text-[#3593A6] text-[10px] font-bold uppercase tracking-wider rounded-lg border border-[#CEE9ED]">
+            Limited
+          </span>
+        )}
+      </div>
+
+      <h3 className="text-xl font-bold text-slate-900 mb-2">{label}</h3>
+      <p className="text-sm text-slate-500 mb-6 flex-grow">{description}</p>
+
+      <div className="flex items-end justify-between">
+        <div>
+          <span className="text-2xl font-black text-slate-900 leading-none">Rs. {price}</span>
+        </div>
+        <div className={`text-[10px] font-medium px-2 py-1 rounded-full ${available === "Unlimited" ? "bg-slate-100 text-slate-500" : "bg-cyan-50 text-cyan-600"
+          }`}>
+          {typeof available === "number" ? `${available} Available` : available}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const PaymentCard = ({ label, icon: Icon, active, onClick }) => {
+  return (
+    <div
+      onClick={onClick}
+      className={`flex flex-col items-center justify-center p-8 rounded-2xl border-2 transition-all cursor-pointer ${active ? "border-[#3593A6] bg-[#F0F9FA]" : "border-slate-100 bg-white hover:border-slate-200"
+        }`}
+    >
+      <div className={`w-16 h-16 rounded-full flex items-center justify-center mb-4 ${active ? "bg-cyan-100 text-[#3593A6]" : "bg-slate-100 text-slate-400"
+        }`}>
+        {Icon ? <Icon size={32} /> : <CreditCard size={32} />}
+      </div>
+      <span className={`font-bold uppercase tracking-widest text-sm ${active ? "text-slate-900" : "text-slate-500"}`}>
+        {label}
+      </span>
+    </div>
   );
 };
 
 export default function BookingPage() {
-  const { id: eventId } = useParams(); // expects route like /booking/:id
+  const { id: eventId } = useParams();
+  const navigate = useNavigate();
 
-  // Event + form state
   const [event, setEvent] = useState(null);
   const [ticketType, setTicketType] = useState("VIP");
   const [quantity, setQuantity] = useState(1);
-  const [name, setName] = useState("");
-  const [billingAddress, setBillingAddress] = useState("");
-  const [email, setEmail] = useState("");
-  const [cardNumber, setCardNumber] = useState("");
-  // Removed unused message and loading state
-  const [showTicketPopup, setShowTicketPopup] = useState(false);
-  const [bookingData, setBookingData] = useState(null);
+  const [paymentMethod, setPaymentMethod] = useState("ESEWA");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const loadEvent = async () => {
@@ -127,52 +174,65 @@ export default function BookingPage() {
         setEvent(data);
         setTicketType("VIP");
         setQuantity(1);
-      } catch {
-        // Optionally log error
+      }catch (e) {
+        setError("Failed to load event details.");
       }
     };
-
-    if (eventId) {
-      loadEvent();
-    }
+    if (eventId) loadEvent();
   }, [eventId]);
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <div className="bg-white p-8 rounded-2xl shadow-xl text-center max-w-md">
+          <div className="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Info size={32} />
+          </div>
+          <h2 className="text-2xl font-bold text-slate-900 mb-2">Error</h2>
+          <p className="text-slate-500 mb-6">{error}</p>
+          <button
+            onClick={() => navigate("/explore")}
+            className="w-full bg-slate-900 text-white py-3 rounded-xl font-bold hover:bg-slate-800 transition-colors"
+          >
+            Back to Events
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   if (!event) {
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <div className="bg-white p-6 rounded-md shadow">Loading event...</div>
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <div className="animate-pulse bg-white p-8 rounded-2xl shadow-xl text-center">
+          <div className="w-12 h-12 border-4 border-[#3593A6] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-slate-500 font-medium">Loading event details...</p>
+        </div>
       </div>
     );
   }
 
   const ticketPrices = event.prices || {};
-  const ticketQuantity = event.Quantity || {};
-  const price = ticketPrices[ticketType] || 0;
-  const subtotal = price * quantity;
-  const tax = Math.round(subtotal * 0.05);
-  const total = subtotal + tax;
+  const ticketCounts = event.Quantity || {};
+  const currentPrice = Number(ticketPrices[ticketType]) || 0;
+  const subtotal = currentPrice * quantity;
+  const processingFee = Math.round(subtotal * 0.05);
+  const total = subtotal + processingFee;
 
-  const eventDate = new Date(event.date).toLocaleString(undefined, {
-    year: "numeric",
+  const eventDate = new Date(event.date).toLocaleDateString("en-US", {
     month: "long",
     day: "numeric",
-    hour: "numeric",
-    minute: "numeric",
+    year: "numeric",
   });
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    // removed setLoading and setMessage
-
+  const handleSubmit = async () => {
+    setLoading(true);
     try {
       const response = await createBooking({
         ticket_type: ticketType,
         quantity,
-        customer_name: name,
-        billing_address: billingAddress,
-        email,
+        payment_method: paymentMethod,
         event_id: eventId,
-        card_number: cardNumber,
       });
       setBookingData(response.booking);
       setShowTicketPopup(true);
@@ -183,189 +243,194 @@ export default function BookingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 pt-20">
-      <div className="w-full h-full  overflow-auto bg-[#F1F0F0]">
-        {/* Header */}
-        <div className="bg-linear-to-r from-[#3593A6] to-[#93CAD5] text-white p-4 md:p-12 flex items-center">
-          <div>
-            <h1 className="text-xl font-semibold md:text-[40px]">
-              {event.title}
-            </h1>
-            <p className="text-xs md:text-[16px]">
-              {eventDate} • {event.location}
-            </p>
+    <div className="min-h-screen bg-slate-50 pt-24 pb-12 px-4 md:px-8">
+      <div className="max-w-7xl mx-auto">
+        {/* Header Section */}
+        <div className="mb-12">
+          {event.category && (
+            <span className="inline-block px-3 py-1 bg-[#3593A6] text-white text-[10px] font-black uppercase tracking-widest rounded-full mb-4">
+              {event.category || "Art & Culture"}
+            </span>
+          )}
+          <h1 className="text-5xl md:text-6xl font-black text-slate-900 mb-6 tracking-tight">
+            {event.title}
+          </h1>
+          <div className="flex flex-wrap gap-6 text-slate-500 font-semibold">
+            <div className="flex items-center gap-2">
+              <Calendar size={20} className="text-[#3593A6]" />
+              <span>{eventDate}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Clock size={20} className="text-[#3593A6]" />
+              <span>{event.time || "4:00 PM - 8:00 PM"}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <MapPin size={20} className="text-[#3593A6]" />
+              <span>{event.location}</span>
+            </div>
           </div>
         </div>
 
-        {/* Image Slider */}
-        <ImageSlider images={event.images} />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
+          {/* Main Booking Controls */}
+          <div className="lg:col-span-2 space-y-12">
 
-        {/* Event note / description */}
-        <div className="px-6 py-4">
-          <div className="bg-white border border-[#90C7D2] text-black text-sm p-4 md:p-10 rounded-md space-y-3">
-            <p>
-              <span className="font-semibold text-[#3593A6] mr-2">
-                Event Hour:
-              </span>{" "}
-              {event.time}
-            </p>
-            <p>
-              <span className="font-semibold text-[#3593A6] mr-2">
-                Description:
-              </span>{" "}
-              {event.description}
-            </p>
+            {/* Step 1: Ticket Selection */}
+            <section>
+              <div className="flex justify-between items-end mb-8">
+                <h2 className="text-2xl font-black text-slate-900 tracking-tight">Select Ticket Type</h2>
+                <span className="text-sm font-bold text-slate-400 uppercase tracking-widest">Step 1 of 2</span>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <TicketCard
+                  label="VIP"
+                  description="Front row seating, artist meet-and-greet, and gift bag."
+                  price={ticketPrices["VIP"] || 2500}
+                  available={ticketCounts["VIP"] || 5}
+                  icon={Gem}
+                  limited={true}
+                  active={ticketType === "VIP"}
+                  onClick={() => setTicketType("VIP")}
+                />
+                <TicketCard
+                  label="Standard"
+                  description="General admission access to the main gallery."
+                  price={ticketPrices["Standard"] || 1200}
+                  available={ticketCounts["Standard"] || "Unlimited"}
+                  icon={Ticket}
+                  active={ticketType === "Standard"}
+                  onClick={() => setTicketType("Standard")}
+                />
+                <TicketCard
+                  label="Student"
+                  description="Requires valid student identification at entry."
+                  price={ticketPrices["Student"] || 600}
+                  available={ticketCounts["Student"] || "Available"}
+                  icon={GraduationCap}
+                  active={ticketType === "Student"}
+                  onClick={() => setTicketType("Student")}
+                />
+              </div>
+            </section>
+
+            {/* Quantity Selector */}
+            <section className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between">
+              <span className="font-bold text-slate-900">Quantity</span>
+              <div className="flex items-center gap-4 bg-slate-50 p-2 rounded-xl">
+                <button
+                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                  className="w-10 h-10 flex items-center justify-center bg-white border border-slate-200 rounded-lg text-slate-600 hover:bg-[#3593A6] hover:text-white hover:border-[#3593A6] transition-all shadow-sm"
+                >
+                  <Minus size={18} />
+                </button>
+                <span className="text-xl font-black text-slate-900 min-w-[2rem] text-center">{quantity}</span>
+                <button
+                  onClick={() => setQuantity(quantity + 1)}
+                  className="w-10 h-10 flex items-center justify-center bg-white border border-slate-200 rounded-lg text-slate-600 hover:bg-[#3593A6] hover:text-white hover:border-[#3593A6] transition-all shadow-sm"
+                >
+                  <Plus size={18} />
+                </button>
+              </div>
+            </section>
+
+            {/* Step 2: Payment Method */}
+            <section>
+              <div className="flex justify-between items-end mb-8">
+                <h2 className="text-2xl font-black text-slate-900 tracking-tight">Payment Method</h2>
+                <span className="text-sm font-bold text-slate-400 uppercase tracking-widest">Step 2 of 2</span>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <PaymentCard
+                  label="ESEWA"
+                  active={paymentMethod === "ESEWA"}
+                  onClick={() => setPaymentMethod("ESEWA")}
+                />
+                <PaymentCard
+                  label="KHALTI"
+                  active={paymentMethod === "KHALTI"}
+                  onClick={() => setPaymentMethod("KHALTI")}
+                />
+                <PaymentCard
+                  label="BANK TRANSFER"
+                  active={paymentMethod === "BANK"}
+                  onClick={() => setPaymentMethod("BANK")}
+                />
+              </div>
+            </section>
+
+            {/* Info Alert */}
+            <div className="bg-[#F0F9FA] border-2 border-[#CEE9ED] p-6 rounded-2xl flex gap-4 text-[#0F766E]">
+              <div className="bg-[#89BDC9] text-white p-1 rounded-full w-fit h-fit">
+                <Info size={16} />
+              </div>
+              <p className="text-sm font-medium leading-relaxed">
+                After clicking "Complete Booking", you will be redirected to the secure portal of your chosen provider to complete the payment.
+              </p>
+            </div>
+
           </div>
+
+          {/* Sidebar: Order Summary */}
+          <aside className="sticky top-32">
+            <div className="bg-white p-8 rounded-[32px] border border-slate-100 shadow-2xl">
+              <h3 className="text-2xl font-black text-slate-900 mb-8 tracking-tight">Order Summary</h3>
+
+              <div className="space-y-6 mb-8">
+                <div className="flex justify-between text-sm">
+                  <span className="font-semibold text-slate-400">Ticket Type</span>
+                  <span className="font-bold text-slate-900">{ticketType} Admission</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="font-semibold text-slate-400">Price (per ticket)</span>
+                  <span className="font-bold text-slate-900">Rs. {currentPrice.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="font-semibold text-slate-400">Quantity</span>
+                  <span className="font-bold text-slate-900">{quantity}</span>
+                </div>
+
+                <div className="h-px bg-slate-100 my-4"></div>
+
+                <div className="flex justify-between text-sm">
+                  <span className="font-semibold text-slate-400">Subtotal</span>
+                  <span className="font-bold text-slate-900">Rs. {subtotal.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="font-semibold text-slate-400">Processing Fee (5%)</span>
+                  <span className="font-bold text-slate-900">Rs. {processingFee.toFixed(2)}</span>
+                </div>
+
+                <div className="pt-6">
+                  <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Total Amount</p>
+                  <p className="text-4xl font-black text-slate-900 tracking-tighter">Rs. {total.toFixed(2)}</p>
+                </div>
+              </div>
+
+              <button
+                onClick={handleSubmit}
+                disabled={loading}
+                className="w-full bg-[#3593A6] text-white py-5 rounded-2xl font-black text-lg shadow-lg shadow-cyan-100 hover:shadow-cyan-200 hover:-translate-y-1 transition-all active:translate-y-0 disabled:opacity-50"
+              >
+                {loading ? "Processing..." : "Complete Booking"}
+              </button>
+
+              <button
+                onClick={() => navigate(-1)}
+                className="w-full text-slate-400 text-sm font-bold mt-6 hover:text-slate-600 transition-colors flex items-center justify-center gap-2"
+              >
+                Cancel and return to event
+              </button>
+
+              <div className="mt-12 flex justify-center gap-6 text-slate-200">
+                <ShieldCheck size={28} />
+                <Ticket size={28} />
+                <CreditCard size={28} />
+              </div>
+            </div>
+          </aside>
         </div>
-
-        {/* Booking form */}
-        <form onSubmit={handleSubmit} className="w-full space-y-6 px-6 pb-8">
-          {/* Ticket section */}
-          <div className="bg-white p-4 md:p-6  rounded-md">
-            <h2 className="text-lg font-semibold mb-3">Book Ticket</h2>
-            <p className="text-xs text-gray-500 mb-2">Select Ticket Type</p>
-
-            <div className="flex gap-3 mb-3  rounded-md">
-              <TicketButton
-                label="VIP"
-                desc="Front row seating "
-                des={ticketPrices["VIP"]}
-                qunt={ticketQuantity && ticketQuantity["VIP"]}
-                active={ticketType === "VIP"}
-                onClick={() => setTicketType("VIP")}
-              />
-              <TicketButton
-                label="Standard"
-                desc="General admission"
-                des={ticketPrices["Standard"]}
-                qunt={ticketQuantity && ticketQuantity["Standard"]}
-                active={ticketType === "Standard"}
-                onClick={() => setTicketType("Standard")}
-              />
-              <TicketButton
-                label="Student"
-                desc="Student ID required"
-                des={ticketPrices["Student"]}
-                qunt={ticketQuantity && ticketQuantity["Student"]}
-                active={ticketType === "Student"}
-                onClick={() => setTicketType("Student")}
-              />
-            </div>
-            {/* TicketPopup moved outside form to prevent form resubmission on download */}
-            <div className="flex items-center gap-3">
-              <label className="text-xs text-gray-500">Quantity</label>
-              <input
-                type="number"
-                min="1"
-                className="w-20 border border-gray-300 rounded-md px-2 py-1 text-sm"
-                value={quantity}
-                onChange={(e) =>
-                  setQuantity(Math.max(1, Number(e.target.value) || 1))
-                }
-              />
-            </div>
-          </div>
-
-          {/* Payment Info */}
-          <div className="space-y-4 bg-white p-4 md:p-7 rounded-md">
-            <h3 className="text-lg font-semibold">Payment Information</h3>
-            <div>
-              <label className="block text-xs text-gray-600 mb-1">
-                Cardholder Name
-              </label>
-              <input
-                type="text"
-                className="w-full border border-gray-500 rounded-md px-3 py-2 md:py-5 text-sm"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-xs text-gray-600 mb-1">
-                Card Number
-              </label>
-              <input
-                type="text"
-                className="w-full border border-gray-500 rounded-md px-3 py-2 md:py-5 text-sm"
-                value={cardNumber}
-                onChange={(e) => setCardNumber(e.target.value)}
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-xs text-gray-600 mb-1">
-                Billing Address
-              </label>
-              <textarea
-                className="w-full border border-gray-500 rounded-md px-3 py-2 text-sm"
-                rows="3"
-                value={billingAddress}
-                onChange={(e) => setBillingAddress(e.target.value)}
-                required
-              />
-            </div>
-          </div>
-
-          {/* Order Summary */}
-          <div className="space-y-3 mt-6 bg-white md:p-7 rounded-md">
-            <h3 className="text-lg font-semibold">Order Summary</h3>
-            <div className="border border-gray-200 rounded-md p-4 text-sm space-y-2">
-              <div className="flex justify-between">
-                <span>Ticket Price</span>
-                <span>Rs. {price}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Quantity</span>
-                <span>{quantity}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Subtotal</span>
-                <span>Rs. {subtotal}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Tax (5%)</span>
-                <span>Rs. {tax}</span>
-              </div>
-              <hr className="my-2" />
-              <div className="flex justify-between font-semibold">
-                <span>Total</span>
-                <span>Rs. {total}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Buttons */}
-          <div className="space-x-2 mt-4 flex ">
-            <button
-              type="submit"
-              className="w-full bg-[#3593A6] text-white py-2 md:py-6 rounded-md text-sm font-semibold hover:bg-[#93CAD5] hover:text-black disabled:opacity-60"
-            >
-              Book
-            </button>
-
-            <button
-              type="button"
-              className="w-full border border-gray-600 text-gray-900 py-2 rounded-md text-sm font-semibold hover:bg-gray-50"
-              onClick={() => {
-                setName("");
-                setBillingAddress("");
-                setEmail("");
-                setCardNumber("");
-                setQuantity(1);
-              }}
-            >
-              Cancel
-            </button>
-          </div>
-        </form>
-        {/* Render TicketPopup outside the form to prevent rebooking on download */}
-        {showTicketPopup && bookingData && (
-          <TicketPopup
-            booking={bookingData}
-            onClose={() => setShowTicketPopup(false)}
-          />
-        )}
       </div>
     </div>
   );

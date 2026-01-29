@@ -38,13 +38,15 @@ app.use("/api/communityguidelines", communityGuidelinesRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/user-problems", userProblemRoutes);
 
+// Public routes
+app.use("/event", eventRoutes);
+
 // Firebase auth middleware for other routes
 app.use(authToken);
 app.use("/auth", authRoutes);
 app.use("/user", userRoutes);
 app.use("/api/community", communityRoutes);
 app.use("/api/events", eventFilters);
-app.use("/event", eventRoutes);
 app.use("/api/booking", bookingRoutes);
 app.use("/artist", artistRoutes);
 app.use("/merch", orderRoutes);
@@ -53,14 +55,14 @@ app.use("/api/cart", cartRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/orderhistory", orderHistoryRoutes);
 
-const port = 5000;
+const port = process.env.PORT || 5000;
 (async () => {
   try {
     await sequelize.authenticate();
     console.log("database connected");
     await sequelize.sync({ alter: true });
     console.log("Models synced");
-    app.listen(port, () => console.log(`server running on port ${port}`));
+    app.listen(port, "0.0.0.0", () => console.log(`server running on port ${port}`));
   } catch (err) {
     console.error("Unable to start server:", err);
   }

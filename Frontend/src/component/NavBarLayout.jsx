@@ -2,7 +2,6 @@ import { useAuth } from "../context/AuthContext";
 import { AdminNavbar } from "./AdminNavBar";
 import { ArtistNavbar } from "./ArtistNavBar";
 import { AttendeeNavBar } from "./AttendeeNavBar";
-import Footer from "../components/Footer";
 
 export function Layout({ children }) {
     const { user, logout, role, loading, dbuser } = useAuth();

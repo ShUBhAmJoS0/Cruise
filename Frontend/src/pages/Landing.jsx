@@ -75,7 +75,7 @@ function LandingPage() {
             </div>
             <div className="flex items-center gap-6">
               <div className="relative hidden lg:block">
-                <input className="w-72 pl-11 pr-4 py-2.5 text-sm bg-slate-100 border-none rounded-full focus:ring-2 focus:ring-[#3593A6]/30 transition-all" placeholder="Search events, artists, venues..." type="text"/>
+                <input className="w-72 pl-11 pr-4 py-2.5 text-sm bg-slate-100 border-none rounded-full focus:ring-2 focus:ring-[#3593A6]/30 transition-all" placeholder="Search events, artists, venues..." type="text" />
                 <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-lg">search</span>
               </div>
               <button onClick={() => navigate("/login")} className="px-6 py-2.5 text-sm font-bold text-slate-700 hover:bg-slate-50 rounded-full transition-all">Login</button>
@@ -92,7 +92,7 @@ function LandingPage() {
             <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight">Experience Premium Events</h1>
           </div>
 
-          <div className="relative h-[520px] flex items-center justify-center" style={{perspective: '1500px'}}>
+          <div className="relative h-[520px] flex items-center justify-center" style={{ perspective: '1500px' }}>
             {/* Stacked card left - hidden on mobile */}
             <div className="absolute w-full max-w-4xl h-[450px] bg-white rounded-[2.5rem] overflow-hidden border border-slate-100 pointer-events-none hidden lg:block"
               style={{
@@ -105,21 +105,21 @@ function LandingPage() {
 
             {/* Main card */}
             <div className="relative z-10 w-full max-w-5xl h-[500px] bg-white rounded-[2.5rem] shadow-2xl border border-slate-50 overflow-hidden flex flex-col md:flex-row"
-              style={{boxShadow: '0 20px 50px -12px rgba(0, 0, 0, 0.08)'}}>
-              
+              style={{ boxShadow: '0 20px 50px -12px rgba(0, 0, 0, 0.08)' }}>
+
               {/* Left side - Image */}
               <div className="relative md:w-3/5 h-full bg-[#1a2c5b] overflow-hidden">
-                <img alt={slides[activeSlide].event} className="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-luminosity hover:scale-105 transition-transform duration-700" 
+                <img alt={slides[activeSlide].event} className="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-luminosity hover:scale-105 transition-transform duration-700"
                   src={slides[activeSlide].image} />
                 <div className="absolute inset-0 bg-gradient-to-r from-[#1a2c5b]/80 via-transparent to-transparent"></div>
-                
+
                 {/* Athlete Image Overlay */}
-                <img alt="Athletes" className="absolute bottom-0 left-0 h-[95%] w-auto object-contain transform translate-x-4 z-20" 
+                <img alt="Athletes" className="absolute bottom-0 left-0 h-[95%] w-auto object-contain transform translate-x-4 z-20"
                   src={slides[activeSlide].athlete} />
-                
+
                 {/* Badge */}
                 <div className="absolute top-8 left-8 z-30 bg-white/10 backdrop-blur-md border border-white/20 p-4 rounded-2xl flex items-center gap-3">
-                  <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center font-black text-[#1a2c5b] text-[10px] leading-tight text-center">{slides[activeSlide].badge.split(' ')[0]}<br/>{slides[activeSlide].badge.split(' ')[1]}</div>
+                  <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center font-black text-[#1a2c5b] text-[10px] leading-tight text-center">{slides[activeSlide].badge.split(' ')[0]}<br />{slides[activeSlide].badge.split(' ')[1]}</div>
                   <div className="text-white">
                     <p className="text-[10px] font-bold uppercase tracking-wider opacity-80">{slides[activeSlide].sponsor}</p>
                     <p className="text-xs font-extrabold">{slides[activeSlide].event}</p>
@@ -139,7 +139,7 @@ function LandingPage() {
                 </div>
 
                 <div className="flex flex-col gap-4">
-                  <button onClick={() => { const token = localStorage.getItem('token'); if (!token) navigate('/login'); else navigate('/explore') }} 
+                  <button onClick={() => { const token = localStorage.getItem('token'); if (!token) navigate('/login'); else navigate('/explore') }}
                     className="w-full py-4 bg-[#3593A6] text-white font-extrabold rounded-2xl shadow-xl shadow-[#3593A6]/20 hover:-translate-y-1 transition-all">
                     Book Your Tickets
                   </button>
@@ -194,11 +194,10 @@ function LandingPage() {
               <button
                 key={index}
                 onClick={() => setActiveSlide(index)}
-                className={`rounded-full transition-all ${
-                  activeSlide === index
-                    ? 'w-12 h-1.5 bg-[#3593A6]'
-                    : 'w-3 h-1.5 bg-slate-200 hover:bg-slate-300'
-                }`}
+                className={`rounded-full transition-all ${activeSlide === index
+                  ? 'w-12 h-1.5 bg-[#3593A6]'
+                  : 'w-3 h-1.5 bg-slate-200 hover:bg-slate-300'
+                  }`}
               ></button>
             ))}
           </div>
@@ -333,7 +332,7 @@ function LandingPage() {
           <div className="mb-8">
             <h2 className="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">Explore Categories</h2>
           </div>
-          
+
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
             {/* Sports */}
             <button onClick={() => { const token = localStorage.getItem('token'); if (!token) navigate('/login'); else navigate('/category/sports') }} className="group cursor-pointer">
@@ -345,7 +344,7 @@ function LandingPage() {
                 </div>
               </div>
             </button>
-            
+
             {/* Festivals */}
             <button onClick={() => { const token = localStorage.getItem('token'); if (!token) navigate('/login'); else navigate('/category/festivals') }} className="group cursor-pointer">
               <div className="aspect-square rounded-2xl bg-[#c45c3e] flex flex-col items-center justify-center p-4 transition-all duration-300 hover:shadow-xl hover:scale-[1.03] relative overflow-hidden">
@@ -356,7 +355,7 @@ function LandingPage() {
                 </div>
               </div>
             </button>
-            
+
             {/* Comedy */}
             <button onClick={() => { const token = localStorage.getItem('token'); if (!token) navigate('/login'); else navigate('/category/comedy') }} className="group cursor-pointer">
               <div className="aspect-square rounded-2xl bg-[#9b59b6] flex flex-col items-center justify-center p-4 transition-all duration-300 hover:shadow-xl hover:scale-[1.03] relative overflow-hidden">
@@ -367,7 +366,7 @@ function LandingPage() {
                 </div>
               </div>
             </button>
-            
+
             {/* Arts */}
             <button onClick={() => { const token = localStorage.getItem('token'); if (!token) navigate('/login'); else navigate('/category/art') }} className="group cursor-pointer">
               <div className="aspect-square rounded-2xl bg-[#3498db] flex flex-col items-center justify-center p-4 transition-all duration-300 hover:shadow-xl hover:scale-[1.03] relative overflow-hidden">
@@ -378,7 +377,7 @@ function LandingPage() {
                 </div>
               </div>
             </button>
-            
+
             {/* Music */}
             <button onClick={() => { const token = localStorage.getItem('token'); if (!token) navigate('/login'); else navigate('/category/music') }} className="group cursor-pointer">
               <div className="aspect-square rounded-2xl bg-[#e74c3c] flex flex-col items-center justify-center p-4 transition-all duration-300 hover:shadow-xl hover:scale-[1.03] relative overflow-hidden">
@@ -389,7 +388,7 @@ function LandingPage() {
                 </div>
               </div>
             </button>
-            
+
             {/* Theatre */}
             <button onClick={() => { const token = localStorage.getItem('token'); if (!token) navigate('/login'); else navigate('/category/theatre') }} className="group cursor-pointer">
               <div className="aspect-square rounded-2xl bg-[#8e44ad] flex flex-col items-center justify-center p-4 transition-all duration-300 hover:shadow-xl hover:scale-[1.03] relative overflow-hidden">
@@ -413,62 +412,64 @@ function LandingPage() {
           <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight mb-12">How it Works</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
             {/* Attendees Section */}
-            <div className="bg-slate-50 p-8 md:p-10 rounded-3xl shadow-sm border border-slate-100 hover:shadow-lg hover:border-[#3593A6]/20 transition-all duration-300">
-              <p className="text-2xl font-bold text-[#3593A6] mb-8">For Attendees</p>
-              <div className="space-y-8">
-                <div className="flex gap-5">
-                  <div className="flex-shrink-0 w-12 h-12 bg-[#3593A6]/10 rounded-2xl flex items-center justify-center">
-                    <span className="material-symbols-outlined text-[#3593A6]">search</span>
-                  </div>
-                  <div>
-                    <p className="font-bold text-lg text-slate-900">Browse and Discover</p>
-                    <p className="text-slate-600 text-sm mt-1">Explore thousands of events in your area and around the world</p>
-                  </div>
-                </div>
-                <div className="flex gap-5">
-                  <div className="flex-shrink-0 w-12 h-12 bg-[#3593A6]/10 rounded-2xl flex items-center justify-center">
-                    <span className="material-symbols-outlined text-[#3593A6]">shopping_cart</span>
-                  </div>
-                  <div>
-                    <p className="font-bold text-lg text-slate-900">Book and Enjoy</p>
-                    <p className="text-slate-600 text-sm mt-1">Secure your tickets and experience unforgettable moments</p>
-                  </div>
-                </div>
+            <div className="relative group p-8 md:p-12 rounded-[2.5rem] bg-gradient-to-br from-slate-50 to-white border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-500 overflow-hidden">
+              <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
+                <span className="material-symbols-outlined text-9xl text-[#3593A6]">confirmation_number</span>
+              </div>
+              <div className="relative z-10">
+                <span className="inline-block px-4 py-2 rounded-full bg-[#3593A6]/10 text-[#3593A6] text-xs font-bold uppercase tracking-widest mb-6">For Attendees</span>
+                <h3 className="text-3xl font-bold text-slate-900 mb-6">Discover & Book</h3>
+                <ul className="space-y-4 mb-8">
+                  <li className="flex items-start gap-4">
+                    <span className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-[#3593A6] text-white font-bold text-sm">1</span>
+                    <p className="text-slate-600 font-medium">Browse exclusive events curated just for you.</p>
+                  </li>
+                  <li className="flex items-start gap-4">
+                    <span className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-[#3593A6] text-white font-bold text-sm">2</span>
+                    <p className="text-slate-600 font-medium">Select your preferred tickets or VIP packages.</p>
+                  </li>
+                  <li className="flex items-start gap-4">
+                    <span className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-[#3593A6] text-white font-bold text-sm">3</span>
+                    <p className="text-slate-600 font-medium">Get instant access and enjoy the experience.</p>
+                  </li>
+                </ul>
+                <button onClick={() => { const token = localStorage.getItem('token'); if (!token) navigate('/login'); else navigate('/explore') }} className="w-full py-4 bg-slate-900 text-white font-bold rounded-2xl hover:bg-[#3593A6] transition-colors shadow-lg shadow-slate-900/20">
+                  Start Exploring
+                </button>
               </div>
             </div>
 
             {/* Artists Section */}
-            <div className="bg-slate-50 p-8 md:p-10 rounded-3xl shadow-sm border border-slate-100 hover:shadow-lg hover:border-[#3593A6]/20 transition-all duration-300">
-              <p className="text-2xl font-bold text-[#3593A6] mb-8">For Artists</p>
-              <div className="space-y-8">
-                <div className="flex gap-5">
-                  <div className="flex-shrink-0 w-12 h-12 bg-[#3593A6]/10 rounded-2xl flex items-center justify-center">
-                    <span className="material-symbols-outlined text-[#3593A6]">person</span>
-                  </div>
-                  <div>
-                    <p className="font-bold text-lg text-slate-900">Create Profile</p>
-                    <p className="text-slate-600 text-sm mt-1">Set up your professional artist profile and showcase your work</p>
-                  </div>
-                </div>
-                <div className="flex gap-5">
-                  <div className="flex-shrink-0 w-12 h-12 bg-[#3593A6]/10 rounded-2xl flex items-center justify-center">
-                    <span className="material-symbols-outlined text-[#3593A6]">calendar_today</span>
-                  </div>
-                  <div>
-                    <p className="font-bold text-lg text-slate-900">List Events</p>
-                    <p className="text-slate-600 text-sm mt-1">Create and manage your events with powerful tools</p>
-                  </div>
-                </div>
+            <div className="relative group p-8 md:p-12 rounded-[2.5rem] bg-[#1a2c5b] text-white overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500">
+              <div className="absolute inset-0 bg-gradient-to-br from-[#1a2c5b] to-[#0a1535]"></div>
+              <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
+                <span className="material-symbols-outlined text-9xl text-white">mic_external_on</span>
+              </div>
+              <div className="relative z-10">
+                <span className="inline-block px-4 py-2 rounded-full bg-white/10 text-white text-xs font-bold uppercase tracking-widest mb-6 border border-white/20">For Artists</span>
+                <h3 className="text-3xl font-bold text-white mb-6">Create & Perform</h3>
+                <ul className="space-y-4 mb-8">
+                  <li className="flex items-start gap-4">
+                    <span className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-white text-[#1a2c5b] font-bold text-sm">1</span>
+                    <p className="text-slate-300 font-medium">Sign up as an artist and build your profile.</p>
+                  </li>
+                  <li className="flex items-start gap-4">
+                    <span className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-white text-[#1a2c5b] font-bold text-sm">2</span>
+                    <p className="text-slate-300 font-medium">Submit your event proposals for approval.</p>
+                  </li>
+                  <li className="flex items-start gap-4">
+                    <span className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-white text-[#1a2c5b] font-bold text-sm">3</span>
+                    <p className="text-slate-300 font-medium">Sell tickets and perform live for your fans.</p>
+                  </li>
+                </ul>
+                <button onClick={() => navigate('/signup')} className="w-full py-4 bg-white text-[#1a2c5b] font-bold rounded-2xl hover:bg-slate-200 transition-colors shadow-lg shadow-white/10">
+                  Join as Artist
+                </button>
               </div>
             </div>
           </div>
-          <div className="flex justify-center mt-12">
-            <button onClick={() => { const token = localStorage.getItem('token'); if (!token) navigate('/login'); else navigate('/artist-dashboard') }} className="px-10 py-4 bg-[#3593A6] text-white rounded-full font-bold text-lg hover:bg-[#2d7a8a] hover:shadow-lg hover:shadow-[#3593A6]/20 transition-all duration-300 shadow-lg">Get Started as Artist</button>
-          </div>
         </div>
       </section>
-
-      {/* FOOTER */}
       <Footer />
     </>
   );

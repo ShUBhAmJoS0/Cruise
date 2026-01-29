@@ -1,166 +1,117 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { toast, ToastContainer } from "react-toastify";
-import 'react-toastify/dist/ReactToastify.css';
+import React from 'react';
+import { Link } from 'react-router-dom';
 
 const Footer = () => {
-    const navigate = useNavigate();
-    const [formData, setFormData] = useState({
-        name: "",
-        email: "",
-        subject: "",
-        message: ""
-    });
-    const [isSubmitting, setIsSubmitting] = useState(false);
-
-    const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (!formData.email || !formData.message) {
-            toast.error("Please provide both email and message.");
-            return;
-        }
-
-        setIsSubmitting(true);
-        try {
-            const response = await fetch('http://localhost:5000/api/user-problems', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(formData)
-            });
-
-            const data = await response.json();
-
-            if (data.success) {
-                toast.success("Problem reported successfully! We'll get back to you soon.");
-                setFormData({ name: "", email: "", subject: "", message: "" });
-            } else {
-                toast.error(data.message || "Failed to report problem.");
-            }
-        } catch (error) {
-            console.error("Error submitting problem:", error);
-            toast.error("An error occurred. Please try again later.");
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
-
     return (
-        <footer className="bg-[#1a2c5b] w-full relative">
-            <ToastContainer position="bottom-right" autoClose={3000} />
-
-            {/* Main Footer Content */}
-            <div className="px-4 md:px-8 py-16 max-w-7xl mx-auto">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-12">
-
-                    {/* Left Column - Logo & About */}
-                    <div className="flex flex-col gap-6">
-                        <div className="flex items-center gap-2">
-                            <img src="/images/cruise logo.png" alt="Cruise Logo" className="h-20 w-20 object-contain" />
-                            {/* <span className="text-white font-bold text-xl">Cruise</span> */}
-                        </div>
-                        <div className="flex flex-col gap-4">
-                            <p className="text-sm font-semibold text-[#3593A6] uppercase tracking-wide">Company</p>
-                            <div className="flex flex-col gap-2">
-                                <button onClick={() => navigate('/')} className="text-gray-300 hover:text-[#3593A6] text-sm transition duration-300 text-left">About Us</button>
-                                <button onClick={() => navigate('/')} className="text-gray-300 hover:text-[#3593A6] text-sm transition duration-300 text-left">Careers</button>
-                                <button onClick={() => navigate('/')} className="text-gray-300 hover:text-[#3593A6] text-sm transition duration-300 text-left">Blog</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Middle Column - Support */}
-                    <div className="flex flex-col gap-6">
-                        <p className="text-sm font-bold text-white uppercase tracking-wider">Support</p>
-                        <div className="flex flex-col gap-2">
-                            <button onClick={() => navigate('/about')} className="text-gray-300 hover:text-[#3593A6] text-sm transition duration-300 text-left">Help Center</button>
-                            <button onClick={() => navigate('/contact')} className="text-gray-300 hover:text-[#3593A6] text-sm transition duration-300 text-left">Contact Us</button>
-                            <button onClick={() => navigate('/')} className="text-gray-300 hover:text-[#3593A6] text-sm transition duration-300 text-left">Terms of Service</button>
-                            <button onClick={() => navigate('/')} className="text-gray-300 hover:text-[#3593A6] text-sm transition duration-300 text-left">Privacy Policy</button>
+        <footer className="bg-[#0a0f18] text-slate-400 py-16 border-t border-slate-800">
+            <div className="max-w-7xl mx-auto px-6 lg:px-8">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
+                    {/* Brand Column */}
+                    <div className="col-span-1 md:col-span-1">
+                        <Link to="/" className="text-2xl font-black text-white tracking-tight uppercase mb-6 block">
+                            CRUISE<span className="text-[#3593A6]">.</span>
+                        </Link>
+                        <p className="text-sm font-medium leading-relaxed mb-6">
+                            Elevating exclusive nautical events to an art form. Join the community of thrill-seekers and wave-riders.
+                        </p>
+                        <div className="flex gap-4">
+                            {['facebook', 'twitter', 'instagram', 'youtube'].map((social) => (
+                                <a
+                                    key={social}
+                                    href={`#${social}`}
+                                    className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-[#3593A6] hover:text-white transition-all text-sm"
+                                >
+                                    <span className={`fa fa-${social}`}></span>
+                                </a>
+                            ))}
                         </div>
                     </div>
 
-                    {/* Right Column - Social & Form */}
-                    <div className="flex flex-col gap-6">
-                        <p className="text-sm font-bold text-white uppercase tracking-wider">Follow Us</p>
-                        <div className="flex gap-3">
-                            <a href="#" className="w-10 h-10 bg-[#3593A6] hover:bg-[#2d7a8a] rounded-lg flex items-center justify-center transition duration-300 text-white" title="Facebook">
-                                <span className="text-lg font-bold">f</span>
-                            </a>
-                            <a href="#" className="w-10 h-10 bg-[#3593A6] hover:bg-[#2d7a8a] rounded-lg flex items-center justify-center transition duration-300 text-white" title="Instagram">
-                                <span className="material-symbols-outlined text-[18px]">photo_camera</span>
-                            </a>
-                            <a href="#" className="w-10 h-10 bg-[#3593A6] hover:bg-[#2d7a8a] rounded-lg flex items-center justify-center transition duration-300 text-white text-xs font-bold" title="Twitter">
-                                X
-                            </a>
-                            <a href="#" className="w-10 h-10 bg-[#3593A6] hover:bg-[#2d7a8a] rounded-lg flex items-center justify-center transition duration-300 text-white" title="LinkedIn">
-                                <span className="text-lg font-bold">in</span>
-                            </a>
-                        </div>
+                    {/* Links Columns */}
+                    <div>
+                        <h4 className="text-white font-bold uppercase tracking-widest text-xs mb-6">Discovery</h4>
+                        <ul className="space-y-4 text-sm font-medium">
+                            <li><Link to="/events" className="hover:text-white transition-colors">Upcoming Events</Link></li>
+                            <li><Link to="/searchartists" className="hover:text-white transition-colors">Artists</Link></li>
+                            <li><Link to="/merchandise" className="hover:text-white transition-colors">Merchandise</Link></li>
+                            <li><Link to="/community" className="hover:text-white transition-colors">Community</Link></li>
+                        </ul>
                     </div>
 
-                    {/* Right Column - Contact Form */}
-                    <div className="flex flex-col gap-6">
-                        <p className="text-sm font-bold text-white uppercase tracking-wider">Contact Us</p>
-                        <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+                    <div>
+                        <h4 className="text-white font-bold uppercase tracking-widest text-xs mb-6">Company</h4>
+                        <ul className="space-y-4 text-sm font-medium">
+                            <li><Link to="/about" className="hover:text-white transition-colors">About Us</Link></li>
+                            <li><Link to="/contact" className="hover:text-white transition-colors">Contact</Link></li>
+                            <li><Link to="/careers" className="hover:text-white transition-colors">Careers</Link></li>
+                            <li><Link to="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link></li>
+                        </ul>
+                    </div>
+
+                    {/* Report a Problem */}
+                    <div>
+                        <h4 className="text-white font-bold uppercase tracking-widest text-xs mb-6">Report a Problem</h4>
+                        <p className="text-sm mb-4">Encountered an issue? Let us know so we can fix it.</p>
+                        <form className="flex flex-col gap-3" onSubmit={async (e) => {
+                            e.preventDefault();
+                            const formData = new FormData(e.target);
+                            const data = {
+                                name: formData.get('name'),
+                                email: formData.get('email'),
+                                message: formData.get('problem'),
+                                subject: 'Footer Report'
+                            };
+                            try {
+                                const response = await fetch('http://localhost:5000/api/user-problems', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify(data)
+                                });
+                                if (response.ok) {
+                                    alert('Report submitted successfully!');
+                                    e.target.reset();
+                                } else {
+                                    alert('Failed to submit report.');
+                                }
+                            } catch (err) {
+                                alert('Error submitting report.');
+                            }
+                        }}>
                             <input
-                                type="text"
                                 name="name"
-                                value={formData.name}
-                                onChange={handleChange}
-                                placeholder="Your Name"
-                                className="w-full px-4 py-2.5 bg-white/10 border border-white/20 rounded-lg text-sm text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#3593A6] transition"
-                            />
-                            <input
-                                type="email"
-                                name="email"
-                                value={formData.email}
-                                onChange={handleChange}
-                                placeholder="Your Email"
-                                className="w-full px-4 py-2.5 bg-white/10 border border-white/20 rounded-lg text-sm text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#3593A6] transition"
-                                required
-                            />
-                            <input
                                 type="text"
-                                name="subject"
-                                value={formData.subject}
-                                onChange={handleChange}
-                                placeholder="Subject"
-                                className="w-full px-4 py-2.5 bg-white/10 border border-white/20 rounded-lg text-sm text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#3593A6] transition"
+                                placeholder="Your Name"
+                                required
+                                className="bg-slate-800 border-none rounded-xl px-4 py-3 text-white text-sm focus:ring-2 focus:ring-[#3593A6]"
+                            />
+                            <input
+                                name="email"
+                                type="email"
+                                placeholder="Email Address"
+                                required
+                                className="bg-slate-800 border-none rounded-xl px-4 py-3 text-white text-sm focus:ring-2 focus:ring-[#3593A6]"
                             />
                             <textarea
-                                name="message"
-                                value={formData.message}
-                                onChange={handleChange}
-                                placeholder="Your message..."
-                                rows="3"
-                                className="w-full px-4 py-2.5 bg-white/10 border border-white/20 rounded-lg text-sm text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#3593A6] transition resize-none"
+                                name="problem"
+                                placeholder="Describe the problem..."
                                 required
+                                rows="2"
+                                className="bg-slate-800 border-none rounded-xl px-4 py-3 text-white text-sm focus:ring-2 focus:ring-[#3593A6] resize-none"
                             ></textarea>
-                            <button
-                                type="submit"
-                                disabled={isSubmitting}
-                                className={`w-full py-2.5 rounded-lg bg-[#3593A6] hover:bg-[#2d7a8a] text-white font-semibold text-sm transition-all transform active:scale-[0.98] ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`}
-                            >
-                                {isSubmitting ? 'Sending...' : 'Send Message'}
+                            <button type="submit" className="bg-[#3593A6] text-white font-bold uppercase tracking-widest text-xs py-3 rounded-xl hover:bg-[#2d7a8a] transition-all">
+                                Submit Report
                             </button>
                         </form>
                     </div>
                 </div>
-            </div>
 
-            {/* Divider */}
-            <div className="h-px bg-white/10 w-full"></div>
-
-            {/* Bottom Footer */}
-            <div className="px-4 md:px-8 py-6 max-w-7xl mx-auto">
-                <div className="text-center text-sm text-gray-400">
-                    <p>© 2026 Cruise Inc. All rights reserved.</p>
+                <div className="pt-8 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-bold uppercase tracking-widest">
+                    <p>© 2026 CRUISE EVENTS. All rights reserved.</p>
+                    <div className="flex gap-8">
+                        <Link to="/terms" className="hover:text-white transition-colors">Terms</Link>
+                        <Link to="/privacy" className="hover:text-white transition-colors">Privacy</Link>
+                        <Link to="/cookies" className="hover:text-white transition-colors">Cookies</Link>
+                    </div>
                 </div>
             </div>
         </footer>
