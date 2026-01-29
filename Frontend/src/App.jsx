@@ -9,7 +9,8 @@ import Bookingpage from "./pages/BookingPage";
 import ExploreEvents from "./pages/ExploreEvents";
 import Merchandise from "./pages/Merchandise";
 import ArtistEventRequestPage from "./pages/ArtistEventrequestpage"
-import ProtectedRoute from "./context/privateRoute"; import PublicRoute from "./context/publicRoute";
+import ProtectedRoute from "./context/privateRoute";
+import PublicRoute from "./context/publicRoute";
 import AdminRoute from "./context/adminRoute";
 import { Layout } from "./component/NavBarLayout";
 import { AddMerch } from "./pages/ArtistAddMerch";
@@ -29,18 +30,17 @@ import MyBookings from "./pages/MyBookings";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminLogin from "./pages/admin/AdminLogin";
 import UserEditProfile from "./pages/UserEditProfile";
-import CommunityGuidelines from "./pages/CommunityGuidelines";
-import Contact from "./pages/Contact";
 import { Toaster } from "react-hot-toast";
+import Fetchuserreviews from "./pages/Fetchuserreviews";
 
 function AppRoutes() {
   const location = useLocation();
-  const noNavPatterns = ["/", "/artist/profile/", "/admin"];
-  const showLayout = !noNavPatterns.some(path => {
+  const noNavPatterns = ["/", "/artist/profile/", "/admin"]; 
+ const showLayout = !noNavPatterns.some(path => {
     if (path === "/") {
-      return location.pathname === "/";
+      return location.pathname === "/"; 
     }
-    return location.pathname.startsWith(path);
+    return location.pathname.startsWith(path); 
   });
   return showLayout ? (
     <Layout>
@@ -49,29 +49,30 @@ function AppRoutes() {
         <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
         <Route path="/signup" element={<PublicRoute><Signup /></PublicRoute>} />
         <Route path="/forgotpassword" element={<PublicRoute><ForgetPassword /></PublicRoute>} />
-        <Route path="/communityguidelines" element={<CommunityGuidelines />} />
 
         {/* users */}
         <Route path="/events" element={<ProtectedRoute allowedRoles={["Attendee"]}><ExploreEvents /></ProtectedRoute>} />
         <Route path="/merchandise" element={<ProtectedRoute allowedRoles={["Attendee"]}><Merchandise></Merchandise></ProtectedRoute>} />
         <Route path="/event/:id" element={<ProtectedRoute allowedRoles={["Attendee"]}><Bookingpage /></ProtectedRoute>} />
-        <Route path="/searchartists" element={<ProtectedRoute allowedRoles={["Attendee"]}><FindArtists></FindArtists></ProtectedRoute>} />
-        <Route path="/about" element={<ProtectedRoute allowedRoles={["Attendee"]}><About /></ProtectedRoute>} />
-        <Route path="/contact" element={<Contact />} />
+<Route path="/searchartists" element={<ProtectedRoute allowedRoles={["Attendee"]}><FindArtists></FindArtists></ProtectedRoute>}/>
+<Route path="/about" element={<ProtectedRoute allowedRoles={["Attendee"]}><About /></ProtectedRoute>} />
         <Route path="/cart" element={<ProtectedRoute allowedRoles={["Attendee"]}><CartPage /></ProtectedRoute>} />
-        <Route path="/checkout" element={<ProtectedRoute allowedRoles={["Attendee"]}><CheckoutPage /></ProtectedRoute>} />
-        <Route path="/receipt" element={<ProtectedRoute allowedRoles={["Attendee"]}><ReceiptPage /></ProtectedRoute>} />
-        <Route path="/community" element={<ProtectedRoute allowedRoles={["Attendee"]}><Community></Community></ProtectedRoute>} />
-
+<Route path="/checkout" element={<ProtectedRoute allowedRoles={["Attendee"]}><CheckoutPage /></ProtectedRoute>} />
+<Route path="/receipt" element={<ProtectedRoute allowedRoles={["Attendee"]}><ReceiptPage /></ProtectedRoute>} />
+<Route path="/community" element={<ProtectedRoute allowedRoles={["Attendee"]}><Community></Community></ProtectedRoute>} />
+<Route path="/mybookings" element={<ProtectedRoute allowedRoles={["Attendee"]}><MyBookings /></ProtectedRoute>} />
+ <Route path="/orderhistory" element={<ProtectedRoute allowedRoles={["Attendee"]}><OrderHistory></OrderHistory></ProtectedRoute>} />
+<Route path="/usereditprofile" element={<ProtectedRoute allowedRoles={["Attendee"]}><UserEditProfile/></ProtectedRoute>} />
         {/* artist */}
         <Route path="/artist/Request" element={<ProtectedRoute allowedRoles={["Artist"]}><ArtistEventRequestPage /></ProtectedRoute>} />
         <Route path="/artist/Addmerch" element={<ProtectedRoute allowedRoles={["Artist"]}><AddMerch /></ProtectedRoute>} />
-        <Route path="/artist/Profile" element={<ProtectedRoute allowedRoles={["Artist"]}><ArtistAnalytics /></ProtectedRoute>} />
+        <Route path="/artist/Profile" element={<ProtectedRoute allowedRoles={["Artist"]}><ArtistAnalytics/></ProtectedRoute>} />
         <Route path="/artist/EditProfile" element={<ProtectedRoute allowedRoles={["Artist"]}><ArtistEditProfile></ArtistEditProfile></ProtectedRoute>} />
-        <Route path="/artist/viewevent" element={<ProtectedRoute allowedRoles={["Artist"]}><ArtistViewEvents></ArtistViewEvents></ProtectedRoute>} />
-        <Route path="/artist/viewmerch" element={<ProtectedRoute allowedRoles={["Artist"]}><ViewMerchandiseTable /></ProtectedRoute>} />
-      </Routes >
-    </Layout >
+        <Route path="/artist/viewevent" element={<ProtectedRoute allowedRoles={["Artist"]}><ArtistViewEvents></ArtistViewEvents></ProtectedRoute>}/>
+        <Route path="/artist/viewmerch" element={<ProtectedRoute allowedRoles={["Artist"]}><ViewMerchandiseTable/></ProtectedRoute>}/>
+        <Route path="/artist/fetchreviews" element={<ProtectedRoute allowedRoles={["Artist"]}><Fetchuserreviews/></ProtectedRoute>}/>
+      </Routes>
+    </Layout>
   ) : (
     <Routes>
       <Route path="/" element={<Landing />} />
@@ -87,47 +88,45 @@ function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
-        <Toaster
-          position="top-center"
-          reverseOrder={false}
-          gutter={8}
-          containerClassName=""
-          containerStyle={{}}
-          toasterId="default"
-          toastOptions={{
+      <Toaster
+  position="top-center"
+  reverseOrder={false}
+  gutter={8}
+  containerClassName=""
+  containerStyle={{}}
+  toasterId="default"
+  toastOptions={{
 
-            className: '',
-            duration: 5000,
-            removeDelay: 1000,
-            style: {
-              background: '#eafae1',
-              color: 'black',
-              borderRadius: "12px"
-            },
-
-
-            success: {
-              duration: 3000,
-              iconTheme: {
-                primary: 'green',
-                secondary: 'white',
-              },
-            },
-            error: {
-              duration: 3000,
-              iconTheme: {
-                primary: 'red',
-                secondary: 'white',
-              },
-              style: {
-                background: '#fad7d7',
-                color: 'black',
-                borderRadius: "12px"
-              },
-            }
-          }}
-        />
-        <AppRoutes />
+    className: '',
+    duration: 5000,
+    removeDelay: 1000,
+    style: {
+      background: '#eafae1',
+      color: 'black',
+      borderRadius:"12px"
+    },
+    success: {
+      duration: 3000,
+      iconTheme: {
+        primary: 'green',
+        secondary: 'white',
+      },
+    },
+    error:{
+        duration: 3000,
+      iconTheme: {
+        primary: 'red',
+        secondary: 'white',
+      },
+          style: {
+      background: '#fad7d7',
+      color: 'black',
+      borderRadius:"12px"
+    },
+    }
+  }}
+/>
+            <AppRoutes />
       </BrowserRouter>
     </AuthProvider>
   );

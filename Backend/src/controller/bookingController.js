@@ -3,14 +3,19 @@ import sequelize from "../Database/db.js";
 import Booking from "../model/Booking.js";
 import Event from "../model/Event.js";
 import User from "../model/User.js";
+import crypto from 'crypto';
 
 const fakeChargeCard = async () => {
   await new Promise((r) => setTimeout(r, 800));
   return { status: "success", transactionId: Date.now().toString() };
 };
-
+const generateTicketCode = () => {
+  const timestamp = Date.now().toString(36).toUpperCase().slice(-6); // Last 6 chars
+  const randomPart = crypto.randomBytes(2).toString('hex').toUpperCase(); // 4 chars
+  return `TKT-${timestamp}-${randomPart}`;
+};
 export const createBookingController = async (req, res) => {
-  const transaction = await sequelize.transaction();
+  let transaction 
 
   try {
     const {
@@ -27,7 +32,7 @@ export const createBookingController = async (req, res) => {
     }
 
     const firebaseUid = req.user.firebase_uid;
-
+ 
     const user = await User.findOne({
       where: { firebase_uid: firebaseUid },
     });
@@ -36,7 +41,7 @@ export const createBookingController = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-
+transaction= await sequelize.transaction();
     const event = await Event.findByPk(event_id, {
       transaction,
       lock: transaction.LOCK.UPDATE,
@@ -62,7 +67,7 @@ export const createBookingController = async (req, res) => {
     const subtotal = pricePerTicket * quantity;
     const fee = Math.round(subtotal * 0.05);
     const total = subtotal + fee;
-
+    const ticketCode = generateTicketCode();
     const paymentResult = await fakeChargeCard(card_number);
     if (paymentResult.status !== "success") {
       return res.status(402).json({ message: "Payment failed" });
@@ -78,6 +83,7 @@ export const createBookingController = async (req, res) => {
 
     const booking = await Booking.create(
       {
+        ticketCode,
         EventId: event.id,
         eventName: event.title,
         ticketType: ticket_type,
@@ -95,7 +101,22 @@ export const createBookingController = async (req, res) => {
 
     res.status(201).json({
       message: "Booking successful",
-      booking,
+      booking: {
+        id: booking.id,
+        ticketCode: booking.ticketCode,
+        eventName: booking.eventName,
+        ticketType: booking.ticketType,
+        quantity: booking.quantity,
+        customerName: booking.customerName,
+        totalPrice: booking.totalPrice,
+        createdAt: booking.createdAt,
+        eventDetails: {
+          title: event.title,
+          date: event.date,
+          time: event.time,
+          location: event.location,
+        }
+      },
       remainingTickets: event.Quantity[ticket_type],
     });
   } catch (err) {

@@ -7,7 +7,8 @@ const router = express.Router();
 
 router.put("/updateProfile", authToken, upload.fields([
   { name: 'profilePic', maxCount: 1 },
-  { name: 'coverPic', maxCount: 1 }
+  { name: 'coverPic', maxCount: 1 },
+  { name: 'mediaImages', maxCount: 10 }
 ]), updateUserProfile);
 
 export default router;

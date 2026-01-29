@@ -4,40 +4,41 @@ import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import api from "../api/axios";
 import { auth } from "../firebase";
-
+import toast from "react-hot-toast";
+import TicketPopup from "../components/ticketpopup";
 
 async function fetchEvent(eventId) {
   const id = parseInt(eventId, 10);
   if (Number.isNaN(id)) {
     throw new Error(`Invalid event id: ${eventId}`);
   }
-  console.log("Fetching event ID:", id)
+  console.log("Fetching event ID:", id);
 
   const res = await api.get(`/event/${id}`);
-  console.log(res.data)
+  console.log(res.data);
   return res.data;
-
 }
-//Sliding images function
+
 function ImageSlider({ images }) {
-  const [currentIndex, setCurrentIndex] = useState(0);
-
-  if (!images || images.length == 0) { return null };
-
-
+  // Removed unused currentIndex and setCurrentIndex
 
   const [startIndex, setStartIndex] = useState(0);
-  const visibleCount = 3; 
+  if (!images || images.length == 0) {
+    return null;
+  }
+  const visibleCount = 3;
 
   const next = () => {
     setStartIndex((prev) =>
-      prev + visibleCount >= images.length ? 0 : prev + visibleCount
+      prev + visibleCount >= images.length ? 0 : prev + visibleCount,
     );
   };
 
   const prev = () => {
     setStartIndex((prev) =>
-      prev - visibleCount < 0 ? images.length - visibleCount : prev - visibleCount
+      prev - visibleCount < 0
+        ? images.length - visibleCount
+        : prev - visibleCount,
     );
   };
 
@@ -76,15 +77,17 @@ function ImageSlider({ images }) {
   );
 }
 
-
 async function createBooking(data, eventId) {
   const token = await auth.currentUser.getIdToken();
-  const res = await api.post("/api/booking", { ...data, eventId }, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
+  const res = await api.post(
+    "/api/booking",
+    { ...data, eventId },
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    },
+  );
   return res.data;
 }
-
 
 const TicketButton = ({ label, desc, des, qunt, active, onClick }) => {
   return (
@@ -113,9 +116,9 @@ export default function BookingPage() {
   const [billingAddress, setBillingAddress] = useState("");
   const [email, setEmail] = useState("");
   const [cardNumber, setCardNumber] = useState("");
-  const [message, setMessage] = useState("");
-  const [loading, setLoading] = useState(false);
-
+  // Removed unused message and loading state
+  const [showTicketPopup, setShowTicketPopup] = useState(false);
+  const [bookingData, setBookingData] = useState(null);
 
   useEffect(() => {
     const loadEvent = async () => {
@@ -124,8 +127,8 @@ export default function BookingPage() {
         setEvent(data);
         setTicketType("VIP");
         setQuantity(1);
-      } catch (e) {
-        setMessage("Failed to load event.");
+      } catch {
+        // Optionally log error
       }
     };
 
@@ -159,11 +162,10 @@ export default function BookingPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setMessage("");
+    // removed setLoading and setMessage
 
     try {
-      await createBooking({
+      const response = await createBooking({
         ticket_type: ticketType,
         quantity,
         customer_name: name,
@@ -172,9 +174,11 @@ export default function BookingPage() {
         event_id: eventId,
         card_number: cardNumber,
       });
-      alert("Booking Confirmed!");
-    } finally {
-      setLoading(false);
+      setBookingData(response.booking);
+      setShowTicketPopup(true);
+      toast.success("Booking Confirmed!");
+    } catch {
+      toast.error("Booking failed");
     }
   };
 
@@ -182,9 +186,11 @@ export default function BookingPage() {
     <div className="min-h-screen bg-gray-100 pt-20">
       <div className="w-full h-full  overflow-auto bg-[#F1F0F0]">
         {/* Header */}
-        <div className="bg-gradient-to-r from-[#3593A6] to-[#93CAD5] text-white p-4 md:p-12 flex items-center">
+        <div className="bg-linear-to-r from-[#3593A6] to-[#93CAD5] text-white p-4 md:p-12 flex items-center">
           <div>
-            <h1 className="text-xl font-semibold md:text-[40px]">{event.title}</h1>
+            <h1 className="text-xl font-semibold md:text-[40px]">
+              {event.title}
+            </h1>
             <p className="text-xs md:text-[16px]">
               {eventDate} • {event.location}
             </p>
@@ -196,13 +202,17 @@ export default function BookingPage() {
 
         {/* Event note / description */}
         <div className="px-6 py-4">
-          <div className="bg-white border border-3 border-[#90C7D2] text-black text-sm p-4 md:p-10 rounded-md space-y-3">
+          <div className="bg-white border border-[#90C7D2] text-black text-sm p-4 md:p-10 rounded-md space-y-3">
             <p>
-              <span className="font-semibold text-[#3593A6] mr-2">Event Hour:</span>{" "}
+              <span className="font-semibold text-[#3593A6] mr-2">
+                Event Hour:
+              </span>{" "}
               {event.time}
             </p>
             <p>
-              <span className="font-semibold text-[#3593A6] mr-2">Description:</span>{" "}
+              <span className="font-semibold text-[#3593A6] mr-2">
+                Description:
+              </span>{" "}
               {event.description}
             </p>
           </div>
@@ -210,7 +220,6 @@ export default function BookingPage() {
 
         {/* Booking form */}
         <form onSubmit={handleSubmit} className="w-full space-y-6 px-6 pb-8">
-
           {/* Ticket section */}
           <div className="bg-white p-4 md:p-6  rounded-md">
             <h2 className="text-lg font-semibold mb-3">Book Ticket</h2>
@@ -242,7 +251,7 @@ export default function BookingPage() {
                 onClick={() => setTicketType("Student")}
               />
             </div>
-
+            {/* TicketPopup moved outside form to prevent form resubmission on download */}
             <div className="flex items-center gap-3">
               <label className="text-xs text-gray-500">Quantity</label>
               <input
@@ -268,7 +277,6 @@ export default function BookingPage() {
                 type="text"
                 className="w-full border border-gray-500 rounded-md px-3 py-2 md:py-5 text-sm"
                 value={name}
-
                 onChange={(e) => setName(e.target.value)}
                 required
               />
@@ -344,17 +352,20 @@ export default function BookingPage() {
                 setBillingAddress("");
                 setEmail("");
                 setCardNumber("");
-                setMessage("");
                 setQuantity(1);
-
               }}
             >
               Cancel
             </button>
-
           </div>
-
         </form>
+        {/* Render TicketPopup outside the form to prevent rebooking on download */}
+        {showTicketPopup && bookingData && (
+          <TicketPopup
+            booking={bookingData}
+            onClose={() => setShowTicketPopup(false)}
+          />
+        )}
       </div>
     </div>
   );

@@ -64,10 +64,11 @@ const CheckoutPage = () => {
     try {
       await api.post("/api/cart/order/cart", { cartItemIds });
       setReceiptData({ items, total, tax, discount });
+      toast.success("order confirmed sucessfully")
       setShowReceipt(true);
     } catch (err) {
       console.error(err);
-      alert("Failed to place order");
+      toast.error("Failed to place order");
     }
   };
 

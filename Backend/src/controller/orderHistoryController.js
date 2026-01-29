@@ -24,14 +24,25 @@ export const getOrderHistory = async (req, res) => {
         },
         {
           model: OrderItem,
+          as: 'OrderItems', 
           include: [
             {
               model: Product,
+              as: 'product', 
             },
           ],
         },
       ],
     });
+
+ 
+    console.log("Orders found:", orders.length);
+    if (orders.length > 0) {
+      console.log("First order OrderItems:", orders[0].OrderItems?.length || 0);
+      if (orders[0].OrderItems && orders[0].OrderItems.length > 0) {
+        console.log("First OrderItem product:", orders[0].OrderItems[0].product ? "exists" : "missing");
+      }
+    }
 
     res.status(200).json({
       success: true,
@@ -55,13 +66,22 @@ export const getOrderById = async (req, res) => {
       return res.status(401).json({ error: "User not authenticated" });
     }
 
-    const order = await OrderHistory.findOne({
-      where: { id, userId }, 
+    const order = await Order.findOne({
+      where: { id, userId },
       include: [
         {
           model: User,
-          as: "User",
           attributes: ["id", "name", "email"],
+        },
+        {
+          model: OrderItem,
+          as: 'OrderItems',
+          include: [
+            {
+              model: Product,
+              as: 'product',
+            },
+          ],
         },
       ],
     });
@@ -77,7 +97,8 @@ export const getOrderById = async (req, res) => {
   }
 };
 
-export const cancelOrder = async (req, res) => {
+
+export const deleteOrder = async (req, res) => {
   try {
     const { id } = req.params;
     const userId = req.user?.id;
@@ -86,15 +107,13 @@ export const cancelOrder = async (req, res) => {
       return res.status(401).json({ error: "User not authenticated" });
     }
 
-    const order = await OrderHistory.findOne({
+    const order = await Order.findOne({
       where: { id, userId },
     });
 
     if (!order) {
       return res.status(404).json({ error: "Order not found" });
     }
-
-    // Check if order can be cancelled
     if (order.status === "Completed") {
       return res.status(400).json({ 
         error: "Cannot cancel completed order" 
@@ -106,26 +125,15 @@ export const cancelOrder = async (req, res) => {
         error: "Order is already cancelled" 
       });
     }
+    order.status = "Cancelled";
+    await order.save();
 
-    // Update order status
-    await order.update({
-      status: "Cancelled",
-      paymentStatus: "Refunded",
+    res.json({
+      success: true,
+      message: "Order deleted successfully"
     });
-
-    const updatedOrder = await OrderHistory.findByPk(id, {
-      include: [
-        {
-          model: User,
-          as: "User",
-          attributes: ["id", "name", "email"],
-        },
-      ],
-    });
-
-    res.json(updatedOrder);
   } catch (error) {
-    console.error("CANCEL ORDER ERROR:", error);
+    console.error("DELETE ORDER ERROR:", error);
     res.status(500).json({ error: error.message });
   }
 };
@@ -138,21 +146,21 @@ export const getOrderStats = async (req, res) => {
       return res.status(401).json({ error: "User not authenticated" });
     }
 
-    const totalOrders = await OrderHistory.count({
+    const totalOrders = await Order.count({
       where: { userId },
     });
 
-    const activeOrders = await OrderHistory.count({
-      where: { userId, status: "Active" },
+    const confirmedOrders = await Order.count({
+      where: { userId, status: "Confirmed" },
     });
 
-    const totalSpent = await OrderHistory.sum("totalAmount", {
-      where: { userId, paymentStatus: "Completed" },
+    const totalSpent = await Order.sum("totalPrice", {
+      where: { userId },
     });
 
     res.json({
       totalOrders,
-      activeOrders,
+      confirmedOrders,
       totalSpent: totalSpent || 0,
     });
   } catch (error) {

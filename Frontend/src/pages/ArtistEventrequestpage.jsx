@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import api from "../api/axios";
 import { Users2, Trophy, Music, Brush, MapPin, CheckCircle2, X } from "lucide-react";
 import { Controller, useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 
 
 function ArtistEventRequestPage() {
@@ -92,7 +93,7 @@ function ArtistEventRequestPage() {
       console.log(res.data);
     } catch (e) {
       console.log(e);
-      alert(e.response?.data?.message || "Failed to load events");
+      console.log(e.response?.data?.message || "Failed to load events");
     }
   };
 
@@ -126,7 +127,7 @@ function ArtistEventRequestPage() {
           'Content-Type': 'multipart/form-data'
         }
       });
-      alert(res.data.message);
+      toast.success(res.data.message);
    
       await LoadRequestedEvents();
   
@@ -138,7 +139,7 @@ function ArtistEventRequestPage() {
     } catch (error) {
       const msg = error.response?.data?.message || "Failed to create event";
       console.log(error.response?.data?.message);
-      alert(msg);
+      toast.error(msg);
     }
   };
 
@@ -185,7 +186,7 @@ function ArtistEventRequestPage() {
       setIsEditModalOpen(true);
     } catch (error) {
       console.error("Failed to fetch event details:", error);
-      alert("Failed to load event details");
+    
     }
   };
 
@@ -259,7 +260,7 @@ function ArtistEventRequestPage() {
         }
       });
       
-      alert(res.data.message || "Event updated successfully");
+      toast.success(res.data.message || "Event updated successfully");
       setIsEditModalOpen(false);
       await LoadRequestedEvents();
       
@@ -270,7 +271,7 @@ function ArtistEventRequestPage() {
       setExistingGalleryImages([]);
     } catch (error) {
       console.error("Failed to update event:", error);
-      alert(error.response?.data?.message || "Failed to update event");
+      toast.error(error.response?.data?.message || "Failed to update event");
     }
   };
 
@@ -280,11 +281,11 @@ function ArtistEventRequestPage() {
     }
     try {
      const res= await api.delete(`/artist/request/${eventId}`);
-      alert(res.data.message);
+      toast.success(res.data.message);
       await LoadRequestedEvents();
     } catch (error) {
       console.error("Failed to delete event:", error);
-      alert(error.response?.data?.message || "Failed to delete event");
+      toast.error(error.response?.data?.message || "Failed to delete event");
     }
   };
 

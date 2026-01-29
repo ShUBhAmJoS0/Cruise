@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import api from "../api/axios";
 import { useNavigate } from "react-router-dom";
-
+import toast from "react-hot-toast";
 const Merchandise = () => {
   const [products, setProducts] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -43,11 +43,11 @@ const Merchandise = () => {
         quantity: 1, 
       });
       setCartUpdated(true);
-      alert("added to cart sucessfully");
+      toast.success("added to cart sucessfully");
       setTimeout(() => setCartUpdated(false), 1500);
     } catch (err) {
       console.error("Failed to add to cart:", err);
-      alert("Failed to add to cart.");
+      toast.error("Failed to add to cart.");
     }
   };
 
@@ -64,7 +64,7 @@ console.log("ola")
     navigate("/checkout", { state: { cartItemIds: [cartItemId] } });
   } catch (err) {
     console.error(err);
-    alert(err.response?.data?.message || "Failed to buy product.");
+    toast.error(err.response?.data?.message || "Failed to buy product.");
   }
   };
 

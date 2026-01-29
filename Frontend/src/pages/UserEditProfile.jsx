@@ -53,11 +53,10 @@ function UserEditProfile() {
       // Reset form state
       setProfilePic(null);
       
-      setSuccessMessage(response.data.message);
-      setTimeout(() => setSuccessMessage(""), 3000);
+      toast.success(response.data.message);
     } catch (e) {
       console.log(e?.response?.data?.message);
-      alert(e?.response?.data?.message || "Error updating profile");
+      toast.error(e?.response?.data?.message || "Error updating profile");
     } finally {
       setLoading(false);
     }

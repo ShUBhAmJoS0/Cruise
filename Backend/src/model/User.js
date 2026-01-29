@@ -42,6 +42,7 @@ const User = sequelize.define("User", {
   bio: { type: DataTypes.TEXT, allowNull: true },
   social: { type: DataTypes.STRING, allowNull: true },
   about: { type: DataTypes.STRING(1000), allowNull: true },
+  mediaImages: { type: DataTypes.JSON, allowNull: true, defaultValue: [] },
   followersCount: {
     type: DataTypes.VIRTUAL(DataTypes.INTEGER),
     defaultValue: 0
