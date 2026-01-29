@@ -15,11 +15,11 @@ function AdminLogin() {
     setLoading(true);
 
     try {
-      // Validate credentials (hardcoded for now)
-      const adminUsername = 'admin';
+      // Validate credentials (hardcoded for now, but matching seed data)
+      const validAdminUsers = ['admin', 'admin@example.com'];
       const adminPassword = 'admin123';
 
-      if ((email || username) !== adminUsername || password !== adminPassword) {
+      if (!(email === 'admin' || username === 'admin' || email === 'admin@example.com' || username === 'admin@example.com') || password !== adminPassword) {
         throw new Error('Invalid credentials. Please try again.');
       }
 
@@ -29,7 +29,7 @@ function AdminLogin() {
       // Save admin token and user info
       localStorage.setItem('adminToken', mockToken);
       localStorage.setItem('adminUser', JSON.stringify({
-        username: adminUsername,
+        username: username || 'admin',
         email: email || 'admin@cruise.local',
         role: 'Admin'
       }));
@@ -54,7 +54,7 @@ function AdminLogin() {
             <div className="bg-gradient-to-r from-[#3593A6] to-[#2d7a8a] px-6 py-8 sm:px-8 sm:py-12">
               <div className="text-center">
                 <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2">Cruise Admin</h1>
-                <p className="text-[#e0f2f1] text-sm font-medium">Secure Admin Portal</p>
+                {/* <p className="text-[#e0f2f1] text-sm font-medium">Secure Admin Portal</p> */}
               </div>
             </div>
 
@@ -181,15 +181,8 @@ function AdminLogin() {
             </div>
           </div>
 
-          {/* Security Badge */}
-          <div className="mt-6 text-center">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md rounded-full border border-white/20">
-              <svg className="w-4 h-4 text-green-400" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 111.414 1.414L7.414 9l3.293 3.293a1 1 0 11-1.414 1.414l-4-4z" clipRule="evenodd" />
-              </svg>
-              <span className="text-white text-xs font-semibold">Secure Connection</span>
-            </div>
-          </div>
+
+
         </div>
       </div>
     </div>

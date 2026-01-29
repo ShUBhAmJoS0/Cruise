@@ -23,8 +23,8 @@ export function AttendeeNavBar({ logout, user, dbuser }) {
       <div className="flex flex-col md:flex-row md:items-center md:justify-between py-4 px-4 md:px-10 gap-4">
 
         <div className="flex  justify-center items-center gap-4 md:gap-70">
-          <div className="font-bold text-3xl " style={{ color: primaryColor }}>
-            Cruise
+          <div className="flex items-center">
+            <img src="/images/cruise logo.png" alt="Cruise Logo" className="h-10" />
           </div>
 
           <div className="flex flex-wrap gap-4 md:gap-7 text-sm md:text-lg font-bold">

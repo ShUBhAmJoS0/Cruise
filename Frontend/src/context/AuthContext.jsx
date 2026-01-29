@@ -70,7 +70,7 @@ export const AuthProvider = ({ children }) => {
 
     const recoverRole = async () => {
       try {
-        const token = await user.getIdToken(true);
+        const token = await user.getIdToken();
         const res = await api.get("/auth/getuser", {
           headers: { Authorization: `Bearer ${token}` },
         });

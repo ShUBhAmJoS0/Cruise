@@ -791,7 +791,7 @@ const ExploreEvents = () => {
                           alt={event.title}
                         />
                         {/* Category Badge */}
-                        <div className="absolute top-4 left-4 bg-slate-900/80 backdrop-blur-md text-white text-[10px] font-black px-3 py-1.5 rounded-lg uppercase tracking-widest border border-white/10">
+                        <div className="absolute top-4 left-4 bg-[#0a0f18]/80 backdrop-blur-md text-white text-[10px] font-bold px-4 py-2 rounded-full uppercase tracking-widest border border-white/10">
                           {event.category || 'General'}
                         </div>
                         {/* Favorite Button */}
@@ -801,47 +801,45 @@ const ExploreEvents = () => {
                       </div>
 
                       {/* Content Area */}
-                      <div className="p-6 flex flex-col flex-1">
-                        {/* Floating Content Card Effect */}
-                        <div className="bg-white rounded-2xl p-5 shadow-lg border border-slate-50 -mt-16 relative z-10 mb-4">
-                          <h3 className="text-lg font-black text-slate-900 mb-1 group-hover:text-[#3593A6] transition-colors line-clamp-1 uppercase tracking-tight">
+                      <div className="p-6 flex flex-col flex-1 bg-white">
+
+                        {/* Category & Title */}
+                        <div className="mb-4">
+                          <p className="text-[#3593A6] text-[10px] font-bold uppercase tracking-widest mb-2">
+                            {event.subCategory || event.category || 'Event'}
+                          </p>
+                          <h3 className="text-xl font-bold text-slate-900 leading-tight group-hover:text-[#3593A6] transition-colors line-clamp-2">
                             {event.title}
                           </h3>
-                          <p className="text-[#3593A6] text-[10px] font-black uppercase tracking-widest">
-                            {event.subCategory || (event.category === 'Music' ? 'Electronic & Dance' : 'Live Event')}
-                          </p>
                         </div>
 
                         {/* Metadata Rows */}
-                        <div className="space-y-4 mb-6 flex-1">
-                          <div className="flex items-center gap-3 text-slate-600">
-                            <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-[#3593A6]">
-                              <span className="material-symbols-outlined text-lg">calendar_month</span>
-                            </div>
-                            <span className="text-xs font-bold">{new Date(event.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })} • {event.time || '7:00 PM'}</span>
+                        <div className="space-y-3 mb-6">
+                          <div className="flex items-center gap-3 text-slate-500">
+                            <span className="material-symbols-outlined text-[#3593A6] text-[20px]">calendar_today</span>
+                            <span className="text-sm font-semibold">
+                              {new Date(event.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })} • {event.time || '7:00 PM'}
+                            </span>
                           </div>
-                          <div className="flex items-center gap-3 text-slate-600">
-                            <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-[#3593A6]">
-                              <span className="material-symbols-outlined text-lg">location_on</span>
-                            </div>
-                            <span className="text-xs font-bold line-clamp-1">{event.location}</span>
+                          <div className="flex items-center gap-3 text-slate-500">
+                            <span className="material-symbols-outlined text-[#3593A6] text-[20px]">location_on</span>
+                            <span className="text-sm font-semibold line-clamp-1">{event.location}</span>
                           </div>
                         </div>
 
-                        {/* Divider */}
-                        <div className="border-t border-slate-100 pt-5 mt-auto">
-                          <div className="flex justify-between items-center">
-                            <div>
-                              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Starting From</p>
-                              <p className="text-xl font-black text-slate-900">${event.prices?.Standard || 0}</p>
-                            </div>
-                            <button
-                              onClick={() => navigate(`/event/${event.id}`)}
-                              className="px-6 py-3 bg-[#0a0f18] text-white text-xs font-black rounded-xl hover:bg-[#3593A6] transition-all uppercase tracking-widest border border-[#0a0f18] hover:border-[#3593A6] shadow-lg shadow-black/10 active:scale-95"
-                            >
-                              Tickets
-                            </button>
+                        {/* Footer */}
+                        <div className="mt-auto pt-4 flex justify-between items-end border-t border-slate-50">
+                          <div>
+                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">From</p>
+                            <p className="text-xl font-black text-slate-900">${event.prices?.Standard || 0}</p>
                           </div>
+                          <button
+                            onClick={() => navigate(`/event/${event.id}`)}
+                            className="flex items-center gap-2 px-6 py-3 bg-[#0a0f18] text-white text-[10px] font-bold rounded-full hover:bg-[#3593A6] transition-all uppercase tracking-widest shadow-lg shadow-slate-900/20 active:scale-95"
+                          >
+                            Get Tickets
+                            <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                          </button>
                         </div>
                       </div>
                     </div>

@@ -17,6 +17,7 @@ function AdminDashboard({ onLogout }) {
     openProblems: 0
   });
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     fetchDashboardStats();
@@ -28,6 +29,7 @@ function AdminDashboard({ onLogout }) {
   const fetchDashboardStats = async () => {
     try {
       setLoading(true);
+      setError(null);
       const response = await fetch('http://localhost:5000/api/admin/dashboard-stats', {
         method: 'GET',
         headers: {
@@ -44,8 +46,7 @@ function AdminDashboard({ onLogout }) {
       setDashboardStats(data);
     } catch (error) {
       console.error('Error fetching dashboard stats:', error);
-      // Set default values if API fails - you can remove this after backend is working
-
+      setError("Backend Disconnected: Please start the PostgreSQL service.");
     } finally {
       setLoading(false);
     }
@@ -76,7 +77,7 @@ function AdminDashboard({ onLogout }) {
     <div className="flex h-screen w-full overflow-hidden bg-[#f6f7f8]">
       {/* Mobile Overlay */}
       {sidebarOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/50 z-40 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
@@ -92,7 +93,7 @@ function AdminDashboard({ onLogout }) {
                 <p className="text-[#617589] text-xs font-medium uppercase tracking-wider mt-1">Dashboard</p>
               </div>
               {/* Close button for mobile */}
-              <button 
+              <button
                 onClick={() => setSidebarOpen(false)}
                 className="lg:hidden p-2 rounded-lg hover:bg-gray-100 text-gray-500"
               >
@@ -154,7 +155,7 @@ function AdminDashboard({ onLogout }) {
         <header className="h-16 flex items-center justify-between px-4 md:px-8 bg-white border-b border-[#e5e7eb] shrink-0">
           <div className="flex items-center gap-3">
             {/* Hamburger Menu for Mobile */}
-            <button 
+            <button
               onClick={() => setSidebarOpen(true)}
               className="lg:hidden p-2 rounded-lg hover:bg-gray-100 text-gray-600"
             >
@@ -172,6 +173,25 @@ function AdminDashboard({ onLogout }) {
         {/* CONTENT */}
         <div className="flex-1 overflow-y-auto p-4 md:p-8">
           <div className="max-w-7xl mx-auto flex flex-col gap-6 md:gap-8 pb-10">
+
+            {/* Error Banner */}
+            {error && (
+              <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded shadow-sm">
+                <div className="flex">
+                  <div className="flex-shrink-0">
+                    <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <div className="ml-3">
+                    <p className="text-sm text-red-700">
+                      {error}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Statistics Grid */}
             <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
               {/* Total Users Card */}
@@ -244,8 +264,8 @@ function AdminDashboard({ onLogout }) {
                   <div className="min-w-0 flex-1">
                     <p className="text-[#617589] text-xs md:text-sm font-medium uppercase tracking-wider truncate">Revenue</p>
                     <p className="text-[#111418] text-xl md:text-3xl font-bold leading-tight mt-1 md:mt-2">
-                      ${loading ? '-' : dashboardStats.totalRevenue >= 1000 
-                        ? (dashboardStats.totalRevenue / 1000).toFixed(1) + 'K' 
+                      ${loading ? '-' : dashboardStats.totalRevenue >= 1000
+                        ? (dashboardStats.totalRevenue / 1000).toFixed(1) + 'K'
                         : dashboardStats.totalRevenue.toFixed(2)}
                     </p>
                   </div>
