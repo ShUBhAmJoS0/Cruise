@@ -1,4 +1,5 @@
 import { useState, } from "react";
+import { useForm, Controller } from "react-hook-form";
 import api from "../api/axios";
 import { Link, useNavigate } from "react-router-dom";
 import { auth, isMockMode, mockCreateUserWithEmailAndPassword, mockUpdateProfile } from "../firebase.js";
@@ -18,6 +19,28 @@ export default function Signup() {
   const [User, setUserr] = useState("");
   const [showpassword, setShowpassword] = useState(false);
   const { setRole, setUser, setDbuser } = useAuth();
+
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    mode: "onBlur",
+    defaultValues: {
+      email: "",
+      password: "",
+      confirmPassword: "",
+    },
+  });
+
+  const hasMinLength = password.length >= 6;
+  const hasUppercase = /[A-Z]/.test(password);
+  const hasSymbol = /[^A-Za-z0-9]/.test(password);
+
+  const onSignupSubmit = () => {
+    signupUser();
+  };
+
   const signupUser = async () => {
     if (!name || !email || !password || !retype) {
       toast.error("All fields are required");
@@ -87,90 +110,206 @@ export default function Signup() {
       className="flex items-center justify-center min-h-screen bg-center bg-no-repeat bg-cover px-4 sm:px-6"
       style={{ backgroundImage: "url('/images/Loginbackground.png')" }}
     >
-      <div className="relative bg-white overflow-hidden rounded-[10px] w-full max-w-4xl px-8 py-4 md:py-2 md:px-3  flex flex-col md:flex-row ">
+      <div className="relative bg-white overflow-hidden rounded-[10px] w-full max-w-4xl px-8 py-4 md:py-2 md:px-3 flex flex-col md:flex-row max-h-[90vh]">
         <img
           className="absolute top-0 left-0 w-32 sm:w-52 md:w-72 pointer-events-none"
           src="/images/Invertedboard.png"
           alt="Decor"
         />
 
-        <div className="flex flex-col w-full md:w-1/2 ml-auto relative mr-8">
+        <div className="flex flex-col w-full md:w-1/2 ml-auto relative mr-8 overflow-y-auto pr-2">
 
           <h1 className="text-3xl sm:text-4xl font-semibold mt-4 mb-5 text-[#3593A6]">
             Join the cruise Community
           </h1>
 
           <div className="flex flex-col">
-            <label className="text-black mt-2 mb-2">Username</label>
-            <input
-              type="text"
-              className="w-full max-w-lg h-[55px] border border-black rounded-md p-4"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Enter your Username"
+            <label className="text-black mt-2 mb-2">
+              Username <span className="text-red-500">*</span>
+            </label>
+            <Controller
+              name="username"
+              control={control}
+              rules={{
+                required: "Username is required",
+              }}
+              render={({ field }) => (
+                <input
+                  type="text"
+                  className="w-full max-w-lg h-[55px] border border-black rounded-md p-4"
+                  value={name}
+                  onChange={(e) => {
+                    field.onChange(e);
+                    setName(e.target.value);
+                  }}
+                  placeholder="Enter your Username"
+                  required
+                />
+              )}
             />
+            {errors.username && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.username.message}
+              </p>
+            )}
           </div>
 
 
           <div className="flex flex-col mt-3">
-            <label className="text-black mb-2">Email Address</label>
-            <input
-              type="email"
-              className="w-full max-w-lg h-[55px] border border-black rounded-md p-4"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your email"
+            <label className="text-black mb-2">
+              Email Address <span className="text-red-500">*</span>
+            </label>
+            <Controller
+              name="email"
+              control={control}
+              rules={{
+                required: "Email is required",
+                pattern: {
+                  value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                  message: "Please enter a valid email address",
+                },
+              }}
+              render={({ field }) => (
+                <input
+                  type="email"
+                  className="w-full max-w-lg h-[55px] border border-black rounded-md p-4"
+                  value={email}
+                  onChange={(e) => {
+                    field.onChange(e);
+                    setEmail(e.target.value);
+                  }}
+                  placeholder="Enter your email"
+                  required
+                />
+              )}
             />
+            {errors.email && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.email.message}
+              </p>
+            )}
           </div>
 
 
-          <div className="flex flex-col mt-3 relative ">
-            <label className="text-black mb-2">Password</label>
-            <input
-              type={showpassword ? "text" : "password"}
-              className="w-full max-w-lg h-[55px] border border-black rounded-md p-4 "
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter your password"
+          <div className="flex flex-col mt-3">
+            <label className="text-black mb-2">
+              Password <span className="text-red-500">*</span>
+            </label>
+            <div className="relative">
+              <Controller
+                name="password"
+                control={control}
+                rules={{
+                  required: "Password is required",
+                  minLength: {
+                    value: 6,
+                    message: "Password must be at least 6 characters",
+                  },
+                }}
+                render={({ field }) => (
+                  <input
+                    type={showpassword ? "text" : "password"}
+                    className="w-full max-w-lg h-[55px] border border-black rounded-md p-4 pr-10"
+                    value={password}
+                    onChange={(e) => {
+                      field.onChange(e);
+                      setPassword(e.target.value);
+                    }}
+                    placeholder="Enter your password"
+                    required
+                  />
+                )}
+              />
+              <button
+                type="button"
+                className="absolute right-3 top-1/2 -translate-y-1/2"
+                onClick={() => setShowpassword(!showpassword)}
+              >
+                {!showpassword ? <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="grey" className="size-6">
+                  <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
+                  <path fillRule="evenodd" d="M1.323 11.447C2.811 6.976 7.028 3.75 12.001 3.75c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113-1.487 4.471-5.705 7.697-10.677 7.697-4.97 0-9.186-3.223-10.675-7.69a1.762 1.762 0 0 1 0-1.113ZM17.25 12a5.25 5.25 0 1 1-10.5 0 5.25 5.25 0 0 1 10.5 0Z" clipRule="evenodd" />
+                </svg> : <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="grey" className="size-6">
+                  <path d="M3.53 2.47a.75.75 0 0 0-1.06 1.06l18 18a.75.75 0 1 0 1.06-1.06l-18-18ZM22.676 12.553a11.249 11.249 0 0 1-2.631 4.31l-3.099-3.099a5.25 5.25 0 0 0-6.71-6.71L7.759 4.577a11.217 11.217 0 0 1 4.242-.827c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113Z" />
+                  <path d="M15.75 12c0 .18-.013.357-.037.53l-4.244-4.243A3.75 3.75 0 0 1 15.75 12ZM12.53 15.713l-4.243-4.244a3.75 3.75 0 0 0 4.244 4.243Z" />
+                  <path d="M6.75 12c0-.619.107-1.213.304-1.764l-3.1-3.1a11.25 11.25 0 0 0-2.63 4.31c-.12.362-.12.752 0 1.114 1.489 4.467 5.704 7.69 10.675 7.69 1.5 0 2.933-.294 4.242-.827l-2.477-2.477A5.25 5.25 0 0 1 6.75 12Z" />
+                </svg>
 
-            />
-            <button type="button" className="absolute right-2 bottom-3" onClick={() => setShowpassword(!showpassword)}>
-              {!showpassword ? <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="grey" className="size-6">
-                <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
-                <path fillRule="evenodd" d="M1.323 11.447C2.811 6.976 7.028 3.75 12.001 3.75c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113-1.487 4.471-5.705 7.697-10.677 7.697-4.97 0-9.186-3.223-10.675-7.69a1.762 1.762 0 0 1 0-1.113ZM17.25 12a5.25 5.25 0 1 1-10.5 0 5.25 5.25 0 0 1 10.5 0Z" clipRule="evenodd" />
-              </svg> : <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="grey" className="size-6">
-                <path d="M3.53 2.47a.75.75 0 0 0-1.06 1.06l18 18a.75.75 0 1 0 1.06-1.06l-18-18ZM22.676 12.553a11.249 11.249 0 0 1-2.631 4.31l-3.099-3.099a5.25 5.25 0 0 0-6.71-6.71L7.759 4.577a11.217 11.217 0 0 1 4.242-.827c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113Z" />
-                <path d="M15.75 12c0 .18-.013.357-.037.53l-4.244-4.243A3.75 3.75 0 0 1 15.75 12ZM12.53 15.713l-4.243-4.244a3.75 3.75 0 0 0 4.244 4.243Z" />
-                <path d="M6.75 12c0-.619.107-1.213.304-1.764l-3.1-3.1a11.25 11.25 0 0 0-2.63 4.31c-.12.362-.12.752 0 1.114 1.489 4.467 5.704 7.69 10.675 7.69 1.5 0 2.933-.294 4.242-.827l-2.477-2.477A5.25 5.25 0 0 1 6.75 12Z" />
-              </svg>
+                }
 
-              }
+              </button>
+            </div>
+            {errors.password && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.password.message}
+              </p>
+            )}
 
-            </button>
+            <div className="mt-2 text-sm">
+              <p className="font-semibold text-gray-700">Password must contain:</p>
+              <ul className="mt-1 space-y-1">
+                <li className={hasMinLength ? "text-green-600" : "text-gray-500"}>
+                  {hasMinLength ? "✓" : "•"} At least 6 characters
+                </li>
+                <li className={hasUppercase ? "text-green-600" : "text-gray-500"}>
+                  {hasUppercase ? "✓" : "•"} At least one uppercase letter
+                </li>
+                <li className={hasSymbol ? "text-green-600" : "text-gray-500"}>
+                  {hasSymbol ? "✓" : "•"} At least one symbol (e.g. ! @ # $)
+                </li>
+              </ul>
+            </div>
           </div>
 
-          <div className="flex flex-col mt-3 relative">
-            <label className="text-black mb-2">Confirm password</label>
-            <input
-              type={showpassword ? "text" : "password"}
-              className="w-full max-w-lg h-[55px] border border-black rounded-md p-4"
-              value={retype}
-              onChange={(e) => setRetype(e.target.value)}
-              placeholder="Re-enter your password"
-            />
-            <button type="button" className="absolute right-2 bottom-3" onClick={() => setShowpassword(!showpassword)}>
-              {!showpassword ? <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="grey" className="size-6">
-                <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
-                <path fillRule="evenodd" d="M1.323 11.447C2.811 6.976 7.028 3.75 12.001 3.75c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113-1.487 4.471-5.705 7.697-10.677 7.697-4.97 0-9.186-3.223-10.675-7.69a1.762 1.762 0 0 1 0-1.113ZM17.25 12a5.25 5.25 0 1 1-10.5 0 5.25 5.25 0 0 1 10.5 0Z" clipRule="evenodd" />
-              </svg> : <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="grey" className="size-6">
-                <path d="M3.53 2.47a.75.75 0 0 0-1.06 1.06l18 18a.75.75 0 1 0 1.06-1.06l-18-18ZM22.676 12.553a11.249 11.249 0 0 1-2.631 4.31l-3.099-3.099a5.25 5.25 0 0 0-6.71-6.71L7.759 4.577a11.217 11.217 0 0 1 4.242-.827c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113Z" />
-                <path d="M15.75 12c0 .18-.013.357-.037.53l-4.244-4.243A3.75 3.75 0 0 1 15.75 12ZM12.53 15.713l-4.243-4.244a3.75 3.75 0 0 0 4.244 4.243Z" />
-                <path d="M6.75 12c0-.619.107-1.213.304-1.764l-3.1-3.1a11.25 11.25 0 0 0-2.63 4.31c-.12.362-.12.752 0 1.114 1.489 4.467 5.704 7.69 10.675 7.69 1.5 0 2.933-.294 4.242-.827l-2.477-2.477A5.25 5.25 0 0 1 6.75 12Z" />
-              </svg>
+          <div className="flex flex-col mt-3">
+            <label className="text-black mb-2">
+              Confirm password <span className="text-red-500">*</span>
+            </label>
+            <div className="relative">
+              <Controller
+                name="confirmPassword"
+                control={control}
+                rules={{
+                  required: "Please confirm your password",
+                  validate: (value) =>
+                    value === password || "Passwords do not match",
+                }}
+                render={({ field }) => (
+                  <input
+                    type={showpassword ? "text" : "password"}
+                    className="w-full max-w-lg h-[55px] border border-black rounded-md p-4 pr-10"
+                    value={retype}
+                    onChange={(e) => {
+                      field.onChange(e);
+                      setRetype(e.target.value);
+                    }}
+                    placeholder="Re-enter your password"
+                    required
+                  />
+                )}
+              />
+              <button
+                type="button"
+                className="absolute right-3 top-1/2 -translate-y-1/2"
+                onClick={() => setShowpassword(!showpassword)}
+              >
+                {!showpassword ? <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="grey" className="size-6">
+                  <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
+                  <path fillRule="evenodd" d="M1.323 11.447C2.811 6.976 7.028 3.75 12.001 3.75c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113-1.487 4.471-5.705 7.697-10.677 7.697-4.97 0-9.186-3.223-10.675-7.69a1.762 1.762 0 0 1 0-1.113ZM17.25 12a5.25 5.25 0 1 1-10.5 0 5.25 5.25 0 0 1 10.5 0Z" clipRule="evenodd" />
+                </svg> : <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="grey" className="size-6">
+                  <path d="M3.53 2.47a.75.75 0 0 0-1.06 1.06l18 18a.75.75 0 1 0 1.06-1.06l-18-18ZM22.676 12.553a11.249 11.249 0 0 1-2.631 4.31l-3.099-3.099a5.25 5.25 0 0 0-6.71-6.71L7.759 4.577a11.217 11.217 0 0 1 4.242-.827c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113Z" />
+                  <path d="M15.75 12c0 .18-.013.357-.037.53l-4.244-4.243A3.75 3.75 0 0 1 15.75 12ZM12.53 15.713l-4.243-4.244a3.75 3.75 0 0 0 4.244 4.243Z" />
+                  <path d="M6.75 12c0-.619.107-1.213.304-1.764l-3.1-3.1a11.25 11.25 0 0 0-2.63 4.31c-.12.362-.12.752 0 1.114 1.489 4.467 5.704 7.69 10.675 7.69 1.5 0 2.933-.294 4.242-.827l-2.477-2.477A5.25 5.25 0 0 1 6.75 12Z" />
+                </svg>
 
-              }
+                }
 
-            </button>
+              </button>
+            </div>
+            {errors.confirmPassword && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.confirmPassword.message}
+              </p>
+            )}
           </div>
 
           {password && retype && password !== retype && (
@@ -208,8 +347,8 @@ export default function Signup() {
 
 
           <button
-            onClick={signupUser}
-            className="w-full max-w-lg h-[55px] rounded-[10px] bg-[#3593A6] text-white mt-4 flex items-center justify-center"
+          onClick={handleSubmit(onSignupSubmit)}
+          className="w-full max-w-lg h-10 rounded-[10px] bg-[#3593A6] p-2 text-white mt-4 flex items-center justify-center transition duration-200 hover:bg-[#2b7c8d] hover:shadow-lg hover:scale-[1.02]"
           >
             Sign Up
           </button>
