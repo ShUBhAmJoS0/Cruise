@@ -50,7 +50,7 @@ console.log("Cart items fetched for order:", items.map(i => ({
 
       if (i.product.productQuantity < i.quantity) {
         return res.status(500).json({
-          message: `Only ${i.Product.productQuantity} items left for ${i.product.productName}`,
+          message: `Only ${i.product.productQuantity} items left for ${i.product.productName}`,
         });
       }
     }

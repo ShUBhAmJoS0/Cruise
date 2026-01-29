@@ -19,7 +19,7 @@
   "main": "server.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest",
     "dev": "nodemon src/server.js",
     "start": "node src/server.js"
   },
@@ -27,6 +27,10 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "nodemon": "^3.1.11"
+    "cross-env": "^7.0.3",
+    "jest": "^30.2.0",
+    "nodemon": "^3.1.11",
+    "sequelize-mock": "^0.10.2",
+    "supertest": "^7.2.2"
   }
 }
