@@ -15,6 +15,7 @@ const Follow = sequelize.define("Follow", {
       model: 'users',
       key: 'id'
     },
+    onDelete: 'CASCADE'
   },
 
   followingId: {
@@ -24,6 +25,7 @@ const Follow = sequelize.define("Follow", {
       model: 'users',
       key: 'id'
     },
+     onDelete: 'CASCADE'
   }
 },{
   indexes: [

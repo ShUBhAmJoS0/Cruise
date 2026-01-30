@@ -45,7 +45,8 @@ const UserProblem = sequelize.define("UserProblem", {
         references: {
             model: 'users',
             key: 'id'
-        }
+        },
+      onDelete:'CASCADE'
     }
 }, {
     tableName: "user_problems",

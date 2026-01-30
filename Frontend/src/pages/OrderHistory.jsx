@@ -435,7 +435,7 @@ export default function OrderHistory() {
               </div>
               <div className="hidden md:flex items-center gap-3 bg-yellow-400 px-6 py-3 rounded-2xl shadow-lg">
                 <Gift className="w-5 h-5 text-yellow-800" />
-                <span className="text-yellow-800 font-bold text-sm">VIP Member</span>
+               
               </div>
             </div>
           </div>

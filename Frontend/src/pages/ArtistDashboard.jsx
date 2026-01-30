@@ -57,7 +57,7 @@ const ArtistAnalytics = () => {
   const latestRevenueValue = revenueData[revenueData.length - 1] || 0;
 
   return (
-    <div className="ml-[22%] px-10 py-8 min-h-screen bg-[#F3F6F8]">
+    <div className=" min-h-screen bg-[#F3F6F8] sm:p-4 md:p-6 lg:p-10 lg:ml-[22%]">
       {/* Top header */}
       <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>

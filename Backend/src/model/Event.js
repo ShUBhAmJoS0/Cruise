@@ -30,7 +30,11 @@ const Event = sequelize.define(
       references:{
         model:User,
         key:"id"
-      }
+      },
+      onDelete:'CASCADE'
+
+      
+
     },
     status:{
       type:DataTypes.STRING,

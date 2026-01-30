@@ -1,43 +1,43 @@
-import { jest, beforeAll, afterAll } from '@jest/globals';
+import { jest, beforeAll, afterAll, afterEach } from "@jest/globals";
 
-// Mock database to prevent actual connections
-jest.mock('../Database/db.js', () => {
-  const mockSequelize = {
-    authenticate: jest.fn().mockResolvedValue(true),
-    define: jest.fn(),
-    transaction: jest.fn(),
-    close: jest.fn(),
-    query: jest.fn(),
-  };
-  return {
-    __esModule: true,
-    default: mockSequelize,
-  };
-});
+// Store original console methods
+const originalLog = console.log;
+const originalError = console.error;
 
 // Global test setup to suppress console logs
 beforeAll(() => {
-  // Suppress console.log for database connection messages
-  const originalLog = console.log;
-  const originalError = console.error;
-  
   console.log = jest.fn((...args) => {
-    if (typeof args[0] === 'string' && args[0].includes('Database connected')) {
-      return; // Suppress DB connection logs
+    const msg = typeof args[0] === "string" ? args[0] : "";
+    if (
+      msg.includes("Database") ||
+      msg.includes("database") ||
+      msg.includes("Executing") ||
+      msg.includes("dotenv") ||
+      msg.includes("DB_")
+    ) {
+      return;
     }
     originalLog(...args);
   });
-  
+
   console.error = jest.fn((...args) => {
-    if (typeof args[0] === 'string' && args[0].includes('DB Connection Error')) {
-      return; // Suppress DB connection errors
+    const msg = typeof args[0] === "string" ? args[0] : "";
+    if (
+      msg.includes("DB Connection") ||
+      msg.includes("Firebase Auth") ||
+      msg.includes("database")
+    ) {
+      return;
     }
     originalError(...args);
   });
 });
 
-afterAll(() => {
-  // Restore console methods
-  jest.restoreAllMocks();
+afterEach(() => {
+  jest.clearAllMocks();
 });
 
+afterAll(() => {
+  console.log = originalLog;
+  console.error = originalError;
+});

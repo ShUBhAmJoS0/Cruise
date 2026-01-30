@@ -294,7 +294,7 @@ function ArtistEventRequestPage() {
   const pendingEvents = requestEvent.filter(item => item.status === "pending").length;
 
   return (
-    <div className="ml-[22%] bg-[#F3F6F8] flex flex-col px-4 md:px-10 py-6 md:py-8 overflow-y-auto min-h-screen">
+    <div className="sm:p-4 md:p-6 lg:p-10 lg:ml-[22%] bg-[#F3F6F8] flex flex-col px-4 md:px-10 py-6 md:py-8 overflow-y-auto min-h-screen">
       {/* Page header */}
       <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
@@ -732,7 +732,7 @@ function ArtistEventRequestPage() {
 
       {/* Edit Modal */}
       {isEditModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 ">
           <div className="bg-white rounded-3xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
             <div className="sticky top-0 bg-white border-b border-gray-200 p-6 flex items-center justify-between rounded-t-3xl">
               <h2 className="text-2xl font-bold text-gray-800">Edit Event</h2>

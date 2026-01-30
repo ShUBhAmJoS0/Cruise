@@ -9,7 +9,7 @@ import User from "../model/User.js";
 
 export const DisplayAll = async (req, res) => {
   try {
-    const events = await Event.findAll({ where: { status: "Approved" } });
+    const events = await Event.findAll({ where: { status: "Approved",visible:"Active"} });
     res.json(events);
   } catch (e) {
     console.error(e);
@@ -155,7 +155,7 @@ export const deleteEvent = async(req,res)=>{
     const eventid = req.params.id
     const event = await Event.findByPk(eventid)
     if(event.visible==="Active"){
-      event.update({visible:"inActive"})
+     await event.update({visible:"inActive"})
       return res.status(200).send({message:"event deleted sucessfully"})
     }
   }
@@ -163,17 +163,25 @@ export const deleteEvent = async(req,res)=>{
     res.status(500).send({message:e.message})
   }
 }
-
 export const filterEvent = async (req, res) => {
   try {
+    // Get dynamic filters from query
     const whereClause = buildEventFilters(req.query);
-    const events = await Event.findAll({ where: whereClause });
+
+
+    const finalWhere = {
+      ...whereClause,
+      visible: "Active",  
+    };
+
+    const events = await Event.findAll({ where: finalWhere });
     res.json(events);
   } catch (err) {
     console.error('Error fetching filtered events:', err);
     res.status(500).json({ error: 'Server error' });
   }
 };
+
 
 export const GetrequestedEvent = async (req, res) => {
   try {

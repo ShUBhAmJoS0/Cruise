@@ -75,7 +75,7 @@ export default function ArtistViewEvents() {
     return (<p>Loading</p>)
   }
   return (
-    <div className="ml-[22%] px-6 md:px-10 py-8 bg-[#F3F6F8] min-h-screen">
+    <div className="sm:p-4 md:p-6 lg:p-10 lg:ml-[22%] px-6 md:px-10 py-8 bg-[#F3F6F8] min-h-screen">
       {/* Page header */}
       <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>

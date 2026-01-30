@@ -1,4 +1,5 @@
 import SequelizeMock from "sequelize-mock";
+
 const dbMock = new SequelizeMock();
 const OrderMock = dbMock.define('Order', {
   id: 1,

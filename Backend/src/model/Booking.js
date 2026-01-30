@@ -59,7 +59,9 @@ const Booking = sequelize.define(
       references: {
         model: User,
         key: "id"
-      }
+      
+      },
+      onDelete:'CASCADE'
     },
     EventId: {
       type: DataTypes.INTEGER,

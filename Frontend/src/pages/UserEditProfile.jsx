@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { Camera, X, User, Mail, Sparkles, CheckCircle } from "lucide-react";
 import api from "../api/axios";
 import { useAuth } from "../context/AuthContext";
+import toast from "react-hot-toast";
 
 function UserEditProfile() {
   const { setDbuser } = useAuth();
@@ -24,9 +25,7 @@ function UserEditProfile() {
   };
 
   const getImageUrl = (pathOrBlob) => {
-    if (!pathOrBlob) return "/images/defaultprofilepic.png";
-    if (pathOrBlob instanceof Blob || pathOrBlob.startsWith("blob:"))
-      return pathOrBlob;
+
     return `http://localhost:5000/${pathOrBlob}`;
   };
 
@@ -96,7 +95,7 @@ function UserEditProfile() {
             <div className="relative group">
               <div className="w-40 h-40 rounded-full overflow-hidden ring-4 ring-[#93CAD5]/40 ring-offset-4 ring-offset-white shadow-lg transition-all duration-300 group-hover:ring-[#93CAD5]/70 group-hover:shadow-2xl group-hover:ring-offset-2">
                 <img
-                  src={getImageUrl(preview)}
+                  src={preview ? (profilePic ? preview : getImageUrl(preview)) : "/default.jpg"}
                   alt="Profile"
                   className="w-full h-full object-cover"
                 />

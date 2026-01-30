@@ -68,3 +68,4 @@ const port = process.env.PORT || 5000;
     console.error("Unable to start server:", err);
   }
 })(); 
+export default app;

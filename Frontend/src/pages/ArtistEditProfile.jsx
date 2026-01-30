@@ -159,7 +159,7 @@ function ArtistEditProfile() {
   }, [existingMediaImages]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#e8f4f6] via-white to-[#d4eef3] flex items-center justify-center p-6 md:p-10 ml-[20%]">
+    <div className="min-h-screen bg-gradient-to-br from-[#e8f4f6] via-white to-[#d4eef3] flex items-center justify-center sm:p-4 md:p-6 lg:p-10 lg:ml-[22%]">
       <div className="w-full max-w-5xl bg-white rounded-3xl shadow-2xl shadow-[#93CAD5]/20 overflow-hidden">
         <div className="md:flex">
 
@@ -176,7 +176,7 @@ function ArtistEditProfile() {
             <div className="relative group">
               <div className="w-36 h-36 rounded-full overflow-hidden ring-4 ring-[#93CAD5]/40 ring-offset-4 ring-offset-white shadow-xl transition-all duration-300 group-hover:ring-[#93CAD5]/70 group-hover:shadow-2xl">
                 <img
-                  src={getImageUrl(preview)}
+                  src={preview ? (profilePic ? preview : getImageUrl(preview)) : "/default.jpg"}
                   alt="Profile"
                   className="w-full h-full object-cover"
                 />
@@ -209,7 +209,7 @@ function ArtistEditProfile() {
             <div className="relative group w-full max-w-xs">
               <div className="aspect-[3/1] rounded-2xl overflow-hidden ring-2 ring-[#93CAD5]/30 ring-offset-2 ring-offset-white shadow-lg transition-all duration-300 group-hover:ring-[#93CAD5]/60 group-hover:shadow-xl bg-gray-100">
                 <img
-                  src={getImageUrl(coverpreview)}
+                    src={coverpreview ? (coverPic ? coverpreview : getImageUrl(coverpreview)) : "/default.jpg"}
                   alt="Cover"
                   className="w-full h-full object-cover"
                 />

@@ -1,32 +1,102 @@
-import { jest } from "@jest/globals";
-import request from 'supertest';
-import express from 'express';
-import bookingRoutes from '../routes/bookingRoutes.js';
+import { jest, describe, it, expect, beforeEach } from "@jest/globals";
+import request from "supertest";
+import express from "express";
 
-jest.mock('../controller/bookingController.js', () => ({
-  createBookingController: jest.fn((req, res) => res.json({ message: 'Booking successful' })),
-  Getmybookings: jest.fn((req, res) => res.json({ data: [], message: 'fetched all bookings successfully' })),
+// Mock controller functions
+const mockCreateBooking = jest.fn();
+const mockGetMyBookings = jest.fn();
+
+// Mock the modules before importing route
+jest.unstable_mockModule("../controller/bookingController.js", () => ({
+  createBookingController: mockCreateBooking,
+  Getmybookings: mockGetMyBookings,
 }));
 
-jest.mock('../middleware/Attendeonly.js', () => ({
-  AttendeeOnly: (req, res, next) => next(),
+jest.unstable_mockModule("../middleware/Attendeonly.js", () => ({
+  AttendeeOnly: (req, res, next) => {
+    if (!req.headers.authorization) {
+      return res.status(401).json({ message: "Authorization token missing" });
+    }
+    req.user = { id: 1, firebase_uid: "test_uid", role: "Attendee" };
+    next();
+  },
 }));
 
-const app = express();
-app.use(express.json());
-app.use('/api/bookings', bookingRoutes);
+// Import route after mocks
+const { default: bookingRoutes } = await import("../routes/bookingRoutes.js");
 
-describe('Booking Routes', () => {
-  it('should have booking routes', () => {
-    expect(true).toBe(true);
+const testApp = express();
+testApp.use(express.json());
+testApp.use("/api/booking", bookingRoutes);
+
+describe("Booking API Endpoints", () => {
+  const token = "valid-test-token";
+
+  beforeEach(() => {
+    jest.clearAllMocks();
   });
 
-  it('should handle POST /api/bookings/', () => {
-    expect(true).toBe(true);
+  it("should handle booking creation request", async () => {
+    mockCreateBooking.mockImplementation((req, res) => {
+      return res.status(201).json({
+        message: "Booking successful",
+        booking: { id: 1, ticketCode: "TKT-123" },
+      });
+    });
+
+    const res = await request(testApp)
+      .post("/api/booking/")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        ticket_type: "VIP",
+        quantity: 2,
+        customer_name: "John Doe",
+        billing_address: "Kathmandu",
+        card_number: "4242424242424242",
+        event_id: 1,
+      });
+
+    expect(mockCreateBooking).toHaveBeenCalled();
+    expect(res.status).toBe(201);
+    expect(res.body).toHaveProperty("booking");
   });
 
-  it('should handle GET /api/bookings/', () => {
-    expect(true).toBe(true);
+  it("should not create booking with missing fields", async () => {
+    mockCreateBooking.mockImplementation((req, res) => {
+      return res.status(400).json({ message: "Missing required fields" });
+    });
+
+    const res = await request(testApp)
+      .post("/api/booking/")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        ticket_type: "VIP",
+        quantity: 2,
+      });
+
+    expect(res.status).toBe(400);
+  });
+
+  it("should handle get my bookings request", async () => {
+    mockGetMyBookings.mockImplementation((req, res) => {
+      return res.status(200).json({
+        data: [{ id: 1, ticketCode: "TKT-123" }],
+        message: "fetched all bookings successfully",
+      });
+    });
+
+    const res = await request(testApp)
+      .get("/api/booking/")
+      .set("Authorization", `Bearer ${token}`);
+
+    expect(mockGetMyBookings).toHaveBeenCalled();
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty("data");
+  });
+
+  it("should not get bookings without token", async () => {
+    const res = await request(testApp).get("/api/booking/");
+
+    expect(res.status).toBe(401);
   });
 });
-

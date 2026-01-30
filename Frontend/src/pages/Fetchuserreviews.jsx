@@ -102,7 +102,7 @@ const Fetchuserreviews = () => {
   return (
     <>
       <ArtistNavbar />
-      <div className="min-h-screen bg-slate-50 pt-16 md:ml-[23%]">
+      <div className="min-h-screen bg-slate-50 pt-16 sm:p-4 md:p-6 lg:p-10 lg:ml-[22%]">
         <div className="max-w-7xl mx-auto px-4 py-8">
           {/* Header */}
           <div className="mb-8">

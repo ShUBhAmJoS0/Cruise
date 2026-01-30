@@ -39,7 +39,7 @@ const Fetchuserreviews = lazy(() => import("./pages/Fetchuserreviews"));
 
 function AppRoutes() {
   const location = useLocation();
-  const noNavPatterns = ["/", "/artist/profile/"];
+  const noNavPatterns = ["/", "/artist/profile/","/admin/login"];
   const showLayout = !noNavPatterns.some(path => {
     const currentPath = location.pathname.toLowerCase();
     if (path === "/") {

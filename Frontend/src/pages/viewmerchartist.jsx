@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { useState } from "react";
 import DataTable from "react-data-table-component";
 import api from "../api/axios";
+import toast from "react-hot-toast";
 
 
 const merchColumns = [
@@ -77,7 +78,7 @@ const MerchExpanded = ({ data, handleMarkAsComplete, completingOrders }) => (
               >
                 {b.Order?.status}
               </span>
-              {(b.Order.status === "Confirmed" || b.Order.status === "Shipped") && (
+              {(b.Order.status === "Confirmed") && (
                 <button
                   onClick={() => handleMarkAsComplete(b.Order.id)}
                   disabled={completingOrders.has(b.Order.id)}
@@ -202,7 +203,7 @@ export default function ViewMerchandiseTable() {
 
   return (
 
-    <div className="ml-[22%] px-6 md:px-10 py-8 min-h-screen bg-[#F3F6F8]">
+    <div className="sm:p-4 md:p-6 lg:p-10 lg:ml-[22%] px-6 md:px-10 py-8 min-h-screen bg-[#F3F6F8]">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
         <div>

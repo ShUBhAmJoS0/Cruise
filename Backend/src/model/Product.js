@@ -14,7 +14,8 @@ export const Product= sequelize.define("product",{
       references:{
         model:User,
         key:"id"
-      }
+      },
+      onDelete:'CASCADE'
     },
     productName:{
         type:DataTypes.STRING,

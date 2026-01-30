@@ -576,7 +576,7 @@ const ArtistProfile = () => {
                         <div
                           key={event.id}
                           className="group bg-white border-2 border-slate-100 rounded-2xl overflow-hidden hover:shadow-2xl hover:border-[#3593A6]/30 transition-all duration-300 cursor-pointer"
-                          onClick={() => navigate(`/event/${event.id}`)}
+                          
                         >
                           <div className="relative h-48 overflow-hidden">
                             <img
@@ -599,16 +599,19 @@ const ArtistProfile = () => {
                             </div>
                           </div>
                           <div className="p-6">
+                           <p className="text-md text-yellow-600 mb-4 line-clamp-2"> Status: {(event.status).toUpperCase()}</p>
                             <p className="text-slate-600 mb-4 line-clamp-2">{event.description}</p>
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-1 text-slate-500 text-sm">
                                 <MapPin className="w-4 h-4" />
                                 <span>{event.location}</span>
                               </div>
-                              <button className="px-4 py-2 bg-[#3593A6] text-white rounded-xl hover:bg-[#2d7a8a] transition-colors font-medium flex items-center gap-2 group-hover:shadow-lg">
-                                View Details
-                                <ChevronRight className="w-4 h-4" />
-                              </button>
+                        {event.status !== "pending" && (
+  <button className="px-4 py-2 bg-[#3593A6] text-white rounded-xl hover:bg-[#2d7a8a] transition-colors font-medium flex items-center gap-2 group-hover:shadow-lg" onClick={() => navigate(`/event/${event.id}`)}>
+    View Details
+    <ChevronRight className="w-4 h-4" />
+  </button>
+)}
                             </div>
                           </div>
                         </div>

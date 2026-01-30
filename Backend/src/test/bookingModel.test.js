@@ -1,35 +1,42 @@
-import SequelizeMock from 'sequelize-mock';
+import SequelizeMock from "sequelize-mock";
 
-// Create a mock DB
 const dbMock = new SequelizeMock();
 
-// Define Booking mock
-const Booking = dbMock.define('Booking', {
-  id: 1,
-  ticketCode: 'ABC123',
-  eventName: 'Concert',
-  ticketType: 'VIP',
-  quantity: 1,
-  customerName: 'John Doe',
-  billingAddress: '123 Street',
-  totalPrice: 100,
-  paymentStatus: 'success',
-  createdBy: 1,
-  EventId: 10
-}, {
-  timestamps: true,
-  underscored: true
-});
 
-describe('Booking Model', () => {
+const Booking = dbMock.define(
+  "Booking",
+  {
+    id: 1,
+    ticketCode: "TKT-123ABC",
+    eventName: "Concert",
+    ticketType: "VIP",
+    quantity: 1,
+    customerName: "John Doe",
+    billingAddress: "Kathmandu",
+    totalPrice: 1500,
+    paymentStatus: "success",
+    createdBy: 1,
+    EventId: 10,
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    timestamps: true,
+    underscored: true
+  }
+);
 
-  it('should define Booking model', () => {
+/* ---------------- TESTS ---------------- */
+
+describe("Booking Model", () => {
+
+  it("should define Booking model", () => {
     expect(Booking).toBeDefined();
-    expect(Booking.name).toBe('Booking'); // sequelize-mock uses .name instead of .modelName
+    expect(Booking.name).toBe("Booking");
   });
 
-  it('should have required fields', () => {
-    const fields = Booking._defaults; // sequelize-mock stores initial values in _defaults
+  it("should have required fields", () => {
+    const fields = Booking._defaults;
 
     expect(fields.id).toBeDefined();
     expect(fields.ticketCode).toBeDefined();
@@ -44,12 +51,16 @@ describe('Booking Model', () => {
     expect(fields.EventId).toBeDefined();
   });
 
-  it('should have default quantity of 1', () => {
+  it("should have default quantity of 1", () => {
     expect(Booking._defaults.quantity).toBe(1);
   });
 
-  it('should have default paymentStatus as success', () => {
-    expect(Booking._defaults.paymentStatus).toBe('success');
+  it("should have default paymentStatus as success", () => {
+    expect(Booking._defaults.paymentStatus).toBe("success");
+  });
+
+  it("should support timestamps", () => {
+    expect(Booking.options.timestamps).toBe(true);
   });
 
 });

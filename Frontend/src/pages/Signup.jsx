@@ -80,13 +80,13 @@ export default function Signup() {
       console.log(res.data.user.userType)
       setRole(res.data.user.userType);
       setDbuser(res.data.user)
-
+  const role = res.data.user.userType
       toast.success("Signup successful!");
-      const role = res.data.user.userType
-      console.log(role)
-      if (role === "Admin") navigate("/admin");
-      else if (role === "Artist") navigate("/artist/Request");
-      else navigate("/events");
+    navigate("/login")
+      // console.log(role)
+      // if (role === "Admin") navigate("/admin");
+      // else if (role === "Artist") navigate("/artist/profile");
+      // else navigate("/events");
     } catch (error) {
       console.error("Signup error:", error);
 

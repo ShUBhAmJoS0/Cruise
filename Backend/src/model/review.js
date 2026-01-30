@@ -20,7 +20,8 @@ const Review = sequelize.define(
       references: {
         model: "users",
         key: "id"
-      }
+      },
+      onDelete: 'CASCADE'
     },
     artistId: {
       type: DataTypes.INTEGER,
@@ -28,7 +29,8 @@ const Review = sequelize.define(
       references: {
         model: "users",
         key: "id"
-      }
+      },
+      onDelete:'CASCADE'
     },
   },
   {
