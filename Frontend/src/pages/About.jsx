@@ -27,7 +27,7 @@ const About = () => {
     <>
 
 
-      <main className="mt-20 bg-cyan-50 min-h-screen">
+      <main className="mt-4 bg-cyan-50 min-h-screen">
         {/* About Us Section */}
         <section className="max-w-6xl mx-auto py-16 px-4">
           <div className="flex flex-col lg:flex-row items-center gap-12">
@@ -58,47 +58,47 @@ const About = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-12">
-  {/* Discover Events */}
-  <div className="bg-white rounded-xl shadow-md p-8 text-center hover:shadow-xl transition-shadow">
-    <div className="w-16 h-16 rounded-full mx-auto flex items-center justify-center" style={{ backgroundColor: `${primaryColor}20` }}>
-      <img 
-        src="/images/DiscoverEvents.png" 
-        alt="Discover Events" 
-        className="w-10 h-10 object-contain"
-      />
-    </div>
-    <h3 className="text-xl font-semibold mt-6">Discover Events</h3>
-    <p className="text-gray-600 mt-4">Discover concerts, expos, and sports events happening near you.</p>
-  </div>
+            {/* Discover Events */}
+            <div className="bg-white rounded-xl shadow-md p-8 text-center hover:shadow-xl transition-shadow">
+              <div className="w-16 h-16 rounded-full mx-auto flex items-center justify-center" style={{ backgroundColor: `${primaryColor}20` }}>
+                <img
+                  src="/images/DiscoverEvents.png"
+                  alt="Discover Events"
+                  className="w-10 h-10 object-contain"
+                />
+              </div>
+              <h3 className="text-xl font-semibold mt-6">Discover Events</h3>
+              <p className="text-gray-600 mt-4">Discover concerts, expos, and sports events happening near you.</p>
+            </div>
 
-  {/* Book Tickets */}
-  <div className="bg-white rounded-xl shadow-md p-8 text-center hover:shadow-xl transition-shadow">
-    <div className="w-16 h-16 rounded-full mx-auto flex items-center justify-center" style={{ backgroundColor: `${primaryColor}20` }}>
-      <img 
-        src="/images/BookTickets.png" 
-        alt="Book Tickets" 
-        className="w-10 h-10 object-contain"
-      />
-    </div>
-    <h3 className="text-xl font-semibold mt-6">Book Tickets</h3>
-    <p className="text-gray-600 mt-4">Book tickets easily and receive instant confirmation for your entry.</p>
-  </div>
+            {/* Book Tickets */}
+            <div className="bg-white rounded-xl shadow-md p-8 text-center hover:shadow-xl transition-shadow">
+              <div className="w-16 h-16 rounded-full mx-auto flex items-center justify-center" style={{ backgroundColor: `${primaryColor}20` }}>
+                <img
+                  src="/images/BookTickets.png"
+                  alt="Book Tickets"
+                  className="w-10 h-10 object-contain"
+                />
+              </div>
+              <h3 className="text-xl font-semibold mt-6">Book Tickets</h3>
+              <p className="text-gray-600 mt-4">Book tickets easily and receive instant confirmation for your entry.</p>
+            </div>
 
 
 
-  {/* Buy Merchandise */}
-  <div className="bg-white rounded-xl shadow-md p-8 text-center hover:shadow-xl transition-shadow">
-    <div className="w-16 h-16 rounded-full mx-auto flex items-center justify-center" style={{ backgroundColor: `${primaryColor}20` }}>
-      <img 
-        src="/images/BuyMerchandise.png" 
-        alt="Buy Merchandise" 
-        className="w-10 h-10 object-contain"
-      />
-    </div>
-    <h3 className="text-xl font-semibold mt-6">Buy Merchandise</h3>
-    <p className="text-gray-600 mt-4">Purchase official event merchandise directly through the platform.</p>
-  </div>
-</div>
+            {/* Buy Merchandise */}
+            <div className="bg-white rounded-xl shadow-md p-8 text-center hover:shadow-xl transition-shadow">
+              <div className="w-16 h-16 rounded-full mx-auto flex items-center justify-center" style={{ backgroundColor: `${primaryColor}20` }}>
+                <img
+                  src="/images/BuyMerchandise.png"
+                  alt="Buy Merchandise"
+                  className="w-10 h-10 object-contain"
+                />
+              </div>
+              <h3 className="text-xl font-semibold mt-6">Buy Merchandise</h3>
+              <p className="text-gray-600 mt-4">Purchase official event merchandise directly through the platform.</p>
+            </div>
+          </div>
         </section>
       </main>
     </>

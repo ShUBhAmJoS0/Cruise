@@ -18,7 +18,7 @@ export default function ForgetPassword() {
                 toast.success("Mock Mode: Password reset link (simulated) sent!");
             } else {
                 await sendPasswordResetEmail(auth, email);
-               toast.success("Password reset link sent!");
+                toast.success("Password reset link sent!");
             }
         }
         catch (e) {

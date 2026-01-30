@@ -137,9 +137,9 @@ function EventRequests({ onNavigate, onLogout }) {
 
       {/* Mobile overlay */}
       {sidebarOpen && (
-        <div 
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden" 
-          onClick={() => setSidebarOpen(false)} 
+        <div
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
         />
       )}
 
@@ -151,8 +151,8 @@ function EventRequests({ onNavigate, onLogout }) {
                 <h1 className="text-[#3593A6] text-xl font-bold leading-normal tracking-tight">Cruise Admin</h1>
                 <p className="text-[#617589] text-xs font-medium uppercase tracking-wider mt-1">Event Requests</p>
               </div>
-              <button 
-                onClick={() => setSidebarOpen(false)} 
+              <button
+                onClick={() => setSidebarOpen(false)}
                 className="lg:hidden p-2 rounded-lg hover:bg-gray-100 text-gray-600"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -213,8 +213,8 @@ function EventRequests({ onNavigate, onLogout }) {
       <main className="flex-1 flex flex-col h-full overflow-hidden">
         <header className="h-16 flex items-center justify-between px-4 md:px-8 bg-white border-b border-[#e5e7eb] shrink-0">
           <div className="flex items-center gap-3">
-            <button 
-              onClick={() => setSidebarOpen(true)} 
+            <button
+              onClick={() => setSidebarOpen(true)}
               className="lg:hidden p-2 rounded-lg hover:bg-gray-100 text-gray-600"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -374,9 +374,9 @@ function EventRequests({ onNavigate, onLogout }) {
                           <div className="flex flex-col">
                             <span className="text-xs text-[#617589] font-medium uppercase tracking-wide">Pricing</span>
                             <div className="flex gap-2 mt-1">
-                              <span className="text-sm font-semibold text-[#3593A6]">VIP: ${event.prices?.VIP || 0}</span>
-                              <span className="text-sm font-semibold text-[#3593A6]">Regular: ${event.prices?.Regular || 0}</span>
-                              <span className="text-sm font-semibold text-[#3593A6]">Student: ${event.prices?.Student || 0}</span>
+                              <span className="text-sm font-semibold text-[#3593A6]">VIP: NPR {event.prices?.VIP || 0}</span>
+                              <span className="text-sm font-semibold text-[#3593A6]">Regular: NPR {event.prices?.Regular || 0}</span>
+                              <span className="text-sm font-semibold text-[#3593A6]">Student: NPR {event.prices?.Student || 0}</span>
                             </div>
                           </div>
 

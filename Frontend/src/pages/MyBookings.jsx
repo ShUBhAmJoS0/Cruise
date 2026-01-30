@@ -65,7 +65,7 @@ export default function MyBookings() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f7f7fa] p-6 pt-20">
+    <div className="min-h-screen bg-[#f7f7fa] p-6 pt-4">
       <div className="max-w-5xl mx-auto">
         <div className="mb-8 flex flex-col md:flex-row md:items-end md:justify-between gap-2">
           <div>
@@ -163,7 +163,7 @@ export default function MyBookings() {
                   </div>
                   <div className="flex flex-col items-end gap-2 min-w-[160px]">
                     <p className="text-3xl font-bold text-emerald-600">
-                      Rs. {booking.totalPrice.toLocaleString()}
+                      NPR {booking.totalPrice.toLocaleString()}
                     </p>
                     <p className="text-xs text-slate-400">Total Amount</p>
                     <button

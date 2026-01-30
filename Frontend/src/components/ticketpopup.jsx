@@ -97,7 +97,7 @@ export default function TicketPopup({ booking, onClose }) {
 
             <div className="pt-2 border-t border-[#e0e0e0]">
               <p className="text-[#2b2929] text-[10px] mb-0.5 mt-5">Total Paid</p>
-              <p className="text-lg font-bold">Rs. {booking.totalPrice}</p>
+              <p className="text-lg font-bold">NPR {booking.totalPrice}</p>
             </div>
           </div>
 

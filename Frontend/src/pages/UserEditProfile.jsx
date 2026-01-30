@@ -11,7 +11,7 @@ function UserEditProfile() {
   const [info, setInfo] = useState({});
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
-  
+
   const { register, handleSubmit, reset, formState: { errors } } = useForm();
 
   const handleImageChange = (e) => {
@@ -25,7 +25,7 @@ function UserEditProfile() {
 
   const getImageUrl = (pathOrBlob) => {
     if (!pathOrBlob) return "/images/defaultprofilepic.png";
-    if (pathOrBlob instanceof Blob || pathOrBlob.startsWith("blob:")) 
+    if (pathOrBlob instanceof Blob || pathOrBlob.startsWith("blob:"))
       return pathOrBlob;
     return `http://localhost:5000/${pathOrBlob}`;
   };
@@ -37,11 +37,11 @@ function UserEditProfile() {
       formData.append("username", data.username);
       formData.append("email", data.email);
       if (profilePic) formData.append("profilePic", profilePic);
-      
+
       const response = await api.put("/user/updateProfile", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      
+
       // Update context with new images
       setDbuser(prev => ({
         ...prev,
@@ -49,10 +49,10 @@ function UserEditProfile() {
         email: data.email,
         profileImage: preview || prev.profileImage
       }));
-      
+
       // Reset form state
       setProfilePic(null);
-      
+
       toast.success(response.data.message);
     } catch (e) {
       console.log(e?.response?.data?.message);
@@ -80,7 +80,7 @@ function UserEditProfile() {
   }, [reset]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#e8f4f6] via-white to-[#d4eef3] flex items-center justify-center p-4 md:p-6 pt-24 pb-8">
+    <div className="min-h-screen bg-gradient-to-br from-[#e8f4f6] via-white to-[#d4eef3] flex items-center justify-center p-4 md:p-6 pt-4 pb-8">
       <div className="w-full max-w-5xl bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-100">
         <div className="md:flex">
           <div className="md:w-2/5 bg-gradient-to-b from-[#93CAD5]/15 via-[#cbe4e8] to-[#93CAD5]/10 p-8 md:p-12 flex flex-col items-center justify-center space-y-6 border-r border-[#93CAD5]/20">
@@ -122,7 +122,7 @@ function UserEditProfile() {
                 </button>
               )}
             </div>
-            
+
             <div className="text-center text-sm text-gray-600">
               <p>Recommended: At least 400x400px</p>
             </div>
@@ -171,7 +171,7 @@ function UserEditProfile() {
                 </label>
                 <input
                   id="email"
-                  {...register("email", { 
+                  {...register("email", {
                     pattern: {
                       value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
                       message: "Invalid email address"
@@ -193,11 +193,10 @@ function UserEditProfile() {
               <button
                 type="submit"
                 disabled={loading}
-                className={`w-full py-3 font-semibold rounded-xl transition-all duration-300 text-white flex items-center justify-center gap-2 shadow-lg shadow-[#93CAD5]/30 hover:shadow-xl hover:shadow-[#93CAD5]/40 ${
-                  loading 
-                    ? "bg-[#93CAD5]/70 cursor-not-allowed" 
+                className={`w-full py-3 font-semibold rounded-xl transition-all duration-300 text-white flex items-center justify-center gap-2 shadow-lg shadow-[#93CAD5]/30 hover:shadow-xl hover:shadow-[#93CAD5]/40 ${loading
+                    ? "bg-[#93CAD5]/70 cursor-not-allowed"
                     : "bg-[#93CAD5] hover:bg-[#7bbcc9]"
-                }`}
+                  }`}
               >
                 {loading ? (
                   <>

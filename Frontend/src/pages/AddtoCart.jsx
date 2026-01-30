@@ -50,7 +50,7 @@ const CartPage = () => {
   };
 
   return (
-    <main className="max-w-6xl mx-auto mt-20 p-4 pt-6 min-h-[520px] pb-12">
+    <main className="max-w-6xl mx-auto mt-4 p-4 pt-6 min-h-[520px] pb-12">
       <div className="flex items-center gap-2 mb-6">
         <ShoppingCart size={28} className="text-[#3593A6]" />
         <h1 className="text-3xl font-medium tracking-tight text-gray-900">

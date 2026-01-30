@@ -244,20 +244,22 @@ export default function Signup() {
               </p>
             )}
 
-            <div className="mt-2 text-sm">
-              <p className="font-semibold text-gray-700">Password must contain:</p>
-              <ul className="mt-1 space-y-1">
-                <li className={hasMinLength ? "text-green-600" : "text-gray-500"}>
-                  {hasMinLength ? "✓" : "•"} At least 6 characters
-                </li>
-                <li className={hasUppercase ? "text-green-600" : "text-gray-500"}>
-                  {hasUppercase ? "✓" : "•"} At least one uppercase letter
-                </li>
-                <li className={hasSymbol ? "text-green-600" : "text-gray-500"}>
-                  {hasSymbol ? "✓" : "•"} At least one symbol (e.g. ! @ # $)
-                </li>
-              </ul>
-            </div>
+            {password && (!hasMinLength || !hasUppercase || !hasSymbol) && (
+              <div className="mt-2 text-sm">
+                <p className="font-semibold text-gray-700">Password must contain:</p>
+                <ul className="mt-1 space-y-1">
+                  <li className={hasMinLength ? "text-green-600" : "text-gray-500"}>
+                    {hasMinLength ? "✓" : "•"} At least 6 characters
+                  </li>
+                  <li className={hasUppercase ? "text-green-600" : "text-gray-500"}>
+                    {hasUppercase ? "✓" : "•"} At least one uppercase letter
+                  </li>
+                  <li className={hasSymbol ? "text-green-600" : "text-gray-500"}>
+                    {hasSymbol ? "✓" : "•"} At least one symbol (e.g. ! @ # $)
+                  </li>
+                </ul>
+              </div>
+            )}
           </div>
 
           <div className="flex flex-col mt-3">
@@ -347,8 +349,8 @@ export default function Signup() {
 
 
           <button
-          onClick={handleSubmit(onSignupSubmit)}
-          className="w-full max-w-lg h-10 rounded-[10px] bg-[#3593A6] p-2 text-white mt-4 flex items-center justify-center transition duration-200 hover:bg-[#2b7c8d] hover:shadow-lg hover:scale-[1.02]"
+            onClick={handleSubmit(onSignupSubmit)}
+            className="w-full max-w-lg h-10 rounded-[10px] bg-[#3593A6] p-2 text-white mt-4 flex items-center justify-center transition duration-200 hover:bg-[#2b7c8d] hover:shadow-lg hover:scale-[1.02]"
           >
             Sign Up
           </button>

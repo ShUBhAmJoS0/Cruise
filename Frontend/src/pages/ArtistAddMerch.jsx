@@ -64,7 +64,7 @@ function AddMerch() {
     const [image, setImage] = useState(null);
     const [preview, setPreview] = useState(`http://localhost:5000/${item.productImage}`);
     const { register, handleSubmit, reset } = useForm();
- 
+
 
     useEffect(() => {
       if (item) {
@@ -99,7 +99,7 @@ function AddMerch() {
         close();
       } catch (error) {
         console.log(error);
-       toast.error("Failed to update", "error");
+        toast.error("Failed to update", "error");
       }
     };
 
@@ -160,13 +160,13 @@ function AddMerch() {
     );
   }
 
-  const deleteProduct = async(id) => {
+  const deleteProduct = async (id) => {
     try {
       const res = await api.delete(`/artist/addmerch/${id}`)
       console.log(deleteProduct)
       toast.success(res.data.message, "success")
       getMerchItems()
-    } catch(error) {
+    } catch (error) {
       console.log(error)
       toast.error(error.response?.data?.message || "Failed to delete product", "error")
     }
@@ -279,9 +279,9 @@ function AddMerch() {
           </div>
 
           <div className="flex flex-col">
-            <label className="text-xs font-medium text-gray-600 mb-1.5">Price (USD)</label>
+            <label className="text-xs font-medium text-gray-600 mb-1.5">Price (NPR)</label>
             <div className="relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xs text-gray-400">$</span>
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[10px] font-bold text-gray-400">NPR</span>
               <input
                 type="number"
                 {...register("price", { required: true })}
@@ -384,8 +384,8 @@ function AddMerch() {
         </div>
 
         <div className="flex gap-6 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
-          {getItems.filter(item => item.visible === "Active") .map(item =>(
-           
+          {getItems.filter(item => item.visible === "Active").map(item => (
+
             <div key={item.productId} className="min-w-[220px] flex-shrink-0 bg-white rounded-2xl shadow-sm border border-gray-200/70 overflow-hidden group hover:shadow-md hover:-translate-y-[2px] transition-all duration-200">
               <div className="relative h-44 overflow-hidden bg-gray-100">
                 <img src={`http://localhost:5000/${item.productImage}`} alt={item.productName} className="w-full h-full object-cover group-hover:scale-[1.04] transition duration-300" />
@@ -398,15 +398,15 @@ function AddMerch() {
                   </button>
                 </div>
               </div>
-              
+
               <div className="p-4 space-y-3">
                 <div>
                   <h3 className="font-medium text-gray-900 mb-0.5 truncate">{item.productName}</h3>
                   <p className="text-[#1F6D7E] font-semibold text-base">
-                    ${item.productPrice}
+                    NPR {item.productPrice}
                   </p>
                 </div>
-                
+
                 <div className="flex gap-2 mb-3">
                   <span className="bg-[#EFF7FA] text-[#1F6D7E] px-3 py-1 rounded-full text-[0.7rem] font-medium">
                     Stock: {item.productQuantity}
@@ -414,14 +414,14 @@ function AddMerch() {
                 </div>
 
                 <div className="space-y-2">
-                  <button 
-                    onClick={() => setEditpopup(item)} 
+                  <button
+                    onClick={() => setEditpopup(item)}
                     className="w-full py-2 text-xs bg-[#1F6D7E] text-white rounded-lg font-medium hover:bg-[#1a5c6a] transition-colors"
                   >
                     Edit Product
                   </button>
-                  <button 
-                    className="w-full py-2 text-xs bg-white text-[#d65659] border border-[#f2b5b7] rounded-lg font-medium hover:bg-[#FFF4F3] transition-colors" 
+                  <button
+                    className="w-full py-2 text-xs bg-white text-[#d65659] border border-[#f2b5b7] rounded-lg font-medium hover:bg-[#FFF4F3] transition-colors"
                     onClick={() => deleteProduct(item.productId)}
                   >
                     Delete
@@ -483,7 +483,7 @@ function AddMerch() {
 
                 <div className="bg-[#F4FAFB] p-4 rounded-xl border border-[#D6E7EE]">
                   <p className="text-xs text-gray-500 mb-1">Net profit (est.)</p>
-                  <p className="text-xl font-bold text-gray-800">{Math.floor(showPopup.OrderItems.reduce((a, b) => a + Number(b.totalPrice), 0)*0.40)}</p>
+                  <p className="text-xl font-bold text-gray-800">{Math.floor(showPopup.OrderItems.reduce((a, b) => a + Number(b.totalPrice), 0) * 0.40)}</p>
                 </div>
               </div>
             </div>
@@ -520,4 +520,4 @@ function AddMerch() {
   );
 }
 
-export { AddMerch };
+export default AddMerch;

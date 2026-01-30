@@ -18,7 +18,7 @@ const ReceiptPage = () => {
   return (
     <main className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 py-12 px-4">
       <div className="max-w-3xl mx-auto">
-    
+
         <div className="flex justify-center mb-8">
           <div className="inline-flex items-center gap-3 bg-emerald-50 border-2 border-emerald-500 rounded-full px-8 py-4">
             <svg className="w-7 h-7 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -28,23 +28,23 @@ const ReceiptPage = () => {
           </div>
         </div>
 
-      
+
         <div className="text-center mb-10">
           <h1 className="text-5xl font-bold text-slate-800 mb-3 tracking-tight">Order Receipt</h1>
           <p className="text-slate-500 text-lg">Thank you for your purchase</p>
         </div>
 
-     
+
         <div className="bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden mb-8">
-      
+
           <div className="bg-[#3593A6] px-8 py-6">
             <div className="flex justify-between items-center">
               <div>
                 <p className="text-white/80 text-sm font-medium mb-1">Order Date</p>
-                <p className="text-white text-lg font-semibold">{new Date().toLocaleDateString('en-US', { 
-                  month: 'long', 
-                  day: 'numeric', 
-                  year: 'numeric' 
+                <p className="text-white text-lg font-semibold">{new Date().toLocaleDateString('en-US', {
+                  month: 'long',
+                  day: 'numeric',
+                  year: 'numeric'
                 })}</p>
               </div>
               <div className="text-right">
@@ -54,13 +54,13 @@ const ReceiptPage = () => {
             </div>
           </div>
 
-         
+
           <div className="px-8 py-6">
             <h2 className="text-slate-800 font-bold text-xl mb-6 flex items-center gap-2">
               <span className="w-1.5 h-6 bg-[#3593A6] rounded-full"></span>
               Order Items
             </h2>
-            
+
             <div className="space-y-5">
               {items.map((item, index) => (
                 <div key={item.id} className="group">
@@ -88,9 +88,9 @@ const ReceiptPage = () => {
                       </div>
                     </div>
                     <div className="text-right flex-shrink-0">
-                      <p className="text-slate-400 text-sm mb-1">${item.product.productPrice.toFixed(2)} each</p>
+                      <p className="text-slate-400 text-sm mb-1">NPR {item.product.productPrice.toFixed(2)} each</p>
                       <p className="text-slate-800 font-bold text-xl">
-                        ${(item.product.productPrice * item.quantity).toFixed(2)}
+                        NPR {(item.product.productPrice * item.quantity).toFixed(2)}
                       </p>
                     </div>
                   </div>
@@ -105,15 +105,15 @@ const ReceiptPage = () => {
               <span className="w-1.5 h-6 bg-[#3593A6] rounded-full"></span>
               Order Summary
             </h2>
-            
+
             <div className="space-y-3 mb-6">
               <div className="flex justify-between items-center py-2">
                 <span className="text-slate-600 font-medium">Subtotal</span>
                 <span className="text-slate-800 font-semibold text-lg">
-                  ${(total - tax + discount).toFixed(2)}
+                  NPR {(total - tax + discount).toFixed(2)}
                 </span>
               </div>
-              
+
               <div className="flex justify-between items-center py-2">
                 <div className="flex items-center gap-2">
                   <span className="text-slate-600 font-medium">Tax</span>
@@ -122,10 +122,10 @@ const ReceiptPage = () => {
                   </span>
                 </div>
                 <span className="text-slate-800 font-semibold text-lg">
-                  ${tax.toFixed(2)}
+                  NPR {tax.toFixed(2)}
                 </span>
               </div>
-              
+
               {discount > 0 && (
                 <div className="flex justify-between items-center py-2">
                   <div className="flex items-center gap-2">
@@ -135,7 +135,7 @@ const ReceiptPage = () => {
                     </span>
                   </div>
                   <span className="text-emerald-600 font-semibold text-lg">
-                    -${discount.toFixed(2)}
+                    -NPR {discount.toFixed(2)}
                   </span>
                 </div>
               )}
@@ -145,14 +145,14 @@ const ReceiptPage = () => {
               <div className="flex justify-between items-center">
                 <span className="text-slate-800 font-bold text-2xl">Grand Total</span>
                 <span className="text-[#3593A6] font-bold text-3xl">
-                  ${total.toFixed(2)}
+                  NPR {total.toFixed(2)}
                 </span>
               </div>
             </div>
           </div>
         </div>
 
-      
+
         <div className="flex justify-center">
           <button
             className="group px-10 py-4 bg-[#3593A6] text-white rounded-2xl font-semibold text-lg shadow-lg hover:shadow-xl hover:bg-[#2d7a8a] transition-all duration-300 transform hover:scale-105 active:scale-95 flex items-center gap-3"

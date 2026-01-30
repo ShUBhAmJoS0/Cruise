@@ -64,18 +64,17 @@ function FindArtists() {
     .slice(0, 5);
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6 md:p-10 mt-20">
+    <div className="min-h-screen bg-gray-100 p-6 md:p-10 mt-4">
       {/* Tabs + Search */}
       <div className="max-w-7xl mx-auto mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         {/* Tabs on the left */}
         <div className="flex gap-4 border-b border-gray-300 flex-grow md:flex-grow-0">
           <button
             onClick={() => setActiveTab("discover")}
-            className={`px-6 py-3 font-semibold transition-all ${
-              activeTab === "discover"
+            className={`px-6 py-3 font-semibold transition-all ${activeTab === "discover"
                 ? "text-[#3593A6] border-b-2 border-[#3593A6]"
                 : "text-gray-500 hover:text-gray-700"
-            }`}
+              }`}
           >
             Discover New Artists
             <span className="ml-2 text-sm bg-gray-200 px-2 py-1 rounded-full">
@@ -84,11 +83,10 @@ function FindArtists() {
           </button>
           <button
             onClick={() => setActiveTab("following")}
-            className={`px-6 py-3 font-semibold transition-all ${
-              activeTab === "following"
+            className={`px-6 py-3 font-semibold transition-all ${activeTab === "following"
                 ? "text-[#3593A6] border-b-2 border-[#3593A6]"
                 : "text-gray-500 hover:text-gray-700"
-            }`}
+              }`}
           >
             Artists You Follow
             <span className="ml-2 text-sm bg-gray-200 px-2 py-1 rounded-full">
@@ -237,11 +235,10 @@ function FindArtists() {
                   <div className="mt-4 flex gap-2 w-full">
                     <button
                       onClick={() => handleFollow(artist.id, actualIndex)}
-                      className={`flex-1 px-4 h-10 rounded-md font-semibold transition ${
-                        artist.isFollowing
+                      className={`flex-1 px-4 h-10 rounded-md font-semibold transition ${artist.isFollowing
                           ? "bg-gray-300 text-gray-800 hover:bg-gray-400"
                           : "bg-[#3593A6] text-white hover:bg-[#2c7f8f]"
-                      }`}
+                        }`}
                     >
                       {artist.isFollowing ? "Following" : "Follow"}
                     </button>

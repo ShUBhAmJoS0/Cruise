@@ -2,16 +2,16 @@ import { Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 const PublicRoute = ({ children }) => {
-  const {user, role, loading } = useAuth(); 
+  const { user, role, loading } = useAuth();
 
-if (loading) return <p>Loading...</p>;
+  if (loading) return <p>Loading...</p>;
 
   if (user) {
-     console.log(role)
-    
- 
+    console.log(role)
+
+
     switch (role) {
-       
+
       case "Admin":
         return <Navigate to="/admin/dashboard" />;
       case "Artist":
@@ -20,8 +20,8 @@ if (loading) return <p>Loading...</p>;
         return <Navigate to="/events" />;
     }
   }
-    console.log("Role missing, showing login page but no redirect loop yet");
-  return children; 
+  console.log("Role missing, showing login page but no redirect loop yet");
+  return children;
 };
 
 export default PublicRoute;

@@ -8,7 +8,7 @@ const Merchandise = () => {
   const [sortOrder, setSortOrder] = useState("Newest");
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
-  const [cartUpdated, setCartUpdated] = useState(false); 
+  const [cartUpdated, setCartUpdated] = useState(false);
   const navigate = useNavigate();
 
 
@@ -40,7 +40,7 @@ const Merchandise = () => {
     try {
       await api.post("/api/cart", {
         productId: product.productId,
-        quantity: 1, 
+        quantity: 1,
       });
       setCartUpdated(true);
       toast.success("added to cart sucessfully");
@@ -52,25 +52,25 @@ const Merchandise = () => {
   };
 
 
-  const handleBuyNow = async(product) => {
-      try {
-    const res = await api.post("/api/cart", {
-      productId: product.productId,
-      quantity: 1,
-    });
-console.log(res.data.data.id)
-console.log("ola")
-    const cartItemId = res.data.data.id; 
-    navigate("/checkout", { state: { cartItemIds: [cartItemId] } });
-  } catch (err) {
-    console.error(err);
-    toast.error(err.response?.data?.message || "Failed to buy product.");
-  }
+  const handleBuyNow = async (product) => {
+    try {
+      const res = await api.post("/api/cart", {
+        productId: product.productId,
+        quantity: 1,
+      });
+      console.log(res.data.data.id)
+      console.log("ola")
+      const cartItemId = res.data.data.id;
+      navigate("/checkout", { state: { cartItemIds: [cartItemId] } });
+    } catch (err) {
+      console.error(err);
+      toast.error(err.response?.data?.message || "Failed to buy product.");
+    }
   };
 
   return (
     <>
-      <main className="mt-20 min-h-screen bg-slate-50 pb-16">
+      <main className="mt-4 min-h-screen bg-slate-50 pb-16">
         {/* Hero Section */}
         <section className="max-w-[1400px] mx-auto px-6 pt-8">
           <div className="bg-[#3593A6] rounded-3xl overflow-hidden shadow-2xl mb-8">
@@ -78,7 +78,7 @@ console.log("ola")
               {/* Decorative elements */}
               <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl"></div>
               <div className="absolute bottom-0 left-0 w-48 h-48 bg-black/5 rounded-full blur-3xl"></div>
-              
+
               <div className="relative z-10 text-center">
                 <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-1.5 rounded-full mb-4">
                   <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
@@ -161,16 +161,15 @@ console.log("ola")
                 <div className="w-1 h-8 bg-[#3593A6] rounded-full"></div>
                 <h2 className="text-xl font-bold text-slate-800">Categories</h2>
               </div>
-              
+
               <div className="space-y-2">
                 {["All", "Clothing", "Accessories", "Signed"].map((cat) => (
                   <button
                     key={cat}
-                    className={`w-full text-left py-3.5 px-5 rounded-xl font-semibold transition-all duration-200 ${
-                      selectedCategory === cat
-                        ? "bg-[#3593A6] text-white shadow-lg shadow-[#3593A6]/25 scale-[1.02]"
-                        : "bg-slate-50 text-slate-700 hover:bg-slate-100 hover:scale-[1.01]"
-                    }`}
+                    className={`w-full text-left py-3.5 px-5 rounded-xl font-semibold transition-all duration-200 ${selectedCategory === cat
+                      ? "bg-[#3593A6] text-white shadow-lg shadow-[#3593A6]/25 scale-[1.02]"
+                      : "bg-slate-50 text-slate-700 hover:bg-slate-100 hover:scale-[1.01]"
+                      }`}
                     onClick={() => setSelectedCategory(cat)}
                   >
                     <div className="flex items-center justify-between">
@@ -193,11 +192,10 @@ console.log("ola")
               {["All", "Clothing", "Accessories", "Signed"].map((cat) => (
                 <button
                   key={cat}
-                  className={`flex-shrink-0 py-2.5 px-5 rounded-full font-semibold transition-all ${
-                    selectedCategory === cat
-                      ? "bg-[#3593A6] text-white"
-                      : "bg-white text-slate-700 border-2 border-slate-200"
-                  }`}
+                  className={`flex-shrink-0 py-2.5 px-5 rounded-full font-semibold transition-all ${selectedCategory === cat
+                    ? "bg-[#3593A6] text-white"
+                    : "bg-white text-slate-700 border-2 border-slate-200"
+                    }`}
                   onClick={() => setSelectedCategory(cat)}
                 >
                   {cat === "All" ? "All Products" : cat}
@@ -228,19 +226,19 @@ console.log("ola")
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
                 {products.map((item) => (
-                  <div 
-                    key={item.productId} 
+                  <div
+                    key={item.productId}
                     className="group bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden hover:shadow-2xl hover:border-[#3593A6]/30 transition-all duration-300 hover:-translate-y-1"
                   >
                     {/* Product Image */}
                     <div className="relative h-64 bg-slate-50 overflow-hidden">
-                      <img 
-                        src={`http://localhost:5000/${item.productImage}`} 
-                        alt={item.productName} 
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
+                      <img
+                        src={`http://localhost:5000/${item.productImage}`}
+                        alt={item.productName}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                      
+
                       {/* Category Badge */}
                       <div className="absolute top-4 left-4">
                         <span className="inline-block bg-white/95 backdrop-blur-sm px-4 py-1.5 rounded-full text-[#3593A6] text-xs font-bold shadow-lg">
@@ -248,22 +246,22 @@ console.log("ola")
                         </span>
                       </div>
                     </div>
-                    
+
                     {/* Product Details */}
                     <div className="p-6">
                       <h3 className="font-bold text-slate-800 text-lg mb-2 line-clamp-1 group-hover:text-[#3593A6] transition-colors">
                         {item.productName}
                       </h3>
-                      
+
                       <div className="flex items-baseline gap-2 mb-4">
                         <span className="text-[#3593A6] font-bold text-2xl">
-                          ${item.productPrice}
+                          NPR {item.productPrice}
                         </span>
                         <span className="text-slate-400 text-sm line-through">
-                          ${(item.productPrice * 1.2).toFixed(2)}
+                          NPR {(item.productPrice * 1.2).toFixed(2)}
                         </span>
                       </div>
-                      
+
                       {/* Meta Info */}
                       <div className="flex flex-wrap gap-2 mb-5">
                         <div className="flex items-center gap-1.5 bg-slate-50 px-3 py-1.5 rounded-lg">
@@ -274,7 +272,7 @@ console.log("ola")
                             {item.productQuantity} available
                           </span>
                         </div>
-                        
+
                         <div className="flex items-center gap-1.5 bg-[#3593A6]/10 px-3 py-1.5 rounded-lg">
                           <svg className="w-4 h-4 text-[#3593A6]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -287,8 +285,8 @@ console.log("ola")
 
                       {/* Action Buttons */}
                       <div className="space-y-3">
-                        <button 
-                          onClick={() => handleAddToCart(item)} 
+                        <button
+                          onClick={() => handleAddToCart(item)}
                           className="group/btn w-full py-3.5 bg-[#3593A6] text-white rounded-xl font-bold shadow-lg shadow-[#3593A6]/25 hover:bg-[#2d7a8a] hover:shadow-xl transition-all duration-200 flex items-center justify-center gap-2"
                         >
                           <svg className="w-5 h-5 group-hover/btn:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -296,8 +294,8 @@ console.log("ola")
                           </svg>
                           Add to Cart
                         </button>
-                        
-                        <button 
+
+                        <button
                           onClick={() => handleBuyNow(item)}
                           className="w-full py-3.5 bg-white text-[#3593A6] border-2 border-[#3593A6] rounded-xl font-bold hover:bg-[#3593A6] hover:text-white transition-all duration-200 flex items-center justify-center gap-2"
                         >

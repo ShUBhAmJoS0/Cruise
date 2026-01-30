@@ -57,7 +57,7 @@ function UserProblems({ onNavigate, onLogout }) {
 
   const handleUpdateStatus = async (id, newStatus) => {
     const adminNotes = replyData[id] || '';
-    
+
     try {
       const response = await fetch(`http://localhost:5000/api/user-problems/${id}/status`, {
         method: 'PATCH',
@@ -74,7 +74,7 @@ function UserProblems({ onNavigate, onLogout }) {
 
       setProblems(problems.map(p => p.id === id ? { ...p, status: newStatus, adminNotes } : p));
       setReplyData(prev => ({ ...prev, [id]: '' }));
-      
+
       if (newStatus === 'Resolved') {
         toast.success('Problem marked as Solved!');
       } else if (newStatus === 'Rejected') {
@@ -142,12 +142,12 @@ function UserProblems({ onNavigate, onLogout }) {
   return (
     <div className="flex h-screen w-full overflow-hidden bg-[#f6f7f8]">
       <ToastContainer position="top-right" autoClose={3000} />
-      
+
       {/* Mobile overlay */}
       {sidebarOpen && (
-        <div 
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden" 
-          onClick={() => setSidebarOpen(false)} 
+        <div
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
         />
       )}
 
@@ -159,8 +159,8 @@ function UserProblems({ onNavigate, onLogout }) {
                 <h1 className="text-[#3593A6] text-xl font-bold leading-normal tracking-tight">Cruise Admin</h1>
                 <p className="text-[#617589] text-xs font-medium uppercase tracking-wider mt-1">User Problems</p>
               </div>
-              <button 
-                onClick={() => setSidebarOpen(false)} 
+              <button
+                onClick={() => setSidebarOpen(false)}
                 className="lg:hidden p-2 rounded-lg hover:bg-gray-100 text-gray-600"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -221,8 +221,8 @@ function UserProblems({ onNavigate, onLogout }) {
       <main className="flex-1 flex flex-col h-full overflow-hidden">
         <header className="h-16 flex items-center justify-between px-4 md:px-8 bg-white border-b border-[#e5e7eb] shrink-0">
           <div className="flex items-center gap-3">
-            <button 
-              onClick={() => setSidebarOpen(true)} 
+            <button
+              onClick={() => setSidebarOpen(true)}
               className="lg:hidden p-2 rounded-lg hover:bg-gray-100 text-gray-600"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -369,7 +369,7 @@ function UserProblems({ onNavigate, onLogout }) {
                   <p className="text-[#617589] text-xs md:text-sm">All user problems have been resolved or there are no reports.</p>
                 </div>
               ) : (
-                              filteredProblems.map((problem) => (
+                filteredProblems.map((problem) => (
                   <div key={problem.id} className="bg-white rounded-xl border border-[#e5e7eb] shadow-sm hover:shadow-md hover:border-[#3593A6]/30 transition-all duration-300 p-4 md:p-6 flex flex-col gap-3 md:gap-4">
                     <div className="flex flex-col gap-3">
                       <div className="flex-1 min-w-0">
@@ -390,17 +390,18 @@ function UserProblems({ onNavigate, onLogout }) {
                         </div>
 
                         <div className="flex flex-col gap-1 text-xs md:text-sm text-[#617589] mb-2 md:mb-3">
+                          <p className="font-semibold text-[#111418] text-sm md:text-base">
+                            Issue Title: {problem.name || 'No Title'}
+                          </p>
                           <p>
-                            <span className="font-medium text-[#111418]">{problem.name || 'Anonymous'}</span>
-                            {' '}&bull;{' '}
                             <span className="text-[#3593A6] break-all">{problem.email}</span>
                           </p>
                           <p className="text-[10px] md:text-xs">
                             {problem.reporter?.name ? `User: ${problem.reporter.name}` : 'Guest'}
                             {' '}&bull;{' '}
-                            {new Date(problem.createdAt).toLocaleDateString('en-US', { 
-                              year: 'numeric', 
-                              month: 'short', 
+                            {new Date(problem.createdAt).toLocaleDateString('en-US', {
+                              year: 'numeric',
+                              month: 'short',
                               day: 'numeric'
                             })}
                           </p>

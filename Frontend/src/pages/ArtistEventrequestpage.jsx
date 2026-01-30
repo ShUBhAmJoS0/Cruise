@@ -10,7 +10,7 @@ function ArtistEventRequestPage() {
   const [selectedImage, setSelectedImage] = useState(null);
   const [selectedImages, setSelectedImages] = useState([]);
   const [imagePreviewUrl, setImagePreviewUrl] = useState(null);
-  
+
 
   const { register, handleSubmit, reset, setValue, watch, control } = useForm({
     defaultValues: {
@@ -35,7 +35,7 @@ function ArtistEventRequestPage() {
   });
 
   const selectedCategory = watch("selected");
-  
+
   // Edit Modal States
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState(null);
@@ -45,10 +45,10 @@ function ArtistEventRequestPage() {
   const [existingGalleryImages, setExistingGalleryImages] = useState([]);
 
   // Edit Event Form
-  const { 
-    register: registerEdit, 
-    handleSubmit: handleSubmitEdit, 
-    reset: resetEdit, 
+  const {
+    register: registerEdit,
+    handleSubmit: handleSubmitEdit,
+    reset: resetEdit,
     setValue: setValueEdit,
     watch: watchEdit,
     control: controlEdit
@@ -104,7 +104,7 @@ function ArtistEventRequestPage() {
   const onSubmit = async (data) => {
     try {
       const formData = new FormData();
-      
+
       formData.append('title', data.EventTitle);
       formData.append('date', data.EventDate);
       formData.append('time', data.EventTime);
@@ -113,11 +113,11 @@ function ArtistEventRequestPage() {
       formData.append('description', data.eventDes);
       formData.append('prices', JSON.stringify(data.Price));
       formData.append('Quantity', JSON.stringify(data.Quantity));
-      
+
       if (selectedImage) {
         formData.append('profileImage', selectedImage);
       }
-    
+
       selectedImages.forEach((file) => {
         formData.append('images', file);
       });
@@ -128,14 +128,14 @@ function ArtistEventRequestPage() {
         }
       });
       toast.success(res.data.message);
-   
+
       await LoadRequestedEvents();
-  
+
       reset();
       setSelectedImage(null);
       setSelectedImages([]);
       setImagePreviewUrl(null);
-    
+
     } catch (error) {
       const msg = error.response?.data?.message || "Failed to create event";
       console.log(error.response?.data?.message);
@@ -150,20 +150,20 @@ function ArtistEventRequestPage() {
       console.log(eventData);
       setEditingEvent(eventData);
 
-      const parsedPrices = typeof eventData.prices === 'string' 
-        ? JSON.parse(eventData.prices) 
+      const parsedPrices = typeof eventData.prices === 'string'
+        ? JSON.parse(eventData.prices)
         : eventData.prices;
       const parsedQuantities = typeof eventData.Quantity === 'string'
         ? JSON.parse(eventData.Quantity)
         : eventData.Quantity;
-      
+
       const categoryMap = {
         "Family": "family",
         "Art": "art",
         "Sports": "sports",
         "Music": "music"
       };
-      
+
       resetEdit({
         title: eventData.title,
         location: eventData.location,
@@ -175,18 +175,18 @@ function ArtistEventRequestPage() {
         quantity: parsedQuantities,
         selectedCategory: categoryMap[eventData.category] || ""
       });
-      
+
       setEditCoverPreview(eventData.profileImage ? `http://localhost:5000/${eventData.profileImage}` : null);
       setEditCoverImage(null);
-      
+
       // Separate existing images from new ones
       setExistingGalleryImages(eventData.images || []);
       setEditGalleryImages([]);
-      
+
       setIsEditModalOpen(true);
     } catch (error) {
       console.error("Failed to fetch event details:", error);
-    
+
     }
   };
 
@@ -224,7 +224,7 @@ function ArtistEventRequestPage() {
   const onEditSubmit = async (data) => {
     try {
       const formData = new FormData();
-      
+
       formData.append('title', data.title);
       formData.append('date', data.date);
       formData.append('time', data.time);
@@ -233,15 +233,15 @@ function ArtistEventRequestPage() {
       formData.append('description', data.description);
       formData.append('prices', JSON.stringify(data.prices));
       formData.append('Quantity', JSON.stringify(data.quantity));
-      
+
       // Add cover image if changed
       if (editCoverImage) {
         formData.append('profileImage', editCoverImage);
       }
-      
+
       // Add existing images that weren't removed
       formData.append('existingImages', JSON.stringify(existingGalleryImages));
-      
+
       // Add new gallery images
       editGalleryImages.forEach((img) => {
         if (img?.file) {
@@ -259,11 +259,11 @@ function ArtistEventRequestPage() {
           'Content-Type': 'multipart/form-data'
         }
       });
-      
+
       toast.success(res.data.message || "Event updated successfully");
       setIsEditModalOpen(false);
       await LoadRequestedEvents();
-      
+
       setEditingEvent(null);
       setEditCoverImage(null);
       setEditCoverPreview(null);
@@ -280,7 +280,7 @@ function ArtistEventRequestPage() {
       return;
     }
     try {
-     const res= await api.delete(`/artist/request/${eventId}`);
+      const res = await api.delete(`/artist/request/${eventId}`);
       toast.success(res.data.message);
       await LoadRequestedEvents();
     } catch (error) {
@@ -406,7 +406,7 @@ function ArtistEventRequestPage() {
             <div className="w-1 h-8 bg-[#3593A6] rounded-full"></div>
             <h3 className="text-lg md:text-xl font-semibold text-gray-900 tracking-tight">Event details</h3>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div className="flex flex-col">
               <label className="text-xs font-medium text-gray-600 mb-2">Event name</label>
@@ -417,7 +417,7 @@ function ArtistEventRequestPage() {
                 {...register("EventTitle")}
               />
             </div>
-            
+
             <div className="flex flex-col">
               <label className="text-xs font-medium text-gray-600 mb-2">Event location</label>
               <input
@@ -427,7 +427,7 @@ function ArtistEventRequestPage() {
                 {...register("EventLocation")}
               />
             </div>
-            
+
             <div className="flex flex-col">
               <label className="text-xs font-medium text-gray-600 mb-2">Event date</label>
               <input
@@ -436,7 +436,7 @@ function ArtistEventRequestPage() {
                 {...register("EventDate")}
               />
             </div>
-            
+
             <div className="flex flex-col">
               <label className="text-xs font-medium text-gray-600 mb-2">Event time</label>
               <input
@@ -446,7 +446,7 @@ function ArtistEventRequestPage() {
               />
             </div>
           </div>
-          
+
           <div className="flex flex-col mt-6">
             <label className="text-xs font-medium text-gray-600 mb-2">Event description</label>
             <textarea
@@ -463,26 +463,25 @@ function ArtistEventRequestPage() {
             <div className="w-1 h-8 bg-[#3593A6] rounded-full"></div>
             <h3 className="text-lg md:text-xl font-semibold text-gray-900 tracking-tight">Event category</h3>
           </div>
-          
+
           <Controller
             name="selected"
             control={control}
             render={({ field }) => (
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
                 {[
-                  { id: "family", label: "Family", icon: <Users2 className="text-[#5ba3b0]"/> },
-                  { id: "art", label: "Art", icon: <Brush className="text-[#5ba3b0]"/> },
-                  { id: "sports", label: "Sports", icon: <Trophy className="text-[#5ba3b0]"/> },
-                  { id: "music", label: "Music", icon: <Music className="text-[#5ba3b0]"/> }
+                  { id: "family", label: "Family", icon: <Users2 className="text-[#5ba3b0]" /> },
+                  { id: "art", label: "Art", icon: <Brush className="text-[#5ba3b0]" /> },
+                  { id: "sports", label: "Sports", icon: <Trophy className="text-[#5ba3b0]" /> },
+                  { id: "music", label: "Music", icon: <Music className="text-[#5ba3b0]" /> }
                 ].map(cat => (
                   <button
                     key={cat.id}
                     type="button"
-                    className={`h-24 border rounded-2xl flex flex-col items-center justify-center gap-2 transition-all hover:-translate-y-[2px] ${
-                      selectedCategory === cat.id 
-                        ? "border-[#3593A6] bg-[#EFF7FA] shadow-sm" 
+                    className={`h-24 border rounded-2xl flex flex-col items-center justify-center gap-2 transition-all hover:-translate-y-[2px] ${selectedCategory === cat.id
+                        ? "border-[#3593A6] bg-[#EFF7FA] shadow-sm"
                         : "border-gray-200 hover:border-[#93CAD5] bg-white"
-                    }`}
+                      }`}
                     onClick={() => {
                       field.onChange(cat.id);
                       setValue("Category", cat.label);
@@ -502,7 +501,7 @@ function ArtistEventRequestPage() {
             <div className="w-1 h-8 bg-[#3593A6] rounded-full"></div>
             <h3 className="text-lg md:text-xl font-semibold text-gray-900 tracking-tight">Ticket information</h3>
           </div>
-          
+
           <div className="bg-[#F8FAFC] rounded-2xl p-5 md:p-6 border border-gray-200/60">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
               {["Standard", "Student", "VIP"].map((type) => (
@@ -511,10 +510,10 @@ function ArtistEventRequestPage() {
                     <div className="bg-[#93CAD5]/80 w-2 h-2 rounded-full"></div>
                     <h4 className="font-semibold text-gray-900 text-sm">{type} ticket</h4>
                   </div>
-                  
+
                   <div className="space-y-3">
                     <div className="flex flex-col">
-                      <label className="text-[0.7rem] font-medium text-gray-600 mb-1">Price ($)</label>
+                      <label className="text-[0.7rem] font-medium text-gray-600 mb-1">Price (NPR)</label>
                       <input
                         type="number"
                         min="0"
@@ -523,7 +522,7 @@ function ArtistEventRequestPage() {
                         {...register(`Price.${type}`)}
                       />
                     </div>
-                    
+
                     <div className="flex flex-col">
                       <label className="text-[0.7rem] font-medium text-gray-600 mb-1">Quantity</label>
                       <input
@@ -546,7 +545,7 @@ function ArtistEventRequestPage() {
             <div className="w-1 h-8 bg-[#3593A6] rounded-full"></div>
             <h3 className="text-lg md:text-xl font-semibold text-gray-900 tracking-tight">Cover image</h3>
           </div>
-          
+
           <div className="bg-[#F8FAFC] rounded-2xl p-5 md:p-6 border border-dashed border-gray-300">
             <div className="flex flex-col md:flex-row items-center gap-6">
               <div className="w-40 h-40 rounded-2xl overflow-hidden bg-white border border-gray-200 flex items-center justify-center shadow-sm">
@@ -558,7 +557,7 @@ function ArtistEventRequestPage() {
                   </svg>
                 )}
               </div>
-              
+
               <div className="flex-1 flex flex-col gap-3">
                 <p className="text-xs md:text-sm text-gray-600">Upload a cover image for your event (PNG, JPG). This is what fans will see first.</p>
                 <div className="flex flex-wrap gap-3">
@@ -598,7 +597,7 @@ function ArtistEventRequestPage() {
             <div className="w-1 h-8 bg-[#3593A6] rounded-full"></div>
             <h3 className="text-lg md:text-xl font-semibold text-gray-900 tracking-tight">Event gallery</h3>
           </div>
-          
+
           <div className="bg-[#F8FAFC] rounded-2xl p-5 md:p-6 border border-dashed border-gray-300">
             <div className="flex flex-col gap-4">
               <label
@@ -615,7 +614,7 @@ function ArtistEventRequestPage() {
                 id="image-uploads"
                 className="hidden"
               />
-              
+
               {selectedImages.length > 0 && (
                 <div className="mt-4">
                   <p className="font-semibold text-gray-700 mb-3 text-sm">Selected images ({selectedImages.length})</p>
@@ -686,8 +685,8 @@ function ArtistEventRequestPage() {
             requestEvent.map((events) => (
               <div key={events.id} className="flex flex-col md:flex-row items-center justify-between bg-[#F8FAFC] p-4 md:p-5 rounded-2xl border border-gray-200 hover:border-[#93CAD5] transition shadow-sm gap-4">
                 <div className="flex items-center gap-4 w-full md:w-auto">
-                  <img 
-                    src={`http://localhost:5000/${events.profileImage}`} 
+                  <img
+                    src={`http://localhost:5000/${events.profileImage}`}
                     className="w-16 h-16 rounded-xl object-cover border-2 border-white shadow-md"
                     alt={events.title}
                   />
@@ -703,12 +702,11 @@ function ArtistEventRequestPage() {
                 </div>
 
                 <div className="flex items-center gap-3 w-full md:w-auto justify-end">
-                  <span className={`px-5 py-2 rounded-xl text-sm font-bold ${
-                    events.status === 'pending' ? 'bg-yellow-100 text-yellow-700 border-2 border-yellow-300' :
-                    events.status === 'approved' ? 'bg-green-100 text-green-700 border-2 border-green-300' :
-                    events.status === 'rejected' ? 'bg-red-100 text-red-700 border-2 border-red-300' :
-                    'bg-gray-100 text-gray-700 border-2 border-gray-300'
-                  }`}>
+                  <span className={`px-5 py-2 rounded-xl text-sm font-bold ${events.status === 'pending' ? 'bg-yellow-100 text-yellow-700 border-2 border-yellow-300' :
+                      events.status === 'approved' ? 'bg-green-100 text-green-700 border-2 border-green-300' :
+                        events.status === 'rejected' ? 'bg-red-100 text-red-700 border-2 border-red-300' :
+                          'bg-gray-100 text-gray-700 border-2 border-gray-300'
+                    }`}>
                     {events.status.toUpperCase()}
                   </span>
                   <button
@@ -803,19 +801,18 @@ function ArtistEventRequestPage() {
                   render={({ field }) => (
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                       {[
-                        { id: "family", label: "Family", icon: <Users2 className="text-[#5ba3b0]"/> },
-                        { id: "art", label: "Art", icon: <Brush className="text-[#5ba3b0]"/> },
-                        { id: "sports", label: "Sports", icon: <Trophy className="text-[#5ba3b0]"/> },
-                        { id: "music", label: "Music", icon: <Music className="text-[#5ba3b0]"/> }
+                        { id: "family", label: "Family", icon: <Users2 className="text-[#5ba3b0]" /> },
+                        { id: "art", label: "Art", icon: <Brush className="text-[#5ba3b0]" /> },
+                        { id: "sports", label: "Sports", icon: <Trophy className="text-[#5ba3b0]" /> },
+                        { id: "music", label: "Music", icon: <Music className="text-[#5ba3b0]" /> }
                       ].map(cat => (
                         <button
                           key={cat.id}
                           type="button"
-                          className={`h-20 border-2 rounded-xl flex flex-col items-center justify-center gap-1 transition ${
-                            editSelectedCategory === cat.id 
-                              ? "border-[#3593A6] bg-[#93CAD5]/20" 
+                          className={`h-20 border-2 rounded-xl flex flex-col items-center justify-center gap-1 transition ${editSelectedCategory === cat.id
+                              ? "border-[#3593A6] bg-[#93CAD5]/20"
                               : "border-gray-200 hover:border-[#93CAD5]"
-                          }`}
+                            }`}
                           onClick={() => {
                             field.onChange(cat.id);
                             setValueEdit("category", cat.label);
@@ -839,7 +836,7 @@ function ArtistEventRequestPage() {
                       <h4 className="font-bold text-gray-800 mb-3">{type}</h4>
                       <div className="space-y-2">
                         <div>
-                          <label className="text-xs font-semibold text-gray-600">Price ($)</label>
+                          <label className="text-xs font-semibold text-gray-600">Price (NPR)</label>
                           <input
                             type="number"
                             min="0"
@@ -896,7 +893,7 @@ function ArtistEventRequestPage() {
               {/* Gallery Images */}
               <div className="mb-6">
                 <h3 className="text-lg font-bold text-gray-800 mb-4">Event Gallery</h3>
-                
+
                 {/* Existing Images */}
                 {existingGalleryImages.length > 0 && (
                   <div className="mb-4">
@@ -905,7 +902,7 @@ function ArtistEventRequestPage() {
                       {existingGalleryImages.map((img, index) => (
                         <div key={index} className="relative group">
                           <div className="w-full h-28 rounded-lg overflow-hidden border-2 border-gray-200">
-                            <img 
+                            <img
                               src={`http://localhost:5000/${img}`}
                               alt={`Gallery ${index + 1}`}
                               className="w-full h-full object-cover"
@@ -923,7 +920,7 @@ function ArtistEventRequestPage() {
                     </div>
                   </div>
                 )}
-                
+
                 {/* Add New Images */}
                 <div className="space-y-3">
                   <p className="text-sm font-semibold text-gray-600">Add New Images to Gallery</p>
@@ -941,7 +938,7 @@ function ArtistEventRequestPage() {
                     id="edit-gallery-upload"
                     className="hidden"
                   />
-                  
+
                   {/* New Images Preview */}
                   {editGalleryImages.length > 0 && (
                     <div>
@@ -950,7 +947,7 @@ function ArtistEventRequestPage() {
                         {editGalleryImages.map((img, index) => (
                           <div key={index} className="relative group">
                             <div className="w-full h-28 rounded-lg overflow-hidden border-2 border-green-300 bg-green-50">
-                              <img 
+                              <img
                                 src={img.preview}
                                 alt={`New ${index + 1}`}
                                 className="w-full h-full object-cover"

@@ -11,7 +11,7 @@ export default function ArtistViewEvents() {
     try {
       const res = await api.get("/artist/allevents/details");
       console.log(res.data.data)
-      setEvents(res.data.data );
+      setEvents(res.data.data);
     } catch (error) {
       console.log("Failed to load events");
     }
@@ -67,13 +67,13 @@ export default function ArtistViewEvents() {
     {
       name: "Revenue",
       selector: (row) =>
-        `Rs. ${(row.Bookings.reduce((sum,b)=>sum+Number(b.totalPrice),0))}`,
+        `NPR ${(row.Bookings.reduce((sum, b) => sum + Number(b.totalPrice), 0))}`,
       sortable: true,
     },
   ];
-if(!events){
-  return (<p>Loading</p>)
-}
+  if (!events) {
+    return (<p>Loading</p>)
+  }
   return (
     <div className="ml-[22%] px-6 md:px-10 py-8 bg-[#F3F6F8] min-h-screen">
       {/* Page header */}
@@ -98,7 +98,7 @@ if(!events){
           </div>
           <div className="flex flex-wrap gap-2 text-[0.7rem] text-gray-500">
             <span className="px-2 py-1 rounded-full bg-[#EFF7FA] text-[#1F6D7E] border border-[#D6E7EE]">
-              Revenue · <span className="font-semibold">Rs. {totalRevenue}</span>
+              Revenue · <span className="font-semibold">NPR {totalRevenue}</span>
             </span>
           </div>
         </div>
@@ -114,7 +114,7 @@ if(!events){
         />
         <Stat
           title="Total revenue"
-          value={`Rs. ${totalRevenue}`}
+          value={`NPR ${totalRevenue}`}
           icon={<DollarSign className="w-5 h-5" />}
         />
         <Stat title="Cities" value="5+" icon={<MapPin className="w-5 h-5" />} />
@@ -282,14 +282,14 @@ const ExpandedEvent = ({ data }) => {
                 <p className="text-gray-500 text-[0.7rem] uppercase tracking-[0.12em] mb-0.5">
                   Revenue
                 </p>
-                <p className="font-semibold">Rs. {b.totalPrice}</p>
+                <p className="font-semibold">NPR {b.totalPrice}</p>
               </div>
               <div>
                 <p className="text-gray-500 text-[0.7rem] uppercase tracking-[0.12em] mb-0.5">
                   Profit (est.)
                 </p>
                 <p className="font-semibold text-emerald-600">
-                  Rs. {Math.round(b.totalPrice * 0.13)}
+                  NPR {Math.round(b.totalPrice * 0.13)}
                 </p>
               </div>
             </div>

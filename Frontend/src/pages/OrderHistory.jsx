@@ -10,7 +10,7 @@ function OrderDetailsModal({ order, isOpen, onClose }) {
   if (!isOpen || !order) return null;
 
   const getStatusColor = (status) => {
-    switch(status) {
+    switch (status) {
       case "Confirmed":
         return "bg-emerald-500";
       case "Cancelled":
@@ -176,7 +176,7 @@ function OrderDetailsModal({ order, isOpen, onClose }) {
 
 function OrderCard({ order, onDeleteOrder, onViewDetails }) {
   const getStatusColor = (status) => {
-    switch(status) {
+    switch (status) {
       case "Confirmed":
         return "bg-emerald-500";
       case "Cancelled":
@@ -341,7 +341,7 @@ export default function OrderHistory() {
   const [isLoading, setIsLoading] = useState(true);
   const [filter, setFilter] = useState("All");
   const [selectedOrder, setSelectedOrder] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false); 
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -416,7 +416,7 @@ export default function OrderHistory() {
   });
 
   return (
-    <div className="min-h-screen bg-slate-50 pt-24 pb-16">
+    <div className="min-h-screen bg-slate-50 pt-4 pb-16">
       <div className="max-w-7xl mx-auto px-4">
         {/* Header */}
         <div className="mb-8">
@@ -541,15 +541,14 @@ export default function OrderHistory() {
             {/* Filter Tabs */}
             <div className="bg-white rounded-3xl shadow-xl p-2 mb-6 border-2 border-slate-100">
               <div className="flex gap-2">
-                {["All", "Confirmed", "Cancelled" ,"Completed"].map((filterOption) => (
+                {["All", "Confirmed", "Cancelled", "Completed"].map((filterOption) => (
                   <button
                     key={filterOption}
                     onClick={() => setFilter(filterOption)}
-                    className={`flex-1 px-6 py-3 rounded-2xl font-bold transition-all text-sm ${
-                      filter === filterOption
-                        ? "bg-[#3593A6] text-white shadow-lg"
-                        : "text-slate-600 hover:bg-slate-100"
-                    }`}
+                    className={`flex-1 px-6 py-3 rounded-2xl font-bold transition-all text-sm ${filter === filterOption
+                      ? "bg-[#3593A6] text-white shadow-lg"
+                      : "text-slate-600 hover:bg-slate-100"
+                      }`}
                   >
                     {filterOption} {filterOption !== "All" && `(${orders.filter(o => o.status === filterOption).length})`}
                   </button>

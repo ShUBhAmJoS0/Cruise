@@ -248,10 +248,129 @@ const ExploreEvents = () => {
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #cbd5e1; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
       `}</style>
 
-      <main className="mt-20 flex flex-col sm:flex-row">
-        <aside ref={filterRef} className="w-full sm:w-[380px] bg-transparent p-4 sm:p-8 static sm:fixed left-0 top-20 bottom-0 z-40 overflow-visible">
+      <main className="mt-24 flex flex-col lg:flex-row">
+        {/* Mobile horizontal filters */}
+        <div className="lg:hidden w-full bg-white border-b border-slate-200 sticky top-[80px] z-40 px-4 py-3 shadow-sm">
+          <div className="flex items-center gap-2 overflow-x-auto hide-scrollbar">
+            <button
+              onClick={() => setMobileFiltersOpen(!mobileFiltersOpen)}
+              className="flex-shrink-0 px-4 py-2 bg-[#3593A6] text-white rounded-full text-sm font-semibold flex items-center gap-2 hover:bg-[#2d7a8a] transition-all"
+            >
+              <span className="material-symbols-outlined text-base">tune</span>
+              Filters
+            </button>
+            <div className="flex items-center gap-2">
+              {Object.entries(tempCategories).filter(([, v]) => v).map(([k]) => (
+                <span key={k} className="px-3 py-1 bg-[#3593A6]/10 text-[#3593A6] rounded-full text-xs font-semibold flex-shrink-0">
+                  {k}
+                </span>
+              ))}
+              {tempDate && (
+                <span className="px-3 py-1 bg-[#3593A6]/10 text-[#3593A6] rounded-full text-xs font-semibold flex-shrink-0">
+                  {tempDate}
+                </span>
+              )}
+              {tempLocation && (
+                <span className="px-3 py-1 bg-[#3593A6]/10 text-[#3593A6] rounded-full text-xs font-semibold flex-shrink-0">
+                  {tempLocation}
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile filters modal */}
+        {mobileFiltersOpen && (
+          <div className="lg:hidden fixed inset-0 bg-black/50 z-50" onClick={() => setMobileFiltersOpen(false)}>
+            <div
+              className="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl p-6 max-h-[85vh] overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-bold text-slate-900">Filters</h2>
+                <button onClick={() => setMobileFiltersOpen(false)} className="p-2">
+                  <span className="material-symbols-outlined">close</span>
+                </button>
+              </div>
+
+              {/* Mobile filter content - simplified */}
+              <div className="space-y-4">
+                <div>
+                  <p className="text-xs font-bold text-slate-400 uppercase mb-2">Categories</p>
+                  <div className="flex flex-wrap gap-2">
+                    {categoriesList.map(cat => (
+                      <button
+                        key={cat}
+                        onClick={() => setTempCategories({ ...tempCategories, [cat]: !tempCategories[cat] })}
+                        className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${tempCategories[cat] ? 'bg-[#3593A6] text-white' : 'bg-slate-100 text-slate-600'
+                          }`}
+                      >
+                        {cat}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <p className="text-xs font-bold text-slate-400 uppercase mb-2">Date</p>
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      onClick={() => setTempDate(null)}
+                      className={`px-4 py-2 rounded-full text-sm font-semibold ${!tempDate ? 'bg-[#3593A6] text-white' : 'bg-slate-100 text-slate-600'}`}
+                    >
+                      Any dates
+                    </button>
+                    {dateOptions.map(opt => (
+                      <button
+                        key={opt}
+                        onClick={() => setTempDate(opt)}
+                        className={`px-4 py-2 rounded-full text-sm font-semibold ${tempDate === opt ? 'bg-[#3593A6] text-white' : 'bg-slate-100 text-slate-600'}`}
+                      >
+                        {opt}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <p className="text-xs font-bold text-slate-400 uppercase mb-2">Location</p>
+                  <select
+                    value={tempLocation || ''}
+                    onChange={(e) => setTempLocation(e.target.value || null)}
+                    className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3593A6]/20"
+                  >
+                    <option value="">Anywhere</option>
+                    {locations.map(loc => (
+                      <option key={loc} value={loc}>{loc}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="flex gap-3 pt-4">
+                  <button
+                    onClick={handleClearAll}
+                    className="flex-1 py-3 border-2 border-slate-300 text-slate-600 font-bold rounded-xl"
+                  >
+                    Clear All
+                  </button>
+                  <button
+                    onClick={() => { handleApplyFilters(); setMobileFiltersOpen(false); }}
+                    className="flex-1 py-3 bg-[#3593A6] text-white font-bold rounded-xl"
+                  >
+                    Apply Filters
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Desktop sidebar filters */}
+        <aside ref={filterRef} className="hidden lg:block w-[380px] bg-transparent p-8 fixed left-0 top-20 bottom-0 z-40 overflow-visible">
           <div className="bg-white rounded-[2.5rem] shadow-2xl border border-slate-100 p-6 flex flex-col gap-2 relative">
             <div className="flex justify-between items-center mb-4 px-2">
               <h2 className="text-xl font-bold text-slate-900">Filters</h2>
@@ -307,7 +426,7 @@ const ExploreEvents = () => {
             <div className="relative">
               <button onClick={() => setActiveFlyout(activeFlyout === 'price' ? null : 'price')} className={`w-full flex items-center gap-4 p-4 rounded-3xl transition-all duration-300 ${activeFlyout === 'price' ? 'bg-[#3593A6]/10 shadow-inner' : 'hover:bg-slate-50'}`}>
                 <div className="w-12 h-12 rounded-2xl bg-[#3593A6]/10 flex items-center justify-center text-[#3593A6]"><span className="material-symbols-outlined">payments</span></div>
-                <div className="flex-1 text-left"><p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Price</p><p className="text-sm font-bold text-slate-900">${tempMinPrice} - ${tempMaxPrice === 500 ? '500+' : tempMaxPrice}</p></div>
+                <div className="flex-1 text-left"><p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Price</p><p className="text-sm font-bold text-slate-900">NPR {tempMinPrice} - NPR {tempMaxPrice === 500 ? '500+' : tempMaxPrice}</p></div>
                 <span className="material-symbols-outlined text-slate-300 text-sm">arrow_forward_ios</span>
               </button>
               {activeFlyout === 'price' && (
@@ -319,7 +438,7 @@ const ExploreEvents = () => {
                     <div className="absolute h-1.5 bg-slate-100 rounded-full top-1/2 left-0 right-0 -translate-y-1/2" />
                     <div ref={filledTrackRef} className="absolute h-1.5 rounded-full top-1/2 -translate-y-1/2 z-10" style={{ backgroundColor: primaryColor }} />
                   </div>
-                  <div className="flex justify-between font-bold text-sm text-[#3593A6]"><span>${tempMinPrice}</span><span>${tempMaxPrice === 500 ? '500+' : tempMaxPrice}</span></div>
+                  <div className="flex justify-between font-bold text-sm text-[#3593A6]"><span>NPR {tempMinPrice}</span><span>NPR {tempMaxPrice === 500 ? '500+' : tempMaxPrice}</span></div>
                 </div>
               )}
             </div>
@@ -347,33 +466,33 @@ const ExploreEvents = () => {
           </div>
         </aside>
 
-        <div className="flex-1 sm:ml-[380px] p-4 md:p-6 lg:p-10 bg-slate-50">
+        <div className="flex-1 lg:ml-[380px] p-4 md:p-6 lg:p-10 bg-slate-50">
           <section className="relative w-full rounded-[2.5rem] overflow-hidden bg-[#0a0f18] text-white shadow-2xl mb-12" style={{ maxHeight: '420px' }}>
             <div className="absolute inset-0">
               <img src={soonestEvent?.profileImage ? `http://localhost:5000/${soonestEvent.profileImage}` : "https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?auto=format&fit=crop&w=1920&q=80"} onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?auto=format&fit=crop&w=1920&q=80"; }} className="w-full h-full object-cover blur-[12px] scale-110 brightness-110" alt="" />
               <div className="absolute inset-0 bg-gradient-to-t from-[#0a0f18]/95 via-[#0a0f18]/75 to-[#0a0f18]/50"></div>
             </div>
             {soonestEvent && (
-              <div className="relative z-10 p-6 md:p-10 flex flex-col items-center">
-                <div className="flex flex-wrap justify-center items-center gap-4 md:gap-8 mb-8">
-                  <div className="flex items-center gap-2 text-xs md:text-sm font-bold uppercase tracking-widest text-slate-300"><span className="material-symbols-outlined text-[#3593A6] text-lg">calendar_today</span>{new Date(soonestEvent.date).toLocaleDateString('en-US', { weekday: 'short', day: 'numeric', month: 'short' })}</div>
-                  <div className="flex items-center gap-2 text-xs md:text-sm font-bold uppercase tracking-widest text-slate-300"><span className="material-symbols-outlined text-[#3593A6] text-lg">schedule</span>{soonestEvent.time}</div>
-                  <div className="flex items-center gap-2 text-xs md:text-sm font-bold uppercase tracking-widest text-slate-300"><span className="material-symbols-outlined text-[#3593A6] text-lg">location_on</span>{soonestEvent.location}</div>
+              <div className="relative z-10 p-4 sm:p-6 md:p-10 flex flex-col items-center">
+                <div className="flex flex-wrap justify-center items-center gap-2 sm:gap-4 md:gap-8 mb-4 sm:mb-8">
+                  <div className="flex items-center gap-1 sm:gap-2 text-[10px] sm:text-xs md:text-sm font-bold uppercase tracking-widest text-slate-300"><span className="material-symbols-outlined text-[#3593A6] text-sm sm:text-lg">calendar_today</span>{new Date(soonestEvent.date).toLocaleDateString('en-US', { weekday: 'short', day: 'numeric', month: 'short' })}</div>
+                  <div className="flex items-center gap-1 sm:gap-2 text-[10px] sm:text-xs md:text-sm font-bold uppercase tracking-widest text-slate-300"><span className="material-symbols-outlined text-[#3593A6] text-sm sm:text-lg">schedule</span>{soonestEvent.time}</div>
+                  <div className="flex items-center gap-1 sm:gap-2 text-[10px] sm:text-xs md:text-sm font-bold uppercase tracking-widest text-slate-300"><span className="material-symbols-outlined text-[#3593A6] text-sm sm:text-lg">location_on</span>{soonestEvent.location}</div>
                 </div>
-                <h1 className="text-3xl md:text-5xl font-black text-center mb-6 uppercase tracking-tight leading-tight">{soonestEvent.title}</h1>
-                <div className="flex gap-3 md:gap-4 mb-8">
+                <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-5xl font-black text-center mb-4 sm:mb-6 uppercase tracking-tight leading-tight px-2">{soonestEvent.title}</h1>
+                <div className="flex gap-2 sm:gap-3 md:gap-4 mb-4 sm:mb-8">
                   {[{ label: 'Days', value: countdown.days }, { label: 'Hours', value: countdown.hours }, { label: 'Mins', value: countdown.mins }, { label: 'Sec', value: countdown.secs }].map((item, i) => (
                     <div key={i} className="flex flex-col items-center">
-                      <div className="w-14 h-16 md:w-20 md:h-24 bg-[#0a0f18]/80 border-2 border-slate-800 rounded-xl flex items-center justify-center relative group overflow-hidden">
-                        <span className="text-xl md:text-4xl font-black text-white relative z-10">{String(item.value).padStart(2, '0')}</span>
+                      <div className="w-12 h-14 sm:w-14 sm:h-16 md:w-20 md:h-24 bg-[#0a0f18]/80 border-2 border-slate-800 rounded-xl flex items-center justify-center relative group overflow-hidden">
+                        <span className="text-lg sm:text-xl md:text-4xl font-black text-white relative z-10">{String(item.value).padStart(2, '0')}</span>
                       </div>
-                      <span className="mt-3 text-[10px] md:text-[11px] font-black uppercase tracking-[0.2em] text-[#3593A6]">{item.label}</span>
+                      <span className="mt-1 sm:mt-2 md:mt-3 text-[8px] sm:text-[10px] md:text-[11px] font-black uppercase tracking-[0.2em] text-[#3593A6]">{item.label}</span>
                     </div>
                   ))}
                 </div>
-                <div className="flex flex-col sm:flex-row gap-3 w-full max-w-md">
-                  <button onClick={() => navigate(`/event/${soonestEvent.id}`)} className="flex-1 py-3 border-2 border-[#3593A6] text-[#3593A6] font-black rounded-xl hover:bg-[#0a0f18] hover:border-[#0a0f18] hover:text-white transition-all uppercase tracking-widest text-xs">View Details</button>
-                  <button onClick={() => navigate(`/event/${soonestEvent.id}`)} className="flex-1 py-3 bg-[#3593A6] text-white font-black rounded-xl shadow-xl hover:bg-[#0a0f18] transition-all uppercase tracking-widest text-xs border-2 border-[#3593A6] hover:border-[#0a0f18]">Buy Ticket</button>
+                <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full max-w-md px-4">
+                  <button onClick={() => navigate(`/event/${soonestEvent.id}`)} className="flex-1 py-2 sm:py-3 border-2 border-[#3593A6] text-[#3593A6] font-black rounded-xl hover:bg-[#0a0f18] hover:border-[#0a0f18] hover:text-white transition-all uppercase tracking-widest text-[10px] sm:text-xs">View Details</button>
+                  <button onClick={() => navigate(`/event/${soonestEvent.id}`)} className="flex-1 py-2 sm:py-3 bg-[#3593A6] text-white font-black rounded-xl shadow-xl hover:bg-[#0a0f18] transition-all uppercase tracking-widest text-[10px] sm:text-xs border-2 border-[#3593A6] hover:border-[#0a0f18]">Buy Ticket</button>
                 </div>
               </div>
             )}
@@ -412,7 +531,7 @@ const ExploreEvents = () => {
                           <div className="flex items-center gap-2 text-slate-500 font-bold"><span className="material-symbols-outlined text-[#3593A6] text-base">location_on</span><span className="text-[10px] line-clamp-1">{event.location}</span></div>
                         </div>
                         <div className="mt-auto pt-3 flex justify-between items-center border-t border-slate-50">
-                          <div><p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">FROM</p><p className="text-xl font-black text-[#0a0f18]">${event.prices?.Standard || 0}</p></div>
+                          <div><p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">FROM</p><p className="text-xl font-black text-[#0a0f18]">NPR {event.prices?.Standard || 0}</p></div>
                           <button onClick={() => navigate(`/event/${event.id}`)} className="flex items-center gap-1.5 px-5 py-2.5 bg-[#3593A6] text-white text-[9px] font-black rounded-lg hover:bg-[#0a0f18] transition-all uppercase tracking-widest shadow-xl active:scale-95">TICKETS <span className="material-symbols-outlined text-sm">arrow_forward</span></button>
                         </div>
                       </div>
@@ -469,7 +588,7 @@ const ExploreEvents = () => {
                                 <div className="flex items-center gap-2 text-slate-600 text-sm"><span className="material-symbols-outlined text-base">location_on</span><span className="line-clamp-1">{event.location}</span></div>
                               </div>
                               <div className="mt-auto pt-4 flex justify-between items-center border-t border-slate-50">
-                                <span className="text-xl font-black text-slate-900">${event.prices?.Standard || 0}</span>
+                                <span className="text-xl font-black text-slate-900">NPR {event.prices?.Standard || 0}</span>
                                 <button onClick={() => navigate(`/event/${event.id}`)} className="px-5 py-2 bg-[#3593A6] text-white text-xs font-bold rounded-xl hover:bg-[#0a0f18] transition-colors uppercase tracking-widest">BOOK TICKET</button>
                               </div>
                             </div>

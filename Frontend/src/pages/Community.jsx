@@ -25,7 +25,7 @@ function CreatePostModal({ onClose, onSubmit, editPost = null }) {
 
   const handleSubmit = async () => {
     if (!content.trim()) return;
-    
+
     setIsSubmitting(true);
     try {
       await onSubmit(content, image);
@@ -180,7 +180,7 @@ export default function Community() {
 
   const handleEditPost = async (content, image) => {
     if (!editingPost) return;
-    
+
     try {
       const formData = new FormData();
       formData.append("content", content);
@@ -201,7 +201,7 @@ export default function Community() {
 
   const handleDeletePost = async (postId) => {
     if (!window.confirm("Are you sure you want to delete this post?")) return;
-    
+
     try {
       await api.delete(`/api/community/${postId}`);
       setPosts(prevPosts => prevPosts.filter(post => post.id !== postId));
@@ -249,9 +249,9 @@ export default function Community() {
               id: response.data?.id || Date.now(),
               content,
               userId: currentUser?.id,
-              User: { 
+              User: {
                 name: currentUser?.name || "You",
-                profileImage: currentUser?.profileImage 
+                profileImage: currentUser?.profileImage
               }
             };
             return {
@@ -303,13 +303,13 @@ export default function Community() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
-      <div className="max-w-2xl mx-auto px-4 py-8">
+      <div className="max-w-2xl mx-auto px-4 pt-0 pb-8">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-gray-800 mb-2">Community</h1>
           <p className="text-gray-600">Share your thoughts and connect with others</p>
-          
-         
+
+
           {currentUser && (
             <p className="text-sm text-gray-500 mt-2">
               Logged in as: {currentUser.name} (ID: {currentUser.id})

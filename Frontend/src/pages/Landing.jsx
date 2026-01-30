@@ -67,9 +67,9 @@ function LandingPage() {
                 <img src="/images/cruise logo.png" alt="Cruise Logo" className="h-10" />
               </div>
               <div className="hidden md:flex items-center space-x-10">
-                <button onClick={() => { const token = localStorage.getItem('token'); if (!token) navigate('/login'); else navigate('/explore') }} className="text-sm font-semibold text-slate-600 hover:text-[#3593A6] transition-colors">Explore</button>
-                <button onClick={() => { const token = localStorage.getItem('token'); if (!token) navigate('/login'); else navigate('/categories') }} className="text-sm font-semibold text-slate-600 hover:text-[#3593A6] transition-colors">Categories</button>
-                <button onClick={() => { const token = localStorage.getItem('token'); if (!token) navigate('/login'); else navigate('/find-artists') }} className="text-sm font-semibold text-slate-600 hover:text-[#3593A6] transition-colors">Artists</button>
+                <button onClick={() => { const token = localStorage.getItem('token'); if (!token) navigate('/login'); else navigate('/events') }} className="text-sm font-semibold text-slate-600 hover:text-[#3593A6] transition-colors">Explore</button>
+                <button onClick={() => { const token = localStorage.getItem('token'); if (!token) navigate('/login'); else navigate('/events') }} className="text-sm font-semibold text-slate-600 hover:text-[#3593A6] transition-colors">Categories</button>
+                <button onClick={() => { const token = localStorage.getItem('token'); if (!token) navigate('/login'); else navigate('/searchartists') }} className="text-sm font-semibold text-slate-600 hover:text-[#3593A6] transition-colors">Artists</button>
                 <button className="text-sm font-semibold text-slate-600 hover:text-[#3593A6] transition-colors">Corporate</button>
               </div>
             </div>
@@ -139,7 +139,7 @@ function LandingPage() {
                 </div>
 
                 <div className="flex flex-col gap-4">
-                  <button onClick={() => { const token = localStorage.getItem('token'); if (!token) navigate('/login'); else navigate('/explore') }}
+                  <button onClick={() => { const token = localStorage.getItem('token'); if (!token) navigate('/login'); else navigate('/events') }}
                     className="w-full py-4 bg-[#3593A6] text-white font-extrabold rounded-2xl shadow-xl shadow-[#3593A6]/20 hover:-translate-y-1 transition-all">
                     Book Your Tickets
                   </button>
@@ -242,7 +242,7 @@ function LandingPage() {
                   </div>
                 </div>
                 <div className="flex justify-between items-center pt-4 border-t border-slate-100">
-                  <span className="text-xl font-black text-slate-900">4500</span>
+                  <span className="text-xl font-black text-slate-900">NPR 4500</span>
                   <button onClick={() => { const token = localStorage.getItem('token'); if (!token) navigate('/login'); else navigate('/event/1') }} className="px-5 py-2 bg-slate-900 text-white text-xs font-bold rounded-xl hover:bg-[#3593A6] transition-colors">View Details</button>
                 </div>
               </div>
@@ -267,7 +267,7 @@ function LandingPage() {
                   </div>
                 </div>
                 <div className="flex justify-between items-center pt-4 border-t border-slate-100">
-                  <span className="text-xl font-black text-slate-900">1500</span>
+                  <span className="text-xl font-black text-slate-900">NPR 1500</span>
                   <button onClick={() => { const token = localStorage.getItem('token'); if (!token) navigate('/login'); else navigate('/event/2') }} className="px-5 py-2 bg-slate-900 text-white text-xs font-bold rounded-xl hover:bg-[#3593A6] transition-colors">View Details</button>
                 </div>
               </div>
@@ -292,7 +292,7 @@ function LandingPage() {
                   </div>
                 </div>
                 <div className="flex justify-between items-center pt-4 border-t border-slate-100">
-                  <span className="text-xl font-black text-slate-900">2900</span>
+                  <span className="text-xl font-black text-slate-900">NPR 2900</span>
                   <button onClick={() => { const token = localStorage.getItem('token'); if (!token) navigate('/login'); else navigate('/event/3') }} className="px-5 py-2 bg-slate-900 text-white text-xs font-bold rounded-xl hover:bg-[#3593A6] transition-colors">View Details</button>
                 </div>
               </div>
@@ -335,7 +335,7 @@ function LandingPage() {
 
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
             {/* Sports */}
-            <button onClick={() => { const token = localStorage.getItem('token'); if (!token) navigate('/login'); else navigate('/category/sports') }} className="group cursor-pointer">
+            <button onClick={() => { const token = localStorage.getItem('token'); if (!token) navigate('/login'); else navigate('/events') }} className="group cursor-pointer">
               <div className="aspect-square rounded-2xl bg-[#2d7a8a] flex flex-col items-center justify-center p-4 transition-all duration-300 hover:shadow-xl hover:scale-[1.03] relative overflow-hidden">
                 <span className="material-symbols-outlined text-white text-8xl mb-auto mt-6 drop-shadow-lg">sports_basketball</span>
                 <div className="mt-auto mb-0 text-left w-full bg-[#1a5a66] -mx-4 px-4 py-3 rounded-b-2xl">
@@ -346,7 +346,7 @@ function LandingPage() {
             </button>
 
             {/* Festivals */}
-            <button onClick={() => { const token = localStorage.getItem('token'); if (!token) navigate('/login'); else navigate('/category/festivals') }} className="group cursor-pointer">
+            <button onClick={() => { const token = localStorage.getItem('token'); if (!token) navigate('/login'); else navigate('/events') }} className="group cursor-pointer">
               <div className="aspect-square rounded-2xl bg-[#c45c3e] flex flex-col items-center justify-center p-4 transition-all duration-300 hover:shadow-xl hover:scale-[1.03] relative overflow-hidden">
                 <span className="material-symbols-outlined text-white text-8xl mb-auto mt-6 drop-shadow-lg">celebration</span>
                 <div className="mt-auto mb-0 text-left w-full bg-[#a04830] -mx-4 px-4 py-3 rounded-b-2xl">
@@ -357,7 +357,7 @@ function LandingPage() {
             </button>
 
             {/* Comedy */}
-            <button onClick={() => { const token = localStorage.getItem('token'); if (!token) navigate('/login'); else navigate('/category/comedy') }} className="group cursor-pointer">
+            <button onClick={() => { const token = localStorage.getItem('token'); if (!token) navigate('/login'); else navigate('/events') }} className="group cursor-pointer">
               <div className="aspect-square rounded-2xl bg-[#9b59b6] flex flex-col items-center justify-center p-4 transition-all duration-300 hover:shadow-xl hover:scale-[1.03] relative overflow-hidden">
                 <span className="material-symbols-outlined text-white text-8xl mb-auto mt-6 drop-shadow-lg">mic</span>
                 <div className="mt-auto mb-0 text-left w-full bg-[#7d4692] -mx-4 px-4 py-3 rounded-b-2xl">
@@ -368,7 +368,7 @@ function LandingPage() {
             </button>
 
             {/* Arts */}
-            <button onClick={() => { const token = localStorage.getItem('token'); if (!token) navigate('/login'); else navigate('/category/art') }} className="group cursor-pointer">
+            <button onClick={() => { const token = localStorage.getItem('token'); if (!token) navigate('/login'); else navigate('/events') }} className="group cursor-pointer">
               <div className="aspect-square rounded-2xl bg-[#3498db] flex flex-col items-center justify-center p-4 transition-all duration-300 hover:shadow-xl hover:scale-[1.03] relative overflow-hidden">
                 <span className="material-symbols-outlined text-white text-8xl mb-auto mt-6 drop-shadow-lg">palette</span>
                 <div className="mt-auto mb-0 text-left w-full bg-[#2980b9] -mx-4 px-4 py-3 rounded-b-2xl">
@@ -379,7 +379,7 @@ function LandingPage() {
             </button>
 
             {/* Music */}
-            <button onClick={() => { const token = localStorage.getItem('token'); if (!token) navigate('/login'); else navigate('/category/music') }} className="group cursor-pointer">
+            <button onClick={() => { const token = localStorage.getItem('token'); if (!token) navigate('/login'); else navigate('/events') }} className="group cursor-pointer">
               <div className="aspect-square rounded-2xl bg-[#e74c3c] flex flex-col items-center justify-center p-4 transition-all duration-300 hover:shadow-xl hover:scale-[1.03] relative overflow-hidden">
                 <span className="material-symbols-outlined text-white text-8xl mb-auto mt-6 drop-shadow-lg">music_note</span>
                 <div className="mt-auto mb-0 text-left w-full bg-[#c0392b] -mx-4 px-4 py-3 rounded-b-2xl">
@@ -390,7 +390,7 @@ function LandingPage() {
             </button>
 
             {/* Theatre */}
-            <button onClick={() => { const token = localStorage.getItem('token'); if (!token) navigate('/login'); else navigate('/category/theatre') }} className="group cursor-pointer">
+            <button onClick={() => { const token = localStorage.getItem('token'); if (!token) navigate('/login'); else navigate('/events') }} className="group cursor-pointer">
               <div className="aspect-square rounded-2xl bg-[#8e44ad] flex flex-col items-center justify-center p-4 transition-all duration-300 hover:shadow-xl hover:scale-[1.03] relative overflow-hidden">
                 <span className="material-symbols-outlined text-white text-8xl mb-auto mt-6 drop-shadow-lg">theater_comedy</span>
                 <div className="mt-auto mb-0 text-left w-full bg-[#6c3483] -mx-4 px-4 py-3 rounded-b-2xl">
@@ -433,7 +433,7 @@ function LandingPage() {
                     <p className="text-slate-600 font-medium">Get instant access and enjoy the experience.</p>
                   </li>
                 </ul>
-                <button onClick={() => { const token = localStorage.getItem('token'); if (!token) navigate('/login'); else navigate('/explore') }} className="w-full py-4 bg-slate-900 text-white font-bold rounded-2xl hover:bg-[#3593A6] transition-colors shadow-lg shadow-slate-900/20">
+                <button onClick={() => { const token = localStorage.getItem('token'); if (!token) navigate('/login'); else navigate('/events') }} className="w-full py-4 bg-slate-900 text-white font-bold rounded-2xl hover:bg-[#3593A6] transition-colors shadow-lg shadow-slate-900/20">
                   Start Exploring
                 </button>
               </div>

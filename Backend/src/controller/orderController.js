@@ -5,7 +5,7 @@ import OrderItem from "../model/OrderItems.js";
 import { Product } from "../model/Product.js";
 
 const TAX_RATE = 0.1;
-const DISCOUNT = 0;   
+const DISCOUNT = 0;
 
 
 export const buyAllCartItems = async (req, res) => {
@@ -15,12 +15,14 @@ export const buyAllCartItems = async (req, res) => {
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
   const { cartItemId, cartItemIds, quantity } = req.body;
+  console.log("Request body:", req.body);
+  console.log("UserId:", userId);
 
   try {
     let items = [];
 
     if (cartItemId) {
-      const item = await CartItem.findByPk(cartItemId, { include: [{model:Product}] });
+      const item = await CartItem.findByPk(cartItemId, { include: [{ model: Product }] });
       if (!item) return res.status(404).json({ message: "Cart item not found" });
 
       item.quantity = quantity || item.quantity;
@@ -29,21 +31,21 @@ export const buyAllCartItems = async (req, res) => {
     } else if (cartItemIds && cartItemIds.length > 0) {
       items = await CartItem.findAll({
         where: { id: cartItemIds },
-        include: [{model:Product}],
+        include: [{ model: Product }],
       });
-console.log(items)
+      console.log(items)
       if (!items.length)
         return res.status(400).json({ message: "No items found in cart" });
 
     } else {
       return res.status(400).json({ message: "No items specified to buy" });
     }
-console.log("Cart items fetched for order:", items.map(i => ({
-  id: i.id,
-  productId: i.productId,
-  quantity: i.quantity,
-  productQuantity: i.product?.productQuantity
-})));
+    console.log("Cart items fetched for order:", items.map(i => ({
+      id: i.id,
+      productId: i.productId,
+      quantity: i.quantity,
+      productQuantity: i.product?.productQuantity
+    })));
     for (const i of items) {
       if (!i.product)
         return res.status(400).json({ message: "Product not found" });
@@ -116,7 +118,7 @@ export const markOrderAsComplete = async (req, res) => {
         {
           model: OrderItem,
           as: 'OrderItems',
-          include: [{ model: Product,as: 'product' }]
+          include: [{ model: Product, as: 'product' }]
         }
       ]
     });

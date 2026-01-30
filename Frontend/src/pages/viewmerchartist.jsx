@@ -1,4 +1,4 @@
-import { ShoppingCart, DollarSign, MapPin,  ShoppingBag, Users, Shirt } from "lucide-react";
+import { ShoppingCart, DollarSign, MapPin, ShoppingBag, Users, Shirt } from "lucide-react";
 import { useEffect } from "react";
 import { useState } from "react";
 import DataTable from "react-data-table-component";
@@ -14,7 +14,7 @@ const merchColumns = [
   },
   {
     name: "Date Added",
-    selector: row =>  `${new Date(row.createdAt).toLocaleDateString()}`,
+    selector: row => `${new Date(row.createdAt).toLocaleDateString()}`,
   },
   {
     name: "Ordered",
@@ -28,16 +28,16 @@ const merchColumns = [
   },
   {
     name: "Revenue",
-    selector: row => `Rs. ${row.OrderItems.reduce((a, b) => a + Number(b.totalPrice), 0)}`,
+    selector: row => `NPR ${row.OrderItems.reduce((a, b) => a + Number(b.totalPrice), 0)}`,
     right: true,
   },
-    {
+  {
     name: "Profit",
-    selector: row => `Rs. ${Math.round((row.OrderItems.reduce((a, b) => a + Number(b.totalPrice), 0))*0.20)}`,
+    selector: row => `NPR ${Math.round((row.OrderItems.reduce((a, b) => a + Number(b.totalPrice), 0)) * 0.20)}`,
     right: true,
   },
 ];
-const MerchExpanded = ({ data,handleMarkAsComplete, completingOrders}) => (
+const MerchExpanded = ({ data, handleMarkAsComplete, completingOrders }) => (
 
   <div className="bg-[#F4FAFB] p-6 rounded-2xl mx-4 mb-5 shadow-inner border border-[#D6E7EE]/70">
     <div className="flex items-center justify-between mb-4">
@@ -64,17 +64,16 @@ const MerchExpanded = ({ data,handleMarkAsComplete, completingOrders}) => (
 
           <div className="flex items-center justify-between sm:justify-end gap-3">
             <p className="font-semibold text-[#1F6D7E] text-sm">
-              Rs. {b.totalPrice}
+              NPR {b.totalPrice}
             </p>
             <div className="flex items-center gap-2">
               <span
-                className={`text-[0.7rem] px-3 py-1 rounded-full border ${
-                  b.Order.status === "Completed"
-                    ? "bg-green-50 text-green-700 border-green-200"
-                    : b.Order.status === "Shipped"
+                className={`text-[0.7rem] px-3 py-1 rounded-full border ${b.Order.status === "Completed"
+                  ? "bg-green-50 text-green-700 border-green-200"
+                  : b.Order.status === "Shipped"
                     ? "bg-emerald-50 text-emerald-700 border-emerald-200"
                     : "bg-amber-50 text-amber-700 border-amber-200"
-                }`}
+                  }`}
               >
                 {b.Order?.status}
               </span>
@@ -95,28 +94,28 @@ const MerchExpanded = ({ data,handleMarkAsComplete, completingOrders}) => (
     </div>
   </div>
 );
- const Stat = ({ title, value, icon, cardClass = "", iconClass = "" }) => (
-   <div
-     className={`p-4 rounded-2xl shadow-sm border flex items-center gap-4 ${cardClass}`}
-   >
-     <div
-       className={`p-3 rounded-xl border shadow-sm ${iconClass}`}
-     >
-       {icon}
-     </div>
-     <div className="min-w-0">
-       <p className="text-[0.7rem] uppercase tracking-[0.12em] text-gray-500 mb-1">
-         {title}
-       </p>
-       <h3 className="text-xl font-semibold text-gray-900 truncate">{value}</h3>
-     </div>
-   </div>
- );
+const Stat = ({ title, value, icon, cardClass = "", iconClass = "" }) => (
+  <div
+    className={`p-4 rounded-2xl shadow-sm border flex items-center gap-4 ${cardClass}`}
+  >
+    <div
+      className={`p-3 rounded-xl border shadow-sm ${iconClass}`}
+    >
+      {icon}
+    </div>
+    <div className="min-w-0">
+      <p className="text-[0.7rem] uppercase tracking-[0.12em] text-gray-500 mb-1">
+        {title}
+      </p>
+      <h3 className="text-xl font-semibold text-gray-900 truncate">{value}</h3>
+    </div>
+  </div>
+);
 
-export function ViewMerchandiseTable() {
-    const[merchData,setGetItems]=useState([]);
-    const [completingOrders, setCompletingOrders] = useState(new Set());
-    const getMerchItems = async () => {
+export default function ViewMerchandiseTable() {
+  const [merchData, setGetItems] = useState([]);
+  const [completingOrders, setCompletingOrders] = useState(new Set());
+  const getMerchItems = async () => {
     try {
       const res = await api.get("/artist/allmerch/details");
       console.log(res.data.data)
@@ -128,7 +127,7 @@ export function ViewMerchandiseTable() {
   };
 
   useEffect(() => {
-  getMerchItems();
+    getMerchItems();
   }, []);
 
   const handleMarkAsComplete = async (orderId) => {
@@ -202,7 +201,7 @@ export function ViewMerchandiseTable() {
     .slice(0, 3);
 
   return (
-    
+
     <div className="ml-[22%] px-6 md:px-10 py-8 min-h-screen bg-[#F3F6F8]">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
@@ -238,35 +237,35 @@ export function ViewMerchandiseTable() {
         </div>
       </div>
 
-       {/* Stats row */}
-       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
-         <Stat
-           title="Merch items"
-           value={merchData.length}
-           icon={<Shirt className="w-5 h-5" />}
-           cardClass="bg-[#EFF7FF] border-[#D6E7EE]"
-           iconClass="bg-white text-[#1F6D7E] border-[#D6E7EE]"
-         />
+      {/* Stats row */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+        <Stat
+          title="Merch items"
+          value={merchData.length}
+          icon={<Shirt className="w-5 h-5" />}
+          cardClass="bg-[#EFF7FF] border-[#D6E7EE]"
+          iconClass="bg-white text-[#1F6D7E] border-[#D6E7EE]"
+        />
         <Stat
           title="Total revenue"
-          value={`Rs ${totalRevenue}`}
+          value={`NPR ${totalRevenue}`}
           icon={<Users className="w-5 h-5" />}
-           cardClass="bg-[#ECFDF3] border-[#BBF7D0]"
-           iconClass="bg-white text-[#166534] border-[#BBF7D0]"
+          cardClass="bg-[#ECFDF3] border-[#BBF7D0]"
+          iconClass="bg-white text-[#166534] border-[#BBF7D0]"
         />
         <Stat
           title="Estimated profit"
-          value={`Rs ${totalProfit}`}
+          value={`NPR ${totalProfit}`}
           icon={<DollarSign className="w-5 h-5" />}
-           cardClass="bg-[#FFFBEB] border-[#FDE68A]"
-           iconClass="bg-white text-[#92400E] border-[#FDE68A]"
+          cardClass="bg-[#FFFBEB] border-[#FDE68A]"
+          iconClass="bg-white text-[#92400E] border-[#FDE68A]"
         />
         <Stat
           title="Total units ordered"
           value={totalOrders}
           icon={<ShoppingCart className="w-5 h-5" />}
-           cardClass="bg-[#FEF2F2] border-[#FECACA]"
-           iconClass="bg-white text-[#991B1B] border-[#FECACA]"
+          cardClass="bg-[#FEF2F2] border-[#FECACA]"
+          iconClass="bg-white text-[#991B1B] border-[#FECACA]"
         />
       </div>
 
@@ -291,8 +290,8 @@ export function ViewMerchandiseTable() {
               data={merchData}
               expandableRows
               expandableRowsComponent={(props) => (
-                <MerchExpanded 
-                  {...props} 
+                <MerchExpanded
+                  {...props}
                   handleMarkAsComplete={handleMarkAsComplete}
                   completingOrders={completingOrders}
                 />

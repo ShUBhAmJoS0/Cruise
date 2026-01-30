@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { ChevronDown, File, Menu, Shirt, User, Users, X } from "lucide-react";
 
-export function ArtistNavbar({  logout, dbuser }) {
+export function ArtistNavbar({ logout, dbuser }) {
   const location = useLocation();
   const navigate = useNavigate();
   const [selected, setSelected] = useState("");
@@ -20,16 +20,16 @@ export function ArtistNavbar({  logout, dbuser }) {
   };
 
   useEffect(() => {
-    if (location.pathname.includes("Profile")){
-       setSelected("Myprofile");
+    if (location.pathname.toLowerCase().includes("profile")) {
+      setSelected("Myprofile");
     }
-    if (location.pathname.includes("reviews")){
+    if (location.pathname.toLowerCase().includes("reviews")) {
       setSelected("User reviews");
-   }
-    else if (location.pathname.includes("Request")) {
+    }
+    else if (location.pathname.toLowerCase().includes("request")) {
       setSelected("ManageEvents");
       setExpandedMenu("ManageEvents");
-    } else if (location.pathname.includes("merch")) {
+    } else if (location.pathname.toLowerCase().includes("merch")) {
       setSelected("Merchandise");
       setExpandedMenu("Merchandise");
     } else setSelected("");
@@ -107,7 +107,7 @@ export function ArtistNavbar({  logout, dbuser }) {
             </div>
           </div>
 
-          <Link to="/artist/EditProfile" onClick={closeMobileMenu}>
+          <Link to="/artist/editprofile" onClick={closeMobileMenu}>
             <button className="w-full bg-[#3593A6] text-white font-medium py-2.5 rounded-xl hover:bg-[#2d7a8a] transition-all shadow-sm text-sm sm:text-base">
               Edit Profile
             </button>
@@ -118,17 +118,16 @@ export function ArtistNavbar({  logout, dbuser }) {
         <nav className="flex-1 px-3 sm:px-4 py-4 sm:py-6 space-y-2 overflow-y-auto">
 
 
-          <Link to="/artist/Profile" onClick={closeMobileMenu}>
+          <Link to="/artist/profile" onClick={closeMobileMenu}>
             <button
               onClick={() => {
                 setSelected("Myprofile");
                 setExpandedMenu("");
               }}
-              className={`w-full px-3 sm:px-4 py-3 sm:py-3.5 rounded-xl flex items-center gap-3 transition-all touch-manipulation ${
-                selected === "Myprofile"
+              className={`w-full px-3 sm:px-4 py-3 sm:py-3.5 rounded-xl flex items-center gap-3 transition-all touch-manipulation ${selected === "Myprofile"
                   ? "bg-[#3593A6]/10 text-[#3593A6] shadow-sm border border-[#3593A6]/20"
                   : "hover:bg-gray-100 text-gray-700 active:bg-gray-200"
-              }`}
+                }`}
             >
               <User className="w-5 h-5 flex-shrink-0" />
               <span className="font-medium text-sm sm:text-base">My Profile</span>
@@ -140,12 +139,12 @@ export function ArtistNavbar({  logout, dbuser }) {
             <button
               onClick={() => {
                 setSelected("ManageEvents")
-                toggleMenu("ManageEvents")}}
-              className={`w-full px-3 sm:px-4 py-3 sm:py-3.5 rounded-xl flex items-center gap-3 transition-all touch-manipulation ${
-                selected === "ManageEvents" || expandedMenu === "ManageEvents"
+                toggleMenu("ManageEvents")
+              }}
+              className={`w-full px-3 sm:px-4 py-3 sm:py-3.5 rounded-xl flex items-center gap-3 transition-all touch-manipulation ${selected === "ManageEvents" || expandedMenu === "ManageEvents"
                   ? "bg-[#3593A6]/10 text-[#3593A6] shadow-sm border border-[#3593A6]/20"
                   : "hover:bg-gray-100 text-gray-700 active:bg-gray-200"
-              }`}
+                }`}
             >
               <File className="w-5 h-5 flex-shrink-0" />
               <span className="font-medium flex-1 text-left text-sm sm:text-base">Manage Events</span>
@@ -157,7 +156,7 @@ export function ArtistNavbar({  logout, dbuser }) {
 
             {expandedMenu === "ManageEvents" && (
               <div className="ml-4 sm:ml-6 mt-2 space-y-1 border-l-2 border-[#3593A6]/30 pl-3 sm:pl-4">
-                <Link to="/artist/Request/" onClick={closeMobileMenu}>
+                <Link to="/artist/request" onClick={closeMobileMenu}>
                   <button className="submenu-btn w-full text-left">Add Events</button>
                 </Link>
                 <Link to="/artist/viewevent" onClick={closeMobileMenu}>
@@ -169,14 +168,14 @@ export function ArtistNavbar({  logout, dbuser }) {
 
           <div>
             <button
-              onClick={() => {toggleMenu("Merchandise")
+              onClick={() => {
+                toggleMenu("Merchandise")
                 setSelected("Merchandise")
               }}
-              className={`w-full px-3 sm:px-4 py-3 sm:py-3.5 rounded-xl flex items-center gap-3 transition-all touch-manipulation ${
-                selected === "Merchandise" || expandedMenu === "Merchandise"
+              className={`w-full px-3 sm:px-4 py-3 sm:py-3.5 rounded-xl flex items-center gap-3 transition-all touch-manipulation ${selected === "Merchandise" || expandedMenu === "Merchandise"
                   ? "bg-[#3593A6]/10 text-[#3593A6] shadow-sm border border-[#3593A6]/20"
                   : "hover:bg-gray-100 text-gray-700 active:bg-gray-200"
-              }`}
+                }`}
             >
               <Shirt className="w-5 h-5 flex-shrink-0" />
               <span className="font-medium flex-1 text-left text-sm sm:text-base">Merchandise</span>
@@ -188,7 +187,7 @@ export function ArtistNavbar({  logout, dbuser }) {
 
             {expandedMenu === "Merchandise" && (
               <div className="ml-4 sm:ml-6 mt-2 space-y-1 border-l-2 border-[#3593A6]/30 pl-3 sm:pl-4">
-                <Link to="/artist/Addmerch" onClick={closeMobileMenu}>
+                <Link to="/artist/addmerch" onClick={closeMobileMenu}>
                   <button className="submenu-btn w-full text-left">Add Merchandise</button>
                 </Link>
                 <Link to="/artist/viewmerch" onClick={closeMobileMenu}>
@@ -203,11 +202,10 @@ export function ArtistNavbar({  logout, dbuser }) {
                 setSelected("User reviews");
                 setExpandedMenu("");
               }}
-              className={`w-full px-3 sm:px-4 py-3 sm:py-3.5 rounded-xl flex items-center gap-3 transition-all touch-manipulation ${
-                selected === "User reviews"
+              className={`w-full px-3 sm:px-4 py-3 sm:py-3.5 rounded-xl flex items-center gap-3 transition-all touch-manipulation ${selected === "User reviews"
                   ? "bg-[#3593A6]/10 text-[#3593A6] shadow-sm border border-[#3593A6]/20"
                   : "hover:bg-gray-100 text-gray-700 active:bg-gray-200"
-              }`}
+                }`}
             >
               <Users className="w-5 h-5 flex-shrink-0" />
               <span className="font-medium text-sm sm:text-base">User reviews</span>
@@ -215,7 +213,7 @@ export function ArtistNavbar({  logout, dbuser }) {
           </Link>
         </nav>
 
-      
+
 
         <div className="p-3 sm:p-4 border-t border-gray-100">
           <button

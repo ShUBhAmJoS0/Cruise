@@ -264,7 +264,7 @@ function AdminDashboard({ onLogout }) {
                   <div className="min-w-0 flex-1">
                     <p className="text-[#617589] text-xs md:text-sm font-medium uppercase tracking-wider truncate">Revenue</p>
                     <p className="text-[#111418] text-xl md:text-3xl font-bold leading-tight mt-1 md:mt-2">
-                      ${loading ? '-' : dashboardStats.totalRevenue >= 1000
+                      NPR {loading ? '-' : dashboardStats.totalRevenue >= 1000
                         ? (dashboardStats.totalRevenue / 1000).toFixed(1) + 'K'
                         : dashboardStats.totalRevenue.toFixed(2)}
                     </p>

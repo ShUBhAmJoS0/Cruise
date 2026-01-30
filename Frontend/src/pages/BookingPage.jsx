@@ -66,7 +66,7 @@ const TicketCard = ({ id, label, description, price, available, icon: Icon, limi
 
       <div className="flex items-end justify-between">
         <div>
-          <span className="text-2xl font-black text-slate-900 leading-none">Rs. {price}</span>
+          <span className="text-2xl font-black text-slate-900 leading-none">NPR {price}</span>
         </div>
         <div className={`text-[10px] font-medium px-2 py-1 rounded-full ${available === "Unlimited" ? "bg-slate-100 text-slate-500" : "bg-cyan-50 text-cyan-600"
           }`}>
@@ -133,7 +133,7 @@ export default function BookingPage() {
           <h2 className="text-2xl font-bold text-slate-900 mb-2">Error</h2>
           <p className="text-slate-500 mb-6">{error}</p>
           <button
-            onClick={() => navigate("/explore")}
+            onClick={() => navigate("/events")}
             className="w-full bg-slate-900 text-white py-3 rounded-xl font-bold hover:bg-slate-800 transition-colors"
           >
             Back to Events
@@ -354,7 +354,7 @@ export default function BookingPage() {
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="font-semibold text-slate-400">Price (per ticket)</span>
-                  <span className="font-bold text-slate-900">Rs. {currentPrice.toFixed(2)}</span>
+                  <span className="font-bold text-slate-900">NPR {currentPrice.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="font-semibold text-slate-400">Quantity</span>
@@ -365,16 +365,16 @@ export default function BookingPage() {
 
                 <div className="flex justify-between text-sm">
                   <span className="font-semibold text-slate-400">Subtotal</span>
-                  <span className="font-bold text-slate-900">Rs. {subtotal.toFixed(2)}</span>
+                  <span className="font-bold text-slate-900">NPR {subtotal.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="font-semibold text-slate-400">Processing Fee (5%)</span>
-                  <span className="font-bold text-slate-900">Rs. {processingFee.toFixed(2)}</span>
+                  <span className="font-bold text-slate-900">NPR {processingFee.toFixed(2)}</span>
                 </div>
 
                 <div className="pt-6">
                   <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Total Amount</p>
-                  <p className="text-4xl font-black text-slate-900 tracking-tighter">Rs. {total.toFixed(2)}</p>
+                  <p className="text-4xl font-black text-slate-900 tracking-tighter">NPR {total.toFixed(2)}</p>
                 </div>
               </div>
 

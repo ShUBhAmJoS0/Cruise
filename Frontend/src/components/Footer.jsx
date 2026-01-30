@@ -11,7 +11,6 @@ const Footer = () => {
                     {/* Brand Column */}
                     <div className="col-span-1 md:col-span-1">
                         <Link to="/" className="flex items-center gap-2 mb-6">
-                            <img src="/images/cruise logo.png" alt="Cruise Logo" className="h-12 w-12 object-contain" />
                             <span className="text-2xl font-black text-white tracking-tight uppercase">
                                 CRUISE<span className="text-[#3593A6]">.</span>
                             </span>
@@ -19,17 +18,6 @@ const Footer = () => {
                         <p className="text-sm font-medium leading-relaxed mb-6">
                             Elevating exclusive nautical events to an art form. Join the community of thrill-seekers and wave-riders.
                         </p>
-                        <div className="flex gap-4">
-                            {['facebook', 'twitter', 'instagram', 'youtube'].map((social) => (
-                                <a
-                                    key={social}
-                                    href={`#${social}`}
-                                    className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-[#3593A6] hover:text-white transition-all text-sm"
-                                >
-                                    <span className={`fa fa-${social}`}></span>
-                                </a>
-                            ))}
-                        </div>
                     </div>
 
                     {/* Discovery Links */}
@@ -65,7 +53,7 @@ const Footer = () => {
                                 name: formData.get('name'),
                                 email: formData.get('email'),
                                 message: formData.get('problem'),
-                                subject: 'Footer Report'
+                                subject: 'User Problem'
                             };
                             try {
                                 const response = await fetch('http://localhost:5000/api/user-problems', {
@@ -86,7 +74,7 @@ const Footer = () => {
                             <input
                                 name="name"
                                 type="text"
-                                placeholder="Your Name"
+                                placeholder="Issue Title"
                                 required
                                 className="bg-slate-800 border-none rounded-xl px-4 py-3 text-white text-xs focus:ring-2 focus:ring-[#3593A6]"
                             />

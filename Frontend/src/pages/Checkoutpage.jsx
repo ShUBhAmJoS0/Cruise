@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import api from "../api/axios";
-import { useLocation } from "react-router-dom";
-import { 
-  X, 
-  ShoppingBag, 
-  Minus, 
-  Plus, 
-  Trash2, 
-  Package, 
+import { useLocation, useNavigate } from "react-router-dom";
+import {
+  X,
+  ShoppingBag,
+  Minus,
+  Plus,
+  Trash2,
+  Package,
   User,
   CheckCircle,
   CreditCard,
@@ -19,6 +20,7 @@ const DISCOUNT = 0;
 
 const CheckoutPage = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const { cartItemIds } = location.state || {};
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -38,8 +40,13 @@ const CheckoutPage = () => {
   };
 
   useEffect(() => {
+    if (!cartItemIds || (Array.isArray(cartItemIds) && cartItemIds.length === 0)) {
+      toast.error("No items selected for checkout");
+      navigate("/merchandise");
+      return;
+    }
     fetchCartItems();
-  }, []);
+  }, [cartItemIds, navigate]);
 
   const updateQty = async (id, qty) => {
     if (qty < 1) return;
@@ -64,16 +71,16 @@ const CheckoutPage = () => {
     try {
       await api.post("/api/cart/order/cart", { cartItemIds });
       setReceiptData({ items, total, tax, discount });
-      toast.success("order confirmed sucessfully")
+      toast.success("order confirmed successfully")
       setShowReceipt(true);
     } catch (err) {
       console.error(err);
-      toast.error("Failed to place order");
+      toast.error(err.response?.data?.message || "Failed to place order");
     }
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 pt-24 pb-16 px-4">
+    <main className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 pt-4 pb-16 px-4">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-8">
@@ -132,7 +139,7 @@ const CheckoutPage = () => {
                           <h3 className="font-bold text-lg text-slate-800 mb-1">
                             {item.product?.productName || "Unknown Product"}
                           </h3>
-                          
+
                           <div className="flex items-center gap-2 mb-2">
                             <User className="w-4 h-4 text-slate-400" />
                             <p className="text-sm text-slate-600">
@@ -147,7 +154,7 @@ const CheckoutPage = () => {
                           )}
 
                           <p className="text-lg font-black text-[#3593A6]">
-                            ${Number(item.product?.productPrice || 0).toFixed(2)}
+                            NPR {Number(item.product?.productPrice || 0).toFixed(2)}
                           </p>
                         </div>
 
@@ -174,7 +181,7 @@ const CheckoutPage = () => {
                           <div className="text-right">
                             <p className="text-xs text-slate-500 mb-1">Subtotal</p>
                             <p className="text-xl font-black text-slate-800">
-                              ${((item.product?.productPrice ?? 0) * item.quantity).toFixed(2)}
+                              NPR {((item.product?.productPrice ?? 0) * item.quantity).toFixed(2)}
                             </p>
                           </div>
                         </div>
@@ -199,7 +206,7 @@ const CheckoutPage = () => {
                   <div className="flex justify-between items-center py-2">
                     <span className="text-slate-600">Subtotal</span>
                     <span className="font-semibold text-slate-800">
-                      ${subtotal.toFixed(2)}
+                      NPR {subtotal.toFixed(2)}
                     </span>
                   </div>
 
@@ -209,7 +216,7 @@ const CheckoutPage = () => {
                       <span className="text-xs bg-slate-100 px-2 py-0.5 rounded">10%</span>
                     </span>
                     <span className="font-semibold text-slate-800">
-                      ${tax.toFixed(2)}
+                      NPR {tax.toFixed(2)}
                     </span>
                   </div>
 
@@ -217,7 +224,7 @@ const CheckoutPage = () => {
                     <div className="flex justify-between items-center py-2">
                       <span className="text-emerald-600">Discount</span>
                       <span className="font-semibold text-emerald-600">
-                        -${discount.toFixed(2)}
+                        -NPR {discount.toFixed(2)}
                       </span>
                     </div>
                   )}
@@ -226,7 +233,7 @@ const CheckoutPage = () => {
                     <div className="flex justify-between items-center">
                       <span className="text-lg font-bold text-slate-800">Total</span>
                       <span className="text-2xl font-black text-[#3593A6]">
-                        ${total.toFixed(2)}
+                        NPR {total.toFixed(2)}
                       </span>
                     </div>
                   </div>
@@ -244,7 +251,7 @@ const CheckoutPage = () => {
                   <div className="flex items-start gap-2">
                     <CheckCircle className="w-4 h-4 text-emerald-600 mt-0.5 flex-shrink-0" />
                     <p className="text-xs text-emerald-700">
-                      Secure checkout · Free shipping on orders over $50
+                      Secure checkout · Free shipping on orders over NPR 5000
                     </p>
                   </div>
                 </div>
@@ -266,7 +273,7 @@ const CheckoutPage = () => {
               >
                 <X className="w-5 h-5 text-white" />
               </button>
-              
+
               <div className="text-center">
                 <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4">
                   <CheckCircle className="w-10 h-10 text-emerald-500" />
@@ -283,11 +290,11 @@ const CheckoutPage = () => {
                   <Receipt className="w-5 h-5 text-[#3593A6]" />
                   Order Details
                 </h3>
-                
+
                 <div className="space-y-3 max-h-64 overflow-y-auto pr-2">
                   {receiptData.items.map((item, index) => (
-                    <div 
-                      key={item.id} 
+                    <div
+                      key={item.id}
                       className="flex justify-between items-start gap-4 py-3 border-b border-slate-100 last:border-0"
                     >
                       <div className="flex-1">
@@ -301,7 +308,7 @@ const CheckoutPage = () => {
                         </div>
                       </div>
                       <p className="font-bold text-slate-800">
-                        ${(item.product.productPrice * item.quantity).toFixed(2)}
+                        NPR {(item.product.productPrice * item.quantity).toFixed(2)}
                       </p>
                     </div>
                   ))}
@@ -311,18 +318,18 @@ const CheckoutPage = () => {
               <div className="space-y-3 mb-6 p-4 bg-slate-50 rounded-xl">
                 <div className="flex justify-between text-sm">
                   <span className="text-slate-600">Tax</span>
-                  <span className="font-semibold text-slate-800">${receiptData.tax.toFixed(2)}</span>
+                  <span className="font-semibold text-slate-800">NPR {receiptData.tax.toFixed(2)}</span>
                 </div>
                 {receiptData.discount > 0 && (
                   <div className="flex justify-between text-sm">
                     <span className="text-emerald-600">Discount</span>
-                    <span className="font-semibold text-emerald-600">-${receiptData.discount.toFixed(2)}</span>
+                    <span className="font-semibold text-emerald-600">-NPR {receiptData.discount.toFixed(2)}</span>
                   </div>
                 )}
                 <div className="border-t border-slate-200 pt-3 flex justify-between items-center">
                   <span className="font-bold text-slate-800">Grand Total</span>
                   <span className="text-2xl font-black text-[#3593A6]">
-                    ${receiptData.total.toFixed(2)}
+                    NPR {receiptData.total.toFixed(2)}
                   </span>
                 </div>
               </div>

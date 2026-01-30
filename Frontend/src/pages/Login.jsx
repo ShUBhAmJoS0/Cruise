@@ -58,7 +58,7 @@ export default function Login() {
       console.log(role)
       toast.success("Login successful!");
       if (role === "Admin") navigate("/admin");
-      else if (role === "Artist") navigate("/artist/Request");
+      else if (role === "Artist") navigate("/artist/request");
       else navigate("/events");
     }
     catch (error) {
@@ -194,8 +194,8 @@ export default function Login() {
 
 
           <button
-          onClick={handleSubmit(onLoginSubmit)}
-          className="w-full h-[55px] rounded-[10px] bg-[#3593A6] text-white mt-5 flex items-center justify-center transition duration-200 hover:bg-[#2b7c8d] hover:shadow-lg hover:scale-[1.02]"
+            onClick={handleSubmit(onLoginSubmit)}
+            className="w-full h-[55px] rounded-[10px] bg-[#3593A6] text-white mt-5 flex items-center justify-center transition duration-200 hover:bg-[#2b7c8d] hover:shadow-lg hover:scale-[1.02]"
           >
             Login
           </button>
@@ -207,7 +207,7 @@ export default function Login() {
           >
             <img
               className="w-[22px] h-[22px] mr-3"
-              src="/images/google.png"
+              src="/images/Google.png"
               alt="Google"
             />
             Continue with Google

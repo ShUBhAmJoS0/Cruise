@@ -195,7 +195,7 @@ const ArtistAnalytics = () => {
               <div className="flex gap-2 text-[0.7rem]">
                 <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-[#F8FFF7] text-[#24663A] border border-[#a2de79]/60">
                   <span className="h-1.5 w-1.5 rounded-full bg-[#7bc963]" />
-                  Revenue ($)
+                  Revenue (NPR)
                 </span>
               </div>
             </div>
@@ -205,7 +205,7 @@ const ArtistAnalytics = () => {
                   labels: revenueLabels,
                   datasets: [
                     {
-                      label: "Revenue ($)",
+                      label: "Revenue (NPR)",
                       data: revenueData,
                       fill: true,
                       backgroundColor: "rgba(147, 202, 213, 0.18)",
